@@ -65,7 +65,7 @@ Progresso e inputs ficam no `localStorage`, por `id` e `missionVersion`. Ao muda
 
 1. Crie uma planilha no Google Sheets.
 2. Abra **Extensions > Apps Script** (Extensões > Apps Script).
-3. Cole o conteúdo de `apps-script/Code.gs`, substituindo o exemplo. Salve.
+3. Cole o conteúdo de `apps-script/Code.gs`, substituindo o exemplo. Salve. No seletor de funções, escolha **setup** e clique em **Run / Executar** uma vez; autorize o acesso solicitado. Isso salva o ID da planilha nas propriedades do script para o Web App conseguir abri-la.
 4. Escolha **Deploy > New deployment > Web app**.
 5. Configure **Execute as: Me**.
 6. Configure **Who has access: Anyone with the link** — a opção pode aparecer como **Anyone**. O acesso deve permitir chamadas sem login. Autorize a implantação com sua conta. Contas institucionais podem restringir acesso público.
@@ -73,6 +73,8 @@ Progresso e inputs ficam no `localStorage`, por `id` e `missionVersion`. Ao muda
 8. Cole em `SHEETS_WEB_APP_URL` no arquivo `src/sheets.js`. Publique novamente o site.
 
 O script vinculado cria a aba **RTC Lab Practice Logs**, os 23 cabeçalhos solicitados e uma linha por conclusão. Arrays são JSON em células. Gravações concorrentes são serializadas. Duplicatas são evitadas por aluno, missão, versão e horário da conclusão. Novas tentativas geram novos horários. Textos que parecem fórmulas são armazenados literalmente.
+
+Execute `setup()` no editor, não `doPost()` (que exige o corpo de uma requisição HTTP). Em execução como Web App, o script abre a planilha com `openById`; os métodos de planilha ativa não estão disponíveis nesse contexto, conforme a [documentação oficial](https://developers.google.com/apps-script/guides/bound). Se copiar o script para outra planilha, execute `setup()` novamente nessa cópia.
 
 Payload: `studentName`, `missionId`, `missionName`, `week`, `missionVersion`, `statusAtCompletion`, `completedAt`, `totalScore`, `maxScore`, `percentage`, `listenedFullAudio`, `repeatedOutLoud`, `difficultAudioPhrase`, `listenRepeatCompleted` (quantidade de frases marcadas), os quatro scores, `difficultPhrases`, `wrongAnswers`, `copiedResultText` e `userAgent`. `completedAt` é ISO UTC; Timestamp é a data de recebimento.
 

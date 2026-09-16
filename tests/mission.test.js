@@ -52,9 +52,13 @@ test('both missions score correctly; errors are preserved and difficult phrases 
   }
 });
 test('registration with no endpoint returns actionable message without network access', async () => {
-  const result = await registerTraining({});
-  assert.equal(result.status, 'disconnected');
-  assert.match(result.message, /Registration not connected yet/);
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = () => { assert.fail('An empty endpoint must never send a request'); };
+  try {
+    const result = await registerTraining({});
+    assert.equal(result.status, 'disconnected');
+    assert.match(result.message, /Registration not connected yet/);
+  } finally { globalThis.fetch = originalFetch; }
 });
 test('configured registration posts JSON without preflight and handles network failure', async () => {
   const source = (await readFile(new URL('../src/sheets.js', import.meta.url), 'utf8')).replace("SHEETS_WEB_APP_URL = ''", "SHEETS_WEB_APP_URL = 'https://script.google.com/macros/s/test/exec'").replace(/export /g, '');
@@ -69,16 +73,37 @@ test('configured registration posts JSON without preflight and handles network f
   assert.deepEqual(JSON.parse(sent.options.body), payload);
   context.fetch = async () => { throw new Error('offline'); };
   await assert.rejects(context.registerTraining(payload), /could not confirm/);
+  context.fetch = async () => ({ type: 'basic', ok: false, status: 500 });
+  await assert.rejects(context.registerTraining(payload), /could not confirm/);
+  context.fetch = (_url, options) => new Promise((_resolve, reject) => options.signal.addEventListener('abort', () => reject(new Error('timeout'))));
+  context.setTimeout = callback => setTimeout(callback, 1);
+  await assert.rejects(context.registerTraining(payload), /could not confirm/);
+});
+test('invalid and whitespace-only endpoint configurations preserve the copy-result fallback', async () => {
+  const source = await readFile(new URL('../src/sheets.js', import.meta.url), 'utf8');
+  for (const endpoint of ['   ', 'https://example.com/exec', 'https://script.google.com/macros/s/test/dev']) {
+    const context = vm.createContext({ fetch: () => assert.fail('Invalid endpoint must not send data') });
+    vm.runInContext(source.replace("SHEETS_WEB_APP_URL = ''", `SHEETS_WEB_APP_URL = '${endpoint}'`).replace(/export /g, ''), context);
+    if (!endpoint.trim()) assert.equal((await context.registerTraining({})).status, 'disconnected');
+    else await assert.rejects(context.registerTraining({}), /Copy your result/);
+  }
 });
 test('Apps Script creates 23 columns, persists JSON, deduplicates and rejects malformed data', async () => {
   const rows = [];
   const sheet = { appendRow: row => rows.push(row), getLastRow: () => rows.length, setFrozenRows() {}, getRange: (r, c, n, w) => ({ setFontWeight() {}, getValues: () => rows.slice(r - 1, r - 1 + n).map(row => row.slice(c - 1, c - 1 + w)) }) };
   let created = false;
-  const context = vm.createContext({ console: { error() {} }, LockService: { getScriptLock: () => ({ waitLock() {}, hasLock: () => true, releaseLock() {} }) }, SpreadsheetApp: { getActiveSpreadsheet: () => ({ getSheetByName: () => created ? sheet : null, insertSheet: name => { assert.equal(name, 'RTC Lab Practice Logs'); created = true; return sheet; } }) }, ContentService: { MimeType: { JSON: 'json' }, createTextOutput: value => ({ setMimeType: () => JSON.parse(value) }) } });
+  const properties = new Map();
+  const book = { getId: () => 'test-sheet-id', getSheetByName: () => created ? sheet : null, insertSheet: name => { assert.equal(name, 'RTC Lab Practice Logs'); created = true; return sheet; } };
+  const context = vm.createContext({ console: { error() {}, log() {} }, PropertiesService: { getScriptProperties: () => ({ setProperty: (key, value) => properties.set(key, value), getProperty: key => properties.get(key) }) }, LockService: { getScriptLock: () => ({ waitLock() {}, hasLock: () => true, releaseLock() {} }) }, SpreadsheetApp: { getActiveSpreadsheet: () => book, openById: id => { assert.equal(id, 'test-sheet-id'); return book; } }, ContentService: { MimeType: { JSON: 'json' }, createTextOutput: value => ({ setMimeType: () => JSON.parse(value) }) } });
   vm.runInContext(await readFile(new URL('../apps-script/Code.gs', import.meta.url), 'utf8'), context);
   const m = missions[0];
   const payload = { studentName: m.studentName, missionId: m.id, missionName: m.title, week: m.week, missionVersion: m.missionVersion, statusAtCompletion: m.status, completedAt: '2026-09-16T12:00:00.000Z', ...summarize(m, answered(m)), listenedFullAudio: true, repeatedOutLoud: true, difficultAudioPhrase: '=IMPORTXML("test")', listenRepeatCompleted: 16, copiedResultText: 'summary', userAgent: 'test' };
   const submit = p => context.doPost({ postData: { contents: JSON.stringify(p) } });
+  assert.equal(submit(payload).success, false);
+  assert.equal(rows.length, 0);
+  context.setup();
+  assert.equal(properties.get('RTC_SPREADSHEET_ID'), 'test-sheet-id');
+  context.SpreadsheetApp.getActiveSpreadsheet = () => { throw new Error('Unavailable in Web App context'); };
   assert.equal(submit(payload).success, true);
   assert.equal(rows[0].length, 23); assert.equal(rows[1].length, 23);
   assert.equal(rows[1][13], "'=IMPORTXML(\"test\")");
@@ -86,5 +111,6 @@ test('Apps Script creates 23 columns, persists JSON, deduplicates and rejects ma
   assert.equal(submit(payload).success, true); assert.equal(rows.length, 2);
   assert.equal(submit({ ...payload, completedAt: '2026-09-17T12:00:00.000Z' }).success, true); assert.equal(rows.length, 3);
   assert.equal(submit({}).success, false); assert.equal(rows.length, 3);
+  assert.equal(submit({ ...payload, listenedFullAudio: 'yes' }).success, false);
   assert.equal(context.doPost({ postData: { contents: 'bad json' } }).success, false);
 });
