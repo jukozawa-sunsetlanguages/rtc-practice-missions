@@ -1,5 +1,5 @@
 // Paste the deployed Google Apps Script /exec URL here. Leave empty to disable.
-export const SHEETS_WEB_APP_URL = '';
+export const SHEETS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwCeaRB62wc_-v-kVG2uoesxG8w0UIeF5sOpdBB9TCzYDNrZA1uLG0Ibm80ne4qb8Q/exec';
 const REGISTRATION_NOT_CONNECTED = 'Registration not connected yet. Copy your result and send it to your teacher.';
 const REGISTRATION_FAILED = 'We could not confirm the submission. Copy your result or try again. Your progress is saved on this device.';
 
