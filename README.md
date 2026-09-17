@@ -129,3 +129,11 @@ Fontes Google são opcionais; o layout usa fontes do sistema caso estejam indisp
 - Conclua ambas as missões; copie o resultado; reinicie e volte à Home.
 - Sem URL: Register Training mostra a mensagem sem quebrar.
 - Com URL real: registre e confira a linha e os 23 campos no Sheets. Esse teste exige uma implantação autorizada e não é substituído pelo teste simulado local.
+
+### Ritmo e voz do treino
+
+Weeks 4 e 5 oferecem Lento (0,75x), Normal (1x) e Rápido (1,2x) no áudio completo e Listen & Repeat. A preferência fica salva neste navegador. Ao alterar o ritmo, toque em Play para reiniciar a voz gerada. Gravações usam o mesmo ritmo.
+
+A voz gerada prioriza vozes masculinas en-US conhecidas disponíveis no dispositivo. A Web Speech API não informa gênero; se nenhuma dessas vozes estiver instalada, usa outra voz americana ou inglesa disponível. Arquivos de áudio mantêm a voz da gravação. Os scripts continuam em fallbackAudioScript, em src/missions.js.
+
+Os roteiros das Weeks 4 e 5 usam [pause] para 3 segundos de silêncio. Week 5 aplica audioRateMultiplier: 0.9 aos três ritmos. audioChapters define os dois marcadores: Core Training (partes 1–3) e Extra Directions Review (parte 4 até o fim). Os timestamps são estimados a 150 palavras/minuto, ajustados pelo ritmo, com as pausas; a voz do dispositivo pode ter duração diferente. Os botões iniciam cada parte separadamente; Play with text-to-speech reproduz tudo.

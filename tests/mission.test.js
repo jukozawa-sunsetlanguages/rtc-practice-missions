@@ -19,8 +19,8 @@ test('Week 5 matches the complete brief and uses a new progress version', () => 
   assert.deepEqual(questionSections.map(s => m[s + 'Questions'].length), [8, 12, 14, 9]);
   assert.equal(m.vocabulary.length, 12); assert.equal(m.recognitionPhrases.length, 10);
   assert.equal(m.targetPhrases.length, 16);
-  assert.match(m.fallbackAudioScript, /Hi, Mateus\./);
-  assert.match(m.fallbackAudioScript, /Part 4 — Travel survival/);
+  assert.match(m.fallbackAudioScript, /This is your Transportation Day training/);
+  assert.match(m.fallbackAudioScript, /Part 5 — Travel survival questions/);
   assert.match(m.fallbackAudioScript, /Final round/);
   assert.match(m.fallbackAudioScript, /I don’t understand/);
   assert.match(m.fallbackAudioScript, /Let me think/);
@@ -196,4 +196,20 @@ test('Google registration page previews data and confirms only after server succ
   success({ success: true });
   assert.match(elements.status.textContent, /Training registered ✅/);
   assert.equal(elements.submit.disabled, true);
+});
+
+test('audio scripts preserve pauses and chapter boundaries at all speeds', async () => {
+  const { speechSegments, estimatedSeconds, speechRates } = await import('../src/audio.js');
+  assert.deepEqual(speechSegments('Hello. [pause] Again.'), [{text:'Hello.'},{pause:3000},{text:'Again.'}]);
+  const m = missions[0];
+  assert.equal(m.audioRateMultiplier, 0.9);
+  assert.deepEqual(m.audioChapters.map(c => c.title), ['Core Training', 'Extra Directions Review']);
+  const offset = m.fallbackAudioScript.indexOf(m.audioChapters[1].startsAt);
+  assert.ok(offset > 0);
+  assert.equal(m.fallbackAudioScript.match(/You want to see the map/g).length, 1);
+  assert.match(missions[1].fallbackAudioScript, /I went to the supermarket/);
+  assert.match(missions[1].fallbackAudioScript, /I’ll be back right away/);
+  const prefix = m.fallbackAudioScript.slice(0, offset);
+  assert.ok(estimatedSeconds(prefix, speechRates.slow * .9) > estimatedSeconds(prefix, speechRates.normal * .9));
+  assert.ok(speechSegments(m.fallbackAudioScript).every(item => item.pause || !item.text.includes('[pause]')));
 });

@@ -18,105 +18,444 @@ export const missions = [
       "recovery phrases"
     ],
     "fullAudioUrl": "",
-    "fallbackAudioScript": `Hi, Mateus.
-
-This is your Transportation Day training.
+    "audioRateMultiplier": 0.9,
+    "audioChapters": [{ "title": "Core Training", "startsAt": "This is your Transportation Day training." }, { "title": "Extra Directions Review", "startsAt": "Part 4 — Useful recognition." }],
+    "fallbackAudioScript": `This is your Transportation Day training.
 
 Repeat out loud.
+
 Don’t just listen.
+
 Speak.
 
 Part 1 — Transportation words.
 
+Repeat.
+
 Uber.
+
+[pause]
+
 Taxi.
+
+[pause]
+
 Subway.
+
+[pause]
+
 Bus.
+
+[pause]
+
 Station.
+
+[pause]
+
 Bus stop.
+
+[pause]
+
 Address.
+
+[pause]
+
 Driver.
+
+[pause]
+
+Ticket.
+
+[pause]
+
+Entrance.
+
+[pause]
+
+Exit.
+
+[pause]
+
+Map.
+
+[pause]
 
 Good.
 
 Part 2 — Transportation phrases.
 
+Repeat.
+
 I need an Uber.
+
+[pause]
+
+Again.
+
+I need an Uber.
+
+[pause]
+
 I need a taxi.
+
+[pause]
+
 Where is the subway station?
+
+[pause]
+
 Where is the bus stop?
+
+[pause]
+
 Here is the address.
 
+[pause]
+
+Can you take me to this address?
+
+[pause]
+
+How much is it?
+
+[pause]
+
+How long does it take?
+
+[pause]
+
 Good.
 
-Part 3 — Directions.
+Part 3 — Core directions.
+
+Repeat.
 
 Go straight.
+
+[pause]
+
 Turn left.
+
+[pause]
+
 Turn right.
+
+[pause]
+
 It’s over there.
+
+[pause]
+
 It’s on the left.
+
+[pause]
+
 It’s on the right.
+
+[pause]
+
+It’s next to the store.
+
+[pause]
+
+It’s near the bathroom.
+
+[pause]
+
 Is this the right way?
+
+[pause]
+
+This is the right way.
+
+[pause]
 
 Good.
 
-Part 4 — Travel survival.
+Part 4 — Useful recognition.
+
+Listen and repeat.
+
+Keep going.
+
+[pause]
+
+Go past the store.
+
+[pause]
+
+Cross the street.
+
+[pause]
+
+Go across the street.
+
+[pause]
+
+At the corner.
+
+[pause]
+
+At the traffic light.
+
+[pause]
+
+At the end of the hall.
+
+[pause]
+
+Take the elevator.
+
+[pause]
+
+Take the stairs.
+
+[pause]
+
+Go upstairs.
+
+[pause]
+
+Go downstairs.
+
+[pause]
+
+Follow the signs.
+
+[pause]
+
+It’s around the corner.
+
+[pause]
+
+It’s in front of you.
+
+[pause]
+
+It’s behind you.
+
+[pause]
+
+Good.
+
+Part 5 — Travel survival questions.
+
+Repeat.
 
 Can you show me on the map?
+
+[pause]
+
 Can you point, please?
+
+[pause]
+
+Is it far?
+
+[pause]
+
+Is it close?
+
+[pause]
+
+Can I walk there?
+
+[pause]
+
+Do I need an Uber?
+
+[pause]
+
+Do I need a ticket?
+
+[pause]
+
+Which way?
+
+[pause]
+
+This way?
+
+[pause]
+
+That way?
+
+[pause]
+
+Good.
+
+Part 6 — Recovery.
+
+Repeat.
+
 Can you repeat, please?
+
+[pause]
+
 Can you speak slowly, please?
+
+[pause]
+
 I don’t understand.
+
+[pause]
+
 Let me think.
+
+[pause]
 
 Good.
 
 Final round.
 
+Answer fast.
+
 You need an Uber.
+
+[pause]
+
 I need an Uber.
 
+[pause]
+
 You need a taxi.
+
+[pause]
+
 I need a taxi.
 
+[pause]
+
 You need the subway station.
+
+[pause]
+
 Where is the subway station?
 
+[pause]
+
+You need the bus stop.
+
+[pause]
+
+Where is the bus stop?
+
+[pause]
+
 The person says: Go straight.
+
+[pause]
+
 Okay.
+
+[pause]
 
 The person says: Turn right.
+
+[pause]
+
 Okay.
 
+[pause]
+
 The place is there.
+
+[pause]
+
 It’s over there.
 
+[pause]
+
+The place is on the left.
+
+[pause]
+
+It’s on the left.
+
+[pause]
+
+The place is on the right.
+
+[pause]
+
+It’s on the right.
+
+[pause]
+
 You want to confirm.
+
+[pause]
+
 Is this the right way?
 
+[pause]
+
 The driver asks for the address.
+
+[pause]
+
 Here is the address.
 
+[pause]
+
 You want to see the map.
+
+[pause]
+
 Can you show me on the map?
 
+[pause]
+
 You want the person to point.
+
+[pause]
+
 Can you point, please?
 
+[pause]
+
+You want to know if it is far.
+
+[pause]
+
+Is it far?
+
+[pause]
+
+You want to know if you can walk.
+
+[pause]
+
+Can I walk there?
+
+[pause]
+
 You don’t understand.
+
+[pause]
+
 Can you repeat, please?
 
+[pause]
+
 The person speaks fast.
+
+[pause]
+
 Can you speak slowly, please?
+
+[pause]
 
 Good job.
 
 Remember:
 
 Ask.
+
 Move.
+
 Confirm.
+
 Recover when confused.`,
     "targetPhrases": [
       {
@@ -607,7 +946,271 @@ Recover when confused.`,
       "Use recovery phrases"
     ],
     "fullAudioUrl": "",
-    "fallbackAudioScript": "Food ordering. Listen, then repeat. I slept a lot. ... I slept a lot. ... I didn’t play games. ... I didn’t play games. ... I bought t-shirts. ... I bought t-shirts. ... It’s over there. ... It’s over there. ... What did you do there? ... What did you do there? ... I choose Coke. ... I choose Coke. ... This is my choice. ... This is my choice. ... The waiter will come right away. ... The waiter will come right away. ... Can I have a burger, please? ... Can I have a burger, please? ... Can I have Coke Zero Sugar, please? ... Can I have Coke Zero Sugar, please? ... That’s all, thank you. ... That’s all, thank you. ... To go, please. ... To go, please. ... Can I pay by card? ... Can I pay by card? ... Can I have the bill, please? ... Can I have the bill, please? ... Can you repeat, please? ... Can you repeat, please? ... Can you speak slowly, please? ... Can you speak slowly, please?",
+    "fallbackAudioScript": `This is your Travel Core Review.
+
+Repeat out loud.
+
+Don’t just listen.
+
+Speak.
+
+Part 1 — Weekend review.
+
+Repeat.
+
+I slept a lot.
+
+[pause]
+
+Again.
+
+I slept a lot.
+
+[pause]
+
+I didn’t play games.
+
+[pause]
+
+Again.
+
+I didn’t play games.
+
+[pause]
+
+I went to the supermarket.
+
+[pause]
+
+Again.
+
+I went to the supermarket.
+
+[pause]
+
+I bought t-shirts.
+
+[pause]
+
+Again.
+
+I bought t-shirts.
+
+[pause]
+
+I ate pasta.
+
+[pause]
+
+Again.
+
+I ate pasta.
+
+[pause]
+
+Good.
+
+Part 2 — There.
+
+Repeat.
+
+There.
+
+[pause]
+
+Over there.
+
+[pause]
+
+It’s over there.
+
+[pause]
+
+Again.
+
+It’s over there.
+
+[pause]
+
+What did you do there?
+
+[pause]
+
+I ate pasta there.
+
+[pause]
+
+Good.
+
+Part 3 — Choose and choice.
+
+Repeat.
+
+Choose.
+
+[pause]
+
+Choice.
+
+[pause]
+
+I choose Coke.
+
+[pause]
+
+This is my choice.
+
+[pause]
+
+I choose chicken.
+
+[pause]
+
+This is my choice.
+
+[pause]
+
+I choose a burger.
+
+[pause]
+
+This is my choice.
+
+[pause]
+
+Good.
+
+Part 4 — Restaurant and travel phrases.
+
+Repeat.
+
+Can I have a burger, please?
+
+[pause]
+
+Can I have Coke Zero Sugar, please?
+
+[pause]
+
+That’s all, thank you.
+
+[pause]
+
+To go, please.
+
+[pause]
+
+Can I pay by card?
+
+[pause]
+
+Can I have the bill, please?
+
+[pause]
+
+Can you repeat, please?
+
+[pause]
+
+Can you speak slowly, please?
+
+[pause]
+
+Good.
+
+Part 5 — Right away.
+
+Listen and repeat.
+
+Right away.
+
+[pause]
+
+Again.
+
+Right away.
+
+[pause]
+
+The waiter will come right away.
+
+[pause]
+
+I’ll be back right away.
+
+[pause]
+
+Good.
+
+Final round.
+
+Answer fast.
+
+Did you sleep a lot?
+
+[pause]
+
+I slept a lot.
+
+[pause]
+
+Did you play games?
+
+[pause]
+
+I didn’t play games.
+
+[pause]
+
+What did you buy?
+
+[pause]
+
+I bought t-shirts.
+
+[pause]
+
+Where is the elevator?
+
+[pause]
+
+It’s over there.
+
+[pause]
+
+What do you choose?
+
+[pause]
+
+I choose Coke.
+
+[pause]
+
+You don’t understand.
+
+[pause]
+
+Can you repeat, please?
+
+[pause]
+
+The person speaks fast.
+
+[pause]
+
+Can you speak slowly, please?
+
+[pause]
+
+Good job.
+
+Remember:
+
+Use full sentences.
+
+Ask for help.
+
+Keep going.`,
     "targetPhrases": [
       {
         "english": "I slept a lot.",

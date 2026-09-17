@@ -1,3 +1,4 @@
+import { speechRates, preferredVoice, speechSegments, estimatedSeconds, timestamp } from './audio.js';
 import { missions } from './missions.js';
 import { evaluate, questionSections } from './scoring.js';
 import { buildResult } from './results.js';
@@ -7,7 +8,7 @@ const app = document.querySelector('#app');
 const steps = ['Mission Briefing', 'Full Audio Training', 'Listen & Repeat', 'Choose the Meaning', 'Complete the Phrase', 'Type the Sentence', 'Final Mission'];
 const current = missions.find(m => m.status === 'current');
 const visible = missions.filter(m => m.status === 'previous' || m === current);
-let mission, state, speechRun = 0, activeRecording;
+let mission, state, speechRun = 0, activeRecording, speechTimer;
 const pendingRegistrations = new Set();
 let storageWarning = false;
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -17,6 +18,19 @@ function read(name) { try { return JSON.parse(localStorage.getItem(name)); } cat
 function write(name, value) {
   try { localStorage.setItem(name, JSON.stringify(value)); }
   catch { if (!storageWarning) { storageWarning = true; toast('Device storage is unavailable. Keep this page open and copy your result before leaving.'); } }
+}
+let speechPace = read('rtc:audio:pace');
+if (!Object.hasOwn(speechRates, speechPace)) speechPace = 'normal';
+function audioRate() { return speechRates[speechPace] * (mission?.audioRateMultiplier || 1); }
+function chapterControls() {
+  if (!mission.audioChapters?.length) return '';
+  return '<div class="audio-chapters"><p class="small muted">Marcadores estimados para o ritmo escolhido. Cada botão inicia somente essa parte.</p>' + mission.audioChapters.map((chapter, index) => {
+    const offset = mission.fallbackAudioScript.indexOf(chapter.startsAt);
+    return '<button class="button secondary" data-action="audio-chapter" data-index="'+index+'">'+timestamp(estimatedSeconds(mission.fallbackAudioScript.slice(0, offset), audioRate()))+' · '+esc(chapter.title)+'</button>';
+  }).join(' ') + '</div>';
+}
+function audioSettings() {
+  return '<fieldset class="audio-settings"><legend>Ritmo da fala</legend><div class="audio-buttons">' + Object.entries({slow:'Lento',normal:'Normal',fast:'Rápido'}).map(([value,label]) => '<button type="button" class="button secondary" data-action="audio-pace" data-pace="'+value+'" aria-pressed="'+(speechPace === value)+'">'+label+'</button>').join('') + '</div><p class="small muted">Voz masculina americana quando disponível no dispositivo.</p></fieldset>';
 }
 function fresh() { return { step: 0, listenedFullAudio: false, repeatedOutLoud: false, difficultAudioPhrase: '', repeat: [], answers: Object.fromEntries(questionSections.map(s => [s, {}])), drafts: {}, completedAt: null, result: null }; }
 function load(m) {
@@ -39,13 +53,15 @@ function speak(text) {
   stopAudio();
   if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) { toast('Audio is unavailable in this browser. Read the script or phrase out loud.'); return; }
   const run = speechRun;
-  const queue = text.match(/[^.!?]+[.!?]*/g)?.map(t => t.replace(/\.{2,}/g, '').trim()).filter(Boolean) || [text];
+  const queue = speechSegments(text);
   function next() {
     if (run !== speechRun || !queue.length) return;
-    const utterance = new SpeechSynthesisUtterance(queue.shift());
-    utterance.lang = 'en-US'; utterance.rate = 0.82;
+    const item = queue.shift();
+    if (item.pause) { speechTimer = setTimeout(next, item.pause); return; }
+    const utterance = new SpeechSynthesisUtterance(item.text);
+    utterance.lang = 'en-US'; utterance.rate = audioRate();
     const voices = window.speechSynthesis.getVoices();
-    utterance.voice = voices.find(v => v.lang === 'en-US') || voices.find(v => v.lang.startsWith('en')) || null;
+    utterance.voice = preferredVoice(voices);
     utterance.onend = next;
     utterance.onerror = e => { if (!['canceled', 'interrupted'].includes(e.error)) { stopAudio(); toast('Audio could not play. Use the written script or try another browser.'); } };
     window.speechSynthesis.speak(utterance);
@@ -56,7 +72,7 @@ function playPhrase(phrase) {
   if (!phrase.audioUrl) return speak(phrase.english);
   stopAudio();
   const run = speechRun;
-  const audio = new Audio(phrase.audioUrl); activeRecording = audio;
+  const audio = new Audio(phrase.audioUrl); activeRecording = audio; audio.playbackRate = audioRate();
   let failed = false;
   const fallback = () => { if (!failed && run === speechRun) { failed = true; toast('Recording unavailable. Playing the text-to-speech version.'); speak(phrase.english); } };
   audio.onerror = fallback;
@@ -104,8 +120,8 @@ function vocabulary(title, items) {
 }
 function stepBody(step) {
   if (step === 0) return `<span class="pill">YOUR MISSION</span><h2 class="brief-title">${esc(mission.keyPhrase)}</h2><p>${esc(mission.goal)}</p><h3 class="spaced">Today you practice</h3><ul class="practice-list">${mission.todayYouPractice.map(p => `<li><span>↗</span>${esc(p)}</li>`).join('')}</ul>${vocabulary('Vocabulary', mission.vocabulary)}<div class="callout">Say the phrases out loud — this is speaking practice.<br><span class="muted">One point per correct first answer. You can retry to practice; retries do not change your score. Audio practice is tracked separately.</span></div>`;
-  if (step === 1) return `<p class="lead">Listen to the full training first.</p><p class="muted">You don’t need to understand everything.<br>Listen, repeat out loud, and keep going.</p>${mission.fullAudioUrl ? `<audio controls preload="none" src="${esc(mission.fullAudioUrl)}">Your browser does not support audio.</audio><p class="small muted">If the recording does not load, use text-to-speech below.</p>` : ''}<div class="audio-buttons"><button class="button secondary" data-action="full-audio">▶ Play with text-to-speech</button><button class="button quiet" data-action="stop-audio">■ Stop audio</button></div><details><summary>Read the full audio script</summary><p class="script">${esc(mission.fallbackAudioScript)}</p></details><button class="button ${state.listenedFullAudio ? 'success-button' : 'secondary'}" data-action="listened" aria-pressed="${state.listenedFullAudio}">${state.listenedFullAudio ? '✓ ' : ''}I listened to the full audio</button>${check('repeatedOutLoud', 'I repeated out loud', state.repeatedOutLoud)}<label class="field-label" for="difficultAudioPhrase">What phrase was difficult? <span class="muted">(optional)</span></label><textarea id="difficultAudioPhrase" rows="2" maxlength="1000" placeholder="A word or phrase to practice again…">${esc(state.difficultAudioPhrase)}</textarea><p class="small muted">Confirm that you listened and repeated to continue.</p>`;
-  if (step === 2) return `<p class="lead">Say it. Repeat it. Make it familiar.</p><button class="button quiet" data-action="stop-audio">■ Stop audio</button><div class="phrase-list">${mission.targetPhrases.map((p, i) => `<article class="phrase-card"><div class="phrase-top"><span class="phrase-number">${String(i + 1).padStart(2, '0')}</span><div><h3>${esc(p.english)}</h3><p lang="pt-BR">${esc(p.portuguese)}</p></div><button class="play-button" data-action="phrase-audio" data-index="${i}" aria-label="Play audio: ${esc(p.english)}">▶<span> Play audio</span></button></div><p class="small muted">Repeat out loud 3 times</p>${check('repeat-' + i, 'I said it 3 times', state.repeat.includes(i), `data-repeat="${i}"`)}</article>`).join('')}</div>${vocabulary('Vocabulary', mission.vocabulary)}${vocabulary('Useful recognition phrases', mission.recognitionPhrases)}<p id="repeat-count" class="small muted">${state.repeat.length} / ${mission.targetPhrases.length} phrases practiced</p>`;
+  if (step === 1) return `<p class="lead">Listen to the full training first.</p><p class="muted">You don’t need to understand everything.<br>Listen, repeat out loud, and keep going.</p>${audioSettings()}${chapterControls()}${mission.fullAudioUrl ? `<audio controls preload="none" src="${esc(mission.fullAudioUrl)}">Your browser does not support audio.</audio><p class="small muted">If the recording does not load, use text-to-speech below.</p>` : ''}<div class="audio-buttons"><button class="button secondary" data-action="full-audio">▶ Play with text-to-speech</button><button class="button quiet" data-action="stop-audio">■ Stop audio</button></div><details><summary>Read the full audio script</summary><p class="script">${esc(mission.fallbackAudioScript)}</p></details><button class="button ${state.listenedFullAudio ? 'success-button' : 'secondary'}" data-action="listened" aria-pressed="${state.listenedFullAudio}">${state.listenedFullAudio ? '✓ ' : ''}I listened to the full audio</button>${check('repeatedOutLoud', 'I repeated out loud', state.repeatedOutLoud)}<label class="field-label" for="difficultAudioPhrase">What phrase was difficult? <span class="muted">(optional)</span></label><textarea id="difficultAudioPhrase" rows="2" maxlength="1000" placeholder="A word or phrase to practice again…">${esc(state.difficultAudioPhrase)}</textarea><p class="small muted">Confirm that you listened and repeated to continue.</p>`;
+  if (step === 2) return `<p class="lead">Say it. Repeat it. Make it familiar.</p>${audioSettings()}<button class="button quiet" data-action="stop-audio">■ Stop audio</button><div class="phrase-list">${mission.targetPhrases.map((p, i) => `<article class="phrase-card"><div class="phrase-top"><span class="phrase-number">${String(i + 1).padStart(2, '0')}</span><div><h3>${esc(p.english)}</h3><p lang="pt-BR">${esc(p.portuguese)}</p></div><button class="play-button" data-action="phrase-audio" data-index="${i}" aria-label="Play audio: ${esc(p.english)}">▶<span> Play audio</span></button></div><p class="small muted">Repeat out loud 3 times</p>${check('repeat-' + i, 'I said it 3 times', state.repeat.includes(i), `data-repeat="${i}"`)}</article>`).join('')}</div>${vocabulary('Vocabulary', mission.vocabulary)}${vocabulary('Useful recognition phrases', mission.recognitionPhrases)}<p id="repeat-count" class="small muted">${state.repeat.length} / ${mission.targetPhrases.length} phrases practiced</p>`;
   const section = questionSections[step - 3];
   const instructions = { chooseMeaning: 'Read the phrase. Choose its meaning in Portuguese.', completePhrase: 'Recall the missing word. Type it below.', typeSentence: 'How would you say this in English?', finalMission: 'Your turn in a real conversation. Use a short phrase from this mission.' };
   return `<p class="lead">${instructions[section]}</p><p class="muted">Check each answer to continue. Capitalization and punctuation don’t affect your score.${section === 'finalMission' ? ' Other valid wording may not be recognized; practice the sample phrases.' : ''}</p><div class="questions">${mission[section + 'Questions'].map((q, i) => questionCard(section, q, i)).join('')}</div>`;
@@ -187,6 +203,23 @@ app.addEventListener('submit', e => {
 app.addEventListener('click', async e => {
   const button = e.target.closest('[data-action]'); if (!button || button.disabled || !mission) return;
   const action = button.dataset.action;
+  if (action === 'audio-pace') {
+    speechPace = button.dataset.pace;
+    write('rtc:audio:pace', speechPace);
+    clearTimeout(speechTimer);
+    speechRun++; if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    if (activeRecording) activeRecording.playbackRate = audioRate();
+    app.querySelectorAll('audio').forEach(audio => { audio.playbackRate = audioRate(); });
+    app.querySelectorAll('[data-action="audio-pace"]').forEach(control => control.setAttribute('aria-pressed', control.dataset.pace === speechPace));
+    const chapters = app.querySelector('.audio-chapters'); if (chapters) chapters.outerHTML = chapterControls();
+    toast('Ritmo atualizado. Toque em Play para ouvir a voz gerada neste ritmo.');
+  }
+  if (action === 'audio-chapter') {
+    const index = Number(button.dataset.index), chapters = mission.audioChapters;
+    const start = mission.fallbackAudioScript.indexOf(chapters[index].startsAt);
+    const end = chapters[index + 1] ? mission.fallbackAudioScript.indexOf(chapters[index + 1].startsAt) : undefined;
+    speak(mission.fallbackAudioScript.slice(start, end));
+  }
   if (action === 'full-audio') speak(mission.fallbackAudioScript);
   if (action === 'stop-audio') stopAudio();
   if (action === 'phrase-audio') playPhrase(mission.targetPhrases[Number(button.dataset.index)]);
@@ -226,6 +259,7 @@ app.addEventListener('click', async e => {
 });
 app.addEventListener('play', e => {
   if (e.target.tagName !== 'AUDIO') return;
+  e.target.playbackRate = audioRate();
   speechRun++; if ('speechSynthesis' in window) window.speechSynthesis.cancel();
   if (activeRecording) { activeRecording.pause(); activeRecording = null; }
 }, true);

@@ -1170,3 +1170,7 @@ details p {
 .registration-data { font-size: .8rem; overflow-wrap: anywhere; }
 @media(min-width:701px) { .home-secondary { grid-template-columns: 1fr 1fr; } }
 @media(max-width:700px) { .complete-header h1 { font-size: 1.8rem; } }
+
+.audio-settings { margin: 1.5rem 0; padding: 1rem; border: 1px solid #354b5c; border-radius: 12px; min-width: 0; }
+.audio-settings .audio-buttons { display: flex; flex-wrap: wrap; gap: .5rem; }
+.audio-settings [aria-pressed="true"] { background: #edbb55; color: #0c1b29; border-color: #edbb55; }
