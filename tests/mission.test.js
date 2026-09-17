@@ -217,3 +217,13 @@ test('audio scripts preserve pauses and chapter boundaries at all speeds', async
   assert.ok(estimatedSeconds(prefix, speechRates.slow * .9) > estimatedSeconds(prefix, speechRates.normal * .9));
   assert.ok(speechSegments(m.fallbackAudioScript).every(item => item.pause || !item.text.includes('[pause]')));
 });
+
+test('legacy practice arrays are normalized without discarding malformed answers', async () => {
+  const context=vm.createContext({});
+  vm.runInContext(await sheetsSource(),context);
+  const parsed=JSON.parse(context.registrationData({difficultPhrases:'["Go straight."]',wrongAnswers:'[{"value":"test"}]'}));
+  assert.deepEqual(parsed.difficultPhrases,['Go straight.']);
+  assert.deepEqual(parsed.wrongAnswers,[{value:'test'}]);
+  assert.deepEqual(JSON.parse(context.registrationData({})).wrongAnswers,[]);
+  assert.throws(()=>context.registrationData({wrongAnswers:'broken JSON'}),/Invalid saved wrongAnswers/);
+});

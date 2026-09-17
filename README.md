@@ -127,3 +127,7 @@ Weeks 4 e 5 oferecem Lento (0,75x), Normal (1x) e Rápido (1,2x) no áudio compl
 A voz gerada prioriza vozes masculinas en-US conhecidas disponíveis no dispositivo. A Web Speech API não informa gênero; se nenhuma dessas vozes estiver instalada, usa outra voz americana ou inglesa disponível. Arquivos de áudio mantêm a voz da gravação. Os scripts continuam em fallbackAudioScript, em src/missions.js.
 
 Os roteiros das Weeks 4 e 5 usam [pause] para 3 segundos de silêncio. Week 5 aplica audioRateMultiplier: 0.9 aos três ritmos. audioChapters define os dois marcadores: Core Training (partes 1–3) e Extra Directions Review (parte 4 até o fim). Os timestamps são estimados a 150 palavras/minuto, ajustados pelo ritmo, com as pausas; a voz do dispositivo pode ter duração diferente. Os botões iniciam cada parte separadamente; Play with text-to-speech reproduz tudo.
+
+Diagnóstico de registro: o console mostra clique, payload enviado, status HTTP, resposta e JSON interpretado. Resultados antigos com listas serializadas em JSON são normalizados antes do POST. Invalid practice details indica difficultPhrases/wrongAnswers fora do formato de lista; não existe campo practiceDetails obrigatório. Não considerar HTML de login ou resposta opaca como sucesso.
+
+Verificação de produção: /build-info.json informa commit (COMMIT_REF), contexto e horário do build Netlify. Compare commit com git rev-parse HEAD; o marcador tem Cache-Control: no-store.

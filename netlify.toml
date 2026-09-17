@@ -1,4 +1,5 @@
 [build]
+  command = "node scripts/build-info.js"
   publish = "."
 
 [[headers]]
@@ -11,3 +12,8 @@
   for = "/src/*"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/build-info.json"
+  [headers.values]
+    Cache-Control = "no-store"
