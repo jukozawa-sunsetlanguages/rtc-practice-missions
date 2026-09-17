@@ -227,3 +227,27 @@ test('legacy practice arrays are normalized without discarding malformed answers
   assert.deepEqual(JSON.parse(context.registrationData({})).wrongAnswers,[]);
   assert.throws(()=>context.registrationData({wrongAnswers:'broken JSON'}),/Invalid saved wrongAnswers/);
 });
+
+test('Register Training click calls POST helper and persists success or failure', async () => {
+  const source = await readFile(new URL('../src/main.js', import.meta.url), 'utf8');
+  const start = source.indexOf("app.addEventListener('click', async e => {");
+  const end = source.indexOf("app.addEventListener('play'", start);
+  for (const success of [true, false]) {
+    let handler, calls = 0, saved, loading = false;
+    const result = {missionId:'test'};
+    const pending = new Set();
+    const context = vm.createContext({
+      app: {addEventListener: (event, callback) => { handler = callback; }},
+      mission: {id:'test'}, state: {result}, pendingRegistrations:pending,
+      resultKey: () => 'test', REGISTRATION_ERROR:'fallback', console:{debug(){},error(){}},
+      renderComplete: () => { if(pending.size) loading = true; },
+      submitTrainingLog: async payload => {calls++; assert.equal(payload,result); assert.equal(pending.size,1); return {success,error:'test failure'};},
+      persistRegistration: (mission, value) => {saved=value;}
+    });
+    vm.runInContext(source.slice(start,end),context);
+    await handler({target:{closest:()=>({dataset:{action:'register'}})}});
+    assert.equal(calls,1); assert.equal(loading,true); assert.equal(pending.size,0);
+    assert.equal(saved.registrationStatus,success?'registered':'error');
+    assert.equal(saved.registrationMessage,success?'Training registered successfully ✅':'fallback');
+  }
+});

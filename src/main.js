@@ -249,9 +249,11 @@ app.addEventListener('click', async e => {
     if (pendingRegistrations.has(id)) return;
     pendingRegistrations.add(id); renderComplete();
     try {
-      const response = await registerTraining(result);
-      result.registrationStatus = response.status; result.registrationMessage = response.message;
-    } catch (error) { result.registrationStatus = 'error'; result.registrationMessage = REGISTRATION_ERROR; }
+      const response = await submitTrainingLog(result);
+      result.registrationStatus = response.success ? 'registered' : 'error';
+      result.registrationMessage = response.success ? 'Training registered successfully ✅' : REGISTRATION_ERROR;
+      if (!response.success) console.error('Training registration failed:', response.error);
+    } catch (error) { console.error('Register Training failed:', error); result.registrationStatus = 'error'; result.registrationMessage = REGISTRATION_ERROR; }
     finally {
       pendingRegistrations.delete(id); persistRegistration(submittedMission, result);
       if (state?.result && resultKey(state.result) === id) { state.result = result; renderComplete(); }
