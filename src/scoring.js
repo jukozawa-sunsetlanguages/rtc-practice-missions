@@ -21,19 +21,31 @@ export function evaluate(value, answers) {
 }
 export function summarize(mission, state) {
   const scores = Object.fromEntries(questionSections.map(section => [section + 'Score',
-    mission[section + 'Questions'].reduce((score, _, i) => score + (state.answers[section]?.[i]?.correct ? 1 : 0), 0)]));
+    mission[section + 'Questions'].reduce((score, _, i) => {
+      const answer = state.answers[section]?.[i];
+      return score + ((answer?.attempts?.[0] || answer)?.correct ? 1 : 0);
+    }, 0)]));
   const maxScore = questionSections.reduce((sum, section) => sum + mission[section + 'Questions'].length, 0);
   const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
   const wrongAnswers = questionSections.flatMap(section => mission[section + 'Questions'].flatMap((q, i) => {
     const attempt = state.answers[section]?.[i];
-    return attempt && !attempt.correct ? [{ section, prompt: q.prompt, answer: attempt.value, expected: q.fullPhrase || q.answers?.[0] || q.options[q.answer] }] : [];
+    const attempts = attempt ? attempt.attempts || [attempt] : [];
+    return attempts.flatMap((item, attemptIndex) => !item.correct ? [{ section, questionIndex: i, attemptNumber: attemptIndex + 1, verdict: item.verdict || 'incorrect', prompt: q.prompt, answer: item.value, expected: q.fullPhrase || q.answers?.[0] || q.options[q.answer] }] : []);
   }));
   const difficultPhrases = [...new Set([
     ...(state.difficultAudioPhrase.trim() ? [state.difficultAudioPhrase.trim()] : []),
     ...wrongAnswers.map(answer => {
-      const q = mission[answer.section + 'Questions'].find(q => q.prompt === answer.prompt);
-      return answer.section === 'chooseMeaning' ? q.prompt : answer.expected;
+      const q = mission[answer.section + 'Questions'][answer.questionIndex];
+      return answer.section === 'chooseMeaning' ? q.practicePhrase || q.prompt : answer.expected;
     })
   ])];
-  return { ...scores, maxScore, totalScore, percentage: maxScore ? Math.round(totalScore / maxScore * 100) : 0, wrongAnswers, difficultPhrases };
+  const answerSummary = { correct: 0, almost: 0, incorrect: 0 };
+  for (const section of questionSections) {
+    mission[section + 'Questions'].forEach((_, i) => {
+      const answer = state.answers[section]?.[i];
+      const first = answer?.attempts?.[0] || answer;
+      if (first) answerSummary[first.verdict || (first.correct ? 'correct' : 'incorrect')]++;
+    });
+  }
+  return { ...scores, maxScore, totalScore, percentage: maxScore ? Math.round(totalScore / maxScore * 100) : 0, wrongAnswers, difficultPhrases, answerSummary };
 }

@@ -14,10 +14,12 @@ function setup() {
 
 function doPost(e) {
   var lock = LockService.getScriptLock();
+  var registrationToken = '';
   try {
     if (!e || !e.postData || !e.postData.contents) throw new Error('Missing JSON body');
     if (e.postData.contents.length > 100000) throw new Error('Payload too large');
     var data = JSON.parse(e.postData.contents);
+    registrationToken = /^[a-f0-9]{32}$/.test(data && data.registrationToken) ? data.registrationToken : '';
     if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('Invalid JSON object');
     ['studentName', 'missionId', 'missionName', 'week', 'missionVersion', 'completedAt'].forEach(function (key) {
       if (typeof data[key] !== 'string' || !data[key].trim()) throw new Error('Missing field: ' + key);
@@ -51,19 +53,41 @@ function doPost(e) {
       var previous = sheet.getRange(2, 2, count, 7).getValues();
       var duplicate = previous.some(function (row) {
         var completedAt = row[6] instanceof Date ? row[6].toISOString() : String(row[6]);
-        return row[0] === cell(data.studentName) && row[1] === cell(data.missionId) && row[4] === cell(data.missionVersion) && completedAt === data.completedAt;
+        return row[0] === cell(data.studentName) && row[1] === cell(data.missionId) && row[4] === cell(data.missionVersion) && Date.parse(completedAt) === Date.parse(data.completedAt);
       });
-      if (duplicate) return json({ success: true });
+      if (duplicate) { receipt(registrationToken, 'registered'); return json({ success: true }); }
     }
     var fields = ['studentName', 'missionId', 'missionName', 'week', 'missionVersion', 'statusAtCompletion', 'completedAt', 'totalScore', 'maxScore', 'percentage', 'listenedFullAudio', 'repeatedOutLoud', 'difficultAudioPhrase', 'listenRepeatCompleted', 'chooseMeaningScore', 'completePhraseScore', 'typeSentenceScore', 'finalMissionScore', 'difficultPhrases', 'wrongAnswers', 'copiedResultText', 'userAgent'];
     sheet.appendRow([new Date()].concat(fields.map(function (key) { return cell(data[key]); })));
+    SpreadsheetApp.flush();
+    receipt(registrationToken, 'registered');
     return json({ success: true });
   } catch (error) {
     console.error(error);
+    receipt(registrationToken, 'error');
     return json({ success: false, error: String(error.message || error) });
   } finally {
     if (lock.hasLock()) lock.releaseLock();
   }
+}
+
+// Anonymous, short-lived receipt: no names, scores or spreadsheet rows exposed.
+function receipt(token, status) {
+  if (!token) return;
+  try { CacheService.getScriptCache().put('receipt:' + token, status, 600); }
+  catch (error) { console.error('Receipt unavailable: ' + error); }
+}
+
+function doGet(e) {
+  var params = e && e.parameter || {};
+  if (!/^[a-f0-9]{32}$/.test(params.receipt || '') || !/^rtcReceipt_[a-f0-9]{32}$/.test(params.callback || '')) {
+    return json({ success: false, error: 'Invalid receipt request' });
+  }
+  var status = 'pending';
+  try { status = CacheService.getScriptCache().get('receipt:' + params.receipt) || 'pending'; }
+  catch (error) { console.error(error); }
+  return ContentService.createTextOutput(params.callback + '(' + JSON.stringify({ status: status }) + ');')
+    .setMimeType(ContentService.MimeType.JAVASCRIPT);
 }
 
 function cell(value) {
