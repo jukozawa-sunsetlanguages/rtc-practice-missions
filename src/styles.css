@@ -1165,5 +1165,8 @@ details p {
 .phrase-card > .small { margin-top: 12px; }
 .previous-copy { min-width: 0; }
 .copy-text { overflow-wrap: anywhere; }
+.registration-panel { margin-top: 20px; }
+.registration-panel li { margin-bottom: 8px; }
+.registration-data { font-size: .8rem; overflow-wrap: anywhere; }
 @media(min-width:701px) { .home-secondary { grid-template-columns: 1fr 1fr; } }
 @media(max-width:700px) { .complete-header h1 { font-size: 1.8rem; } }

@@ -78,16 +78,51 @@ function receipt(token, status) {
   catch (error) { console.error('Receipt unavailable: ' + error); }
 }
 
-function doGet(e) {
-  var params = e && e.parameter || {};
-  if (!/^[a-f0-9]{32}$/.test(params.receipt || '') || !/^rtcReceipt_[a-f0-9]{32}$/.test(params.callback || '')) {
-    return json({ success: false, error: 'Invalid receipt request' });
-  }
-  var status = 'pending';
-  try { status = CacheService.getScriptCache().get('receipt:' + params.receipt) || 'pending'; }
-  catch (error) { console.error(error); }
-  return ContentService.createTextOutput(params.callback + '(' + JSON.stringify({ status: status }) + ');')
-    .setMimeType(ContentService.MimeType.JAVASCRIPT);
+// Google enforces sign-in before serving this page. Deploy with access set to
+// "Anyone with Google account" (or the intended Workspace organization).
+function doGet() {
+  return HtmlService.createHtmlOutput(registrationPage_())
+    .setTitle('RTC Lab — Register Training')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
+
+// Called only from the authenticated Google-hosted page via google.script.run.
+// Reuse the same validation, lock, 23-column mapping and deduplication as doPost.
+function registerAuthenticatedTraining(serialized) {
+  if (typeof serialized !== 'string' || serialized.length > 100000) return { success: false, error: 'Invalid registration data' };
+  return JSON.parse(doPost({ postData: { contents: serialized } }).getContent());
+}
+
+function registrationPage_() {
+  return `<!doctype html><html lang="en"><head><base target="_top"><style>
+  :root{color-scheme:dark;font-family:system-ui,sans-serif;background:#0a1726;color:#f2f0e9}*{box-sizing:border-box}body{margin:0;padding:24px}main{max-width:620px;margin:24px auto}header{color:#e8c568;font:12px monospace;letter-spacing:2px}h1{font-size:28px}p,li{line-height:1.6;color:#b4c1cf}section{padding:22px;border:1px solid #33485e;border-radius:16px;background:#101f30}label{display:block;margin-bottom:12px}textarea{width:100%;background:#0a1726;color:#f2f0e9;border:1px solid #52667c;border-radius:8px;padding:12px;font:16px monospace;resize:vertical}button{min-height:48px;padding:12px 20px;border:0;border-radius:8px;background:#e8b963;color:#152333;font-weight:700;cursor:pointer;margin:12px 0}button:disabled{opacity:.5;cursor:default}button:focus-visible,textarea:focus-visible{outline:3px solid #e8b963;outline-offset:3px}#preview{white-space:pre-wrap}#status{white-space:pre-wrap;color:#f2f0e9}small{display:block;line-height:1.6;color:#b4c1cf}
+  </style></head><body><main><header>WORKSPEAK · RTC LAB</header><h1>Register Training</h1><p>Paste the registration data copied from your mission. Check the preview, then confirm.</p><section><form id="registration"><label for="payload">Registration data / Dados do treino</label><textarea id="payload" rows="7" maxlength="100000" required autocomplete="off" spellcheck="false" placeholder="Paste the data copied by Register Training…"></textarea><p id="preview" aria-live="polite"></p><button id="submit" type="submit" disabled>Register Training</button></form><p id="status" role="status" aria-live="polite"></p><small>After confirmation, return to RTC Lab. Repeating the same submission will not create a duplicate.</small></section></main><script>
+  const form=document.getElementById('registration'), input=document.getElementById('payload'), button=document.getElementById('submit'), preview=document.getElementById('preview'), status=document.getElementById('status');
+  let data=null, pending=false, timeout;
+  input.addEventListener('input', function(){
+    if(pending)return;
+    data=null; button.disabled=true; preview.textContent=''; status.textContent='';
+    if(!input.value.trim())return;
+    try {
+      const value=JSON.parse(input.value);
+      if(!value || typeof value.studentName!=='string' || typeof value.missionName!=='string' || !Number.isFinite(value.totalScore) || !Number.isFinite(value.maxScore))throw Error('invalid');
+      data=value;
+      preview.textContent='Student: '+value.studentName+'\\nMission: '+value.week+' — '+value.missionName+'\\nScore: '+value.totalScore+' / '+value.maxScore;
+      button.disabled=false;
+    } catch(error){status.textContent='Please paste the registration data, not the WhatsApp summary. Return to the mission and click Copy registration data.';}
+  });
+  function failure(message){clearTimeout(timeout);pending=false;input.readOnly=false;button.disabled=false;button.textContent='Try again';status.textContent=message;}
+  form.addEventListener('submit', function(event){
+    event.preventDefault();if(pending || !data)return;
+    pending=true;input.readOnly=true;button.disabled=true;button.textContent='Registering…';status.textContent='Saving your training…';
+    timeout=setTimeout(function(){status.textContent='Still waiting for Google. Keep this tab open. If it does not finish, reload and paste the same data to retry safely.';},20000);
+    google.script.run.withSuccessHandler(function(result){
+      if(!result || result.success!==true){failure('I couldn’t register the training. Copy your result and send it to your teacher. '+(result && result.error ? 'Details: '+result.error : ''));return;}
+      clearTimeout(timeout);pending=false;button.disabled=true;button.textContent='Training registered ✅';
+      status.textContent='Training registered ✅ Good job, '+data.studentName+'. You can now return to RTC Lab.';
+    }).withFailureHandler(function(){failure('I couldn’t register the training. Try again or copy your result and send it to your teacher.');}).registerAuthenticatedTraining(input.value);
+  });
+  </script></body></html>`;
 }
 
 function cell(value) {

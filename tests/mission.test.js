@@ -80,32 +80,18 @@ test('registration with no endpoint returns actionable message without network a
   assert.equal(result.status, 'disconnected');
   assert.match(result.message, /Registration not connected yet/);
 });
-test('configured registration posts JSON without preflight and handles network failure', async () => {
-  const source = await sheetsSource('https://script.google.com/macros/s/test/exec');
-  let sent;
-  const context = vm.createContext({ crypto: globalThis.crypto, AbortController, setTimeout, clearTimeout, fetch: async (url, options) => { sent = { url, options }; return { type: 'opaque' }; } });
-  vm.runInContext(source, context);
-  context.readReceipt = async () => 'registered';
-  const payload = { studentName: 'Mateus', missionId: 'test' };
-  assert.equal((await context.registerTraining(payload)).status, 'registered');
-  assert.equal(sent.options.method, 'POST');
-  assert.equal(sent.options.mode, 'no-cors');
-  assert.match(sent.options.headers['Content-Type'], /^text\/plain/);
-  const posted = JSON.parse(sent.options.body);
-  assert.match(posted.registrationToken, /^[a-f0-9]{32}$/);
-  delete posted.registrationToken;
-  assert.deepEqual(posted, payload);
-  context.readReceipt = async () => 'unknown';
-  assert.equal((await context.registerTraining(payload)).status, 'sent');
-  context.readReceipt = async () => 'error';
-  await assert.rejects(context.registerTraining(payload), /Copy your result/);
-  context.fetch = async () => { throw new Error('offline'); };
-  await assert.rejects(context.registerTraining(payload), /Copy your result/);
-  context.fetch = async () => ({ type: 'basic', ok: false, status: 500 });
-  await assert.rejects(context.registerTraining(payload), /Copy your result/);
-  context.fetch = (_url, options) => new Promise((_resolve, reject) => options.signal.addEventListener('abort', () => reject(new Error('timeout'))));
-  context.setTimeout = callback => setTimeout(callback, 1);
-  await assert.rejects(context.registerTraining(payload), /Copy your result/);
+test('authenticated registration copies data without anonymous network requests', async () => {
+  let copied;
+  const context=vm.createContext({navigator:{clipboard:{writeText:async text=>{copied=text;}}},fetch:()=>assert.fail('Must not fetch a login-protected endpoint anonymously')});
+  vm.runInContext(await sheetsSource('https://script.google.com/macros/s/test/exec'),context);
+  const result=await context.registerTraining({studentName:'Mateus',missionId:'test',registrationStatus:'old',registrationMessage:'old'});
+  assert.equal(result.status,'awaiting-login');
+  assert.match(result.message,/not registered yet/);
+  assert.deepEqual(JSON.parse(copied),{studentName:'Mateus',missionId:'test'});
+  context.navigator.clipboard.writeText=async()=>{throw Error('denied');};
+  const fallback=await context.registerTraining({studentName:'Mateus'});
+  assert.equal(fallback.status,'awaiting-login');
+  assert.match(fallback.message,/Copy the registration data below/);
 });
 test('invalid and whitespace-only endpoint configurations preserve the copy-result fallback', async () => {
   for (const endpoint of ['   ', 'https://example.com/exec', 'https://script.google.com/macros/s/test/dev']) {
@@ -122,7 +108,7 @@ test('Apps Script creates 23 columns, persists JSON, deduplicates and rejects ma
   const properties = new Map();
   const receipts = new Map();
   const book = { getId: () => 'test-sheet-id', getSheetByName: () => created ? sheet : null, insertSheet: name => { assert.equal(name, 'RTC Lab Practice Logs'); created = true; return sheet; } };
-  const context = vm.createContext({ console: { error() {}, log() {} }, CacheService: { getScriptCache: () => ({ put: (key, value) => receipts.set(key, value), get: key => receipts.get(key) }) }, PropertiesService: { getScriptProperties: () => ({ setProperty: (key, value) => properties.set(key, value), getProperty: key => properties.get(key) }) }, LockService: { getScriptLock: () => ({ waitLock() {}, hasLock: () => true, releaseLock() {} }) }, SpreadsheetApp: { flush() {}, getActiveSpreadsheet: () => book, openById: id => { assert.equal(id, 'test-sheet-id'); return book; } }, ContentService: { MimeType: { JSON: 'json', JAVASCRIPT: 'js' }, createTextOutput: value => ({ setMimeType: type => type === 'js' ? value : JSON.parse(value) }) } });
+  const context = vm.createContext({ console: { error() {}, log() {} }, CacheService: { getScriptCache: () => ({ put: (key, value) => receipts.set(key, value), get: key => receipts.get(key) }) }, PropertiesService: { getScriptProperties: () => ({ setProperty: (key, value) => properties.set(key, value), getProperty: key => properties.get(key) }) }, LockService: { getScriptLock: () => ({ waitLock() {}, hasLock: () => true, releaseLock() {} }) }, SpreadsheetApp: { flush() {}, getActiveSpreadsheet: () => book, openById: id => { assert.equal(id, 'test-sheet-id'); return book; } }, ContentService: { MimeType: { JSON: 'json', JAVASCRIPT: 'js' }, createTextOutput: value => ({ setMimeType: type => type === 'js' ? value : Object.assign(JSON.parse(value), { getContent: () => value }) }) } });
   vm.runInContext(await readFile(new URL('../apps-script/Code.gs', import.meta.url), 'utf8'), context);
   const m = missions[0];
   const payload = { studentName: m.studentName, missionId: m.id, missionName: m.title, week: m.week, missionVersion: m.missionVersion, statusAtCompletion: m.status, completedAt: '2026-09-16T12:00:00.000Z', ...summarize(m, answered(m)), listenedFullAudio: true, repeatedOutLoud: true, difficultAudioPhrase: '=IMPORTXML("test")', listenRepeatCompleted: 16, copiedResultText: 'summary', userAgent: 'test' };
@@ -136,11 +122,13 @@ test('Apps Script creates 23 columns, persists JSON, deduplicates and rejects ma
   context.SpreadsheetApp.getActiveSpreadsheet = () => { throw new Error('Unavailable in Web App context'); };
   assert.equal(submit(payload).success, true);
   assert.equal(receipts.get('receipt:' + payload.registrationToken), 'registered');
-  const callback = 'rtcReceipt_' + 'b'.repeat(32);
-  const response = context.doGet({ parameter: { receipt: payload.registrationToken, callback } });
-  assert.equal(response, callback + '({"status":"registered"});');
-  assert.ok(!response.includes('Mateus'));
-  assert.equal(context.doGet({ parameter: { receipt: payload.registrationToken, callback: 'alert(1)' } }).success, false);
+  const loginPage=context.registrationPage_();
+  assert.match(loginPage,/google.script.run.withSuccessHandler/);
+  assert.match(loginPage,/registerAuthenticatedTraining/);
+  assert.match(loginPage,/Registration data/);
+  assert.equal(context.registerAuthenticatedTraining(JSON.stringify(payload)).success,true);
+  assert.equal(context.registerAuthenticatedTraining('not json').success,false);
+  assert.equal(context.registerAuthenticatedTraining(null).success,false);
   assert.equal(rows[0].length, 23); assert.equal(rows[1].length, 23);
   assert.equal(rows[1][13], "'=IMPORTXML(\"test\")");
   assert.ok(Array.isArray(JSON.parse(rows[1][19])));
@@ -179,16 +167,33 @@ test('result is a historical snapshot, with local ISO, completed items and Whats
   assert.equal(Date.parse(result.completedAt), date.getTime());
 });
 
-test('receipt reader cleans up callback and script on confirmation and transport error', async () => {
-  const source = (await readFile(new URL('../src/sheets.js', import.meta.url), 'utf8')).replace(/export /g, '');
-  let removed = 0, mode = 'success', lastUrl;
-  const window = {};
-  const context = vm.createContext({ window, crypto: globalThis.crypto, setTimeout, clearTimeout, document: { createElement: () => ({ remove() { removed++; } }), head: { appendChild(script) { lastUrl = new URL(script.src); if (mode === 'success') window[lastUrl.searchParams.get('callback')]({ status: 'registered' }); else script.onerror(); } } } });
-  vm.runInContext(source, context);
-  assert.equal(await context.readReceipt('https://script.google.com/macros/s/test/exec', 'a'.repeat(32)), 'registered');
-  assert.equal(lastUrl.searchParams.get('receipt'), 'a'.repeat(32));
-  assert.equal(Object.keys(window).length, 0);
-  mode = 'error';
-  assert.equal(await context.readReceipt('https://script.google.com/macros/s/test/exec', 'a'.repeat(32)), 'unknown');
-  assert.equal(removed, 2); assert.equal(Object.keys(window).length, 0);
+test('Google registration page previews data and confirms only after server success', async () => {
+  const server = vm.createContext({});
+  vm.runInContext(await readFile(new URL('../apps-script/Code.gs', import.meta.url), 'utf8'), server);
+  const html = server.registrationPage_();
+  const script = html.match(/<script>([\s\S]*?)<\/script>/)[1];
+  const elements = Object.fromEntries(['registration', 'payload', 'submit', 'preview', 'status'].map(id => [id, { value: '', textContent: '', disabled: true, handlers: {}, addEventListener(event, fn) { this.handlers[event] = fn; } }]));
+  let success, failure, sent, calls = 0;
+  const runner = { withSuccessHandler(fn) { success = fn; return runner; }, withFailureHandler(fn) { failure = fn; return runner; }, registerAuthenticatedTraining(data) { sent = data; calls++; } };
+  const client = vm.createContext({ document: { getElementById: id => elements[id] }, google: { script: { run: runner } }, setTimeout, clearTimeout });
+  vm.runInContext(script, client);
+  elements.payload.value = 'WhatsApp summary'; elements.payload.handlers.input();
+  assert.equal(elements.submit.disabled, true);
+  assert.match(elements.status.textContent, /not the WhatsApp summary/);
+  const payload = { studentName: '<img src=x>', week: 'Week 5', missionName: 'Transportation', totalScore: 40, maxScore: 43 };
+  elements.payload.value = JSON.stringify(payload); elements.payload.handlers.input();
+  assert.equal(elements.submit.disabled, false);
+  assert.match(elements.preview.textContent, /Score: 40 \/ 43/);
+  elements.registration.handlers.submit({ preventDefault() {} });
+  elements.registration.handlers.submit({ preventDefault() {} });
+  assert.equal(calls, 1); assert.deepEqual(JSON.parse(sent), payload);
+  assert.equal(elements.submit.disabled, true);
+  failure(); assert.match(elements.status.textContent, /couldn’t register/);
+  elements.registration.handlers.submit({ preventDefault() {} });
+  success({ success: false, error: 'Run setup first' });
+  assert.match(elements.status.textContent, /Run setup first/);
+  elements.registration.handlers.submit({ preventDefault() {} });
+  success({ success: true });
+  assert.match(elements.status.textContent, /Training registered ✅/);
+  assert.equal(elements.submit.disabled, true);
 });

@@ -81,7 +81,7 @@ A Home contém Current Mission, Previous Missions e **My Last Result** (a conclu
 3. Cole o conteúdo de `apps-script/Code.gs`, substituindo o exemplo. Salve. No seletor de funções, escolha **setup** e clique em **Run / Executar** uma vez; autorize o acesso solicitado. Isso salva o ID da planilha nas propriedades do script para o Web App conseguir abri-la.
 4. Escolha **Deploy > New deployment > Web app**.
 5. Configure **Execute as: Me**.
-6. Configure **Who has access: Anyone with the link** — a opção pode aparecer como **Anyone**. O acesso deve permitir chamadas sem login. Autorize a implantação com sua conta. Contas institucionais podem restringir acesso público.
+6. Configure **Who has access: Anyone with Google account**, ou restrinja à organização Workspace desejada. **Mantenha o login obrigatório**. Não selecione acesso anônimo. Use Execute as: Me para gravar na planilha da trainer sem conceder acesso direto à planilha ao aluno.
 7. Copie a URL do Web App que termina em `/exec` (não `/dev`).
 8. Cole em `SHEETS_WEB_APP_URL` no arquivo `src/sheets.js`. Publique novamente o site.
 
@@ -91,19 +91,24 @@ Execute `setup()` no editor, não `doPost()` (que exige o corpo de uma requisiç
 
 Payload: `studentName`, `missionId`, `missionName`, `week`, `missionVersion`, `statusAtCompletion`, `completedAt`, `totalScore`, `maxScore`, `percentage`, `listenedFullAudio`, `repeatedOutLoud`, `difficultAudioPhrase`, `listenRepeatCompleted` (quantidade de frases marcadas), os quatro scores, `difficultPhrases`, `wrongAnswers`, `copiedResultText` e `userAgent`. `completedAt` é ISO com deslocamento local (por exemplo `2026-09-17T12:00:00.000-03:00`); Timestamp é a data de recebimento. O snapshot inclui também `practicedPhrases`, `completedItems`, `sectionTotals` e `answerSummary`; o Apps Script mantém os 23 cabeçalhos solicitados e grava a classificação dos erros no JSON de Wrong Answers.
 
-### CORS e confirmação
+### Registro com login Google obrigatório
 
-O cliente envia **POST com corpo JSON e Content-Type `text/plain;charset=utf-8`**, em modo `no-cors`, evitando preflight. O script interpreta JSON e retorna `{ "success": true }`. Como o navegador não pode ler diretamente essa resposta opaca, cada envio inclui um `registrationToken` aleatório de 128 bits. Após gravar e executar `SpreadsheetApp.flush()`, o receptor armazena um recibo temporário por até 10 minutos no CacheService.
+A prática continua no site estático. O registro é concluído na página hospedada pelo próprio Apps Script, protegida pelo login Google da implantação. O antigo envio anônimo por fetch e a consulta JSONP foram substituídos: eles não conseguiam realizar o login exigido pelo Web App.
 
-O cliente consulta `doGet` por JSONP, com callback restrito a `rtcReceipt_<32 caracteres hex>`, até quatro vezes. A consulta retorna somente `registered`, `error` ou `pending`, sem nome, nota, respostas ou dados da planilha. O token não entra nos 23 campos do log. A técnica de callback é suportada pelo [Content Service do Apps Script](https://developers.google.com/apps-script/guides/content); a URL precisa apontar para o script confiável da trainer.
+1. No final da missão, clique **Register Training**. O aplicativo copia os dados de registro e mostra as instruções.
+2. Clique **Open Google Registration**, entre com uma conta autorizada e cole os dados no campo **Registration data**.
+3. Confira aluno, missão e nota na prévia e clique **Register Training** nessa página.
+4. Aguarde **Training registered ✅**, exibido somente após a resposta positiva da gravação. Retorne ao app quando terminar.
 
-Com recibo confirmado: **Training registered ✅ Good job, Mateus.** Com falha confirmada ou de rede: **I couldn’t register the training. Copy your result and send it to your teacher.** Se a confirmação estiver indisponível, a mensagem distingue envio de registro confirmado e permite nova tentativa. Cache expirado, bloqueio de scripts ou uma implantação antiga podem impedir o recibo mesmo após a gravação; confira o Sheets nesses casos. Não troque para `application/json` sem uma solução de CORS.
+Se a cópia automática for bloqueada, use **Copy registration data** ou selecione o texto manualmente no painel. Esse conteúdo é diferente do resumo **Copy Result**, que continua destinado ao WhatsApp. Os dados não são colocados na URL nem enviados automaticamente antes da confirmação. A página autenticada usa [google.script.run](https://developers.google.com/apps-script/guides/html/communication) para chamar o servidor no contexto do Google, sem depender de cookies de terceiros ou CORS do site estático.
 
-O botão fica desabilitado apenas enquanto registra ou após confirmação. Em falha ou confirmação indisponível, permite tentar novamente; o script evita duplicar o mesmo resultado. Sem URL, mostra: “Registration not connected yet. Copy your result and send it to your teacher.” O aluno precisa clicar em Register Training: nada é enviado automaticamente. A URL pública não autentica remetentes; mantenha a própria planilha privada.
+A confirmação aparece na página Google; o app original não afirma que registrou ao apenas abrir o fluxo. Dados locais permanecem disponíveis. Reenviar a mesma conclusão não duplica a linha. Se a sessão expirar, faça login novamente e cole os mesmos dados.
 
-Ao atualizar o script: **Deploy > Manage deployments > Edit > New version > Deploy**. Mantenha a mesma URL. Para diagnosticar falhas, confira **Executions** no Apps Script e as permissões do Web App.
+**Atualizar uma implantação existente:** substitua todo o conteúdo de Code.gs pelo arquivo deste repositório, execute setup() se ainda não configurou a planilha e selecione **Deploy > Manage deployments > Edit > New version > Deploy**. Preserve a URL /exec e o acesso com login obrigatório. Não basta atualizar o GitHub: o código no Apps Script precisa ser publicado também. Tudo está no Code.gs; não é necessário criar um arquivo HTML separado.
 
-Se a URL redirecionar para `accounts.google.com`, a implantação está exigindo autenticação. Escolha **Anyone** (não **Anyone with Google account**) para permitir o registro pelo aluno sem login. Ao atualizar esta versão, substitua o `Code.gs` na implantação também: a confirmação depende do novo `doGet`, além do `doPost`. Testes automatizados usam endpoints simulados e nunca enviam registros à URL real configurada.
+Se a URL abrir uma mensagem sobre recibo inválido ou função doGet ausente em vez do formulário, a implantação ainda está com a versão antiga. Se a conta não tiver acesso, use a conta permitida pela implantação. Em falhas de gravação, consulte **Executions** no Apps Script. Não remova o login para contornar o erro.
+
+O doPost continua disponível para clientes autenticados, mas o site não tenta enviar por fetch. Os testes automatizados usam mocks e nunca escrevem na planilha real.
 
 ## Deploy no Netlify
 
