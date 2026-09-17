@@ -4,8 +4,14 @@ import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 import { missions } from '../src/missions.js';
 import { normalize, evaluate, summarize, questionSections } from '../src/scoring.js';
-import { registerTraining } from '../src/sheets.js';
 import { buildResult, localISO } from '../src/results.js';
+
+// Never call the deployed URL during automated tests. Use explicit test endpoints.
+async function sheetsSource(endpoint = '') {
+  return (await readFile(new URL('../src/sheets.js', import.meta.url), 'utf8'))
+    .replace(/export const SHEETS_WEB_APP_URL = '[^']*';/, `export const SHEETS_WEB_APP_URL = '${endpoint}';`)
+    .replace(/export /g, '');
+}
 
 test('Week 5 matches the complete brief and uses a new progress version', () => {
   const m = missions.find(m => m.id === 'week-05-transportation');
@@ -68,16 +74,14 @@ test('both missions score correctly; errors are preserved and difficult phrases 
   }
 });
 test('registration with no endpoint returns actionable message without network access', async () => {
-  const originalFetch = globalThis.fetch;
-  globalThis.fetch = () => { assert.fail('An empty endpoint must never send a request'); };
-  try {
-    const result = await registerTraining({});
-    assert.equal(result.status, 'disconnected');
-    assert.match(result.message, /Registration not connected yet/);
-  } finally { globalThis.fetch = originalFetch; }
+  const context = vm.createContext({ fetch: () => assert.fail('An empty endpoint must never send a request') });
+  vm.runInContext(await sheetsSource(), context);
+  const result = await context.registerTraining({});
+  assert.equal(result.status, 'disconnected');
+  assert.match(result.message, /Registration not connected yet/);
 });
 test('configured registration posts JSON without preflight and handles network failure', async () => {
-  const source = (await readFile(new URL('../src/sheets.js', import.meta.url), 'utf8')).replace("SHEETS_WEB_APP_URL = ''", "SHEETS_WEB_APP_URL = 'https://script.google.com/macros/s/test/exec'").replace(/export /g, '');
+  const source = await sheetsSource('https://script.google.com/macros/s/test/exec');
   let sent;
   const context = vm.createContext({ crypto: globalThis.crypto, AbortController, setTimeout, clearTimeout, fetch: async (url, options) => { sent = { url, options }; return { type: 'opaque' }; } });
   vm.runInContext(source, context);
@@ -104,10 +108,9 @@ test('configured registration posts JSON without preflight and handles network f
   await assert.rejects(context.registerTraining(payload), /Copy your result/);
 });
 test('invalid and whitespace-only endpoint configurations preserve the copy-result fallback', async () => {
-  const source = await readFile(new URL('../src/sheets.js', import.meta.url), 'utf8');
   for (const endpoint of ['   ', 'https://example.com/exec', 'https://script.google.com/macros/s/test/dev']) {
     const context = vm.createContext({ fetch: () => assert.fail('Invalid endpoint must not send data') });
-    vm.runInContext(source.replace("SHEETS_WEB_APP_URL = ''", `SHEETS_WEB_APP_URL = '${endpoint}'`).replace(/export /g, ''), context);
+    vm.runInContext(await sheetsSource(endpoint), context);
     if (!endpoint.trim()) assert.equal((await context.registerTraining({})).status, 'disconnected');
     else await assert.rejects(context.registerTraining({}), /Copy your result/);
   }

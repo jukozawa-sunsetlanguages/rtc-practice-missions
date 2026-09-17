@@ -103,6 +103,8 @@ O botão fica desabilitado apenas enquanto registra ou após confirmação. Em f
 
 Ao atualizar o script: **Deploy > Manage deployments > Edit > New version > Deploy**. Mantenha a mesma URL. Para diagnosticar falhas, confira **Executions** no Apps Script e as permissões do Web App.
 
+Se a URL redirecionar para `accounts.google.com`, a implantação está exigindo autenticação. Escolha **Anyone** (não **Anyone with Google account**) para permitir o registro pelo aluno sem login. Ao atualizar esta versão, substitua o `Code.gs` na implantação também: a confirmação depende do novo `doGet`, além do `doPost`. Testes automatizados usam endpoints simulados e nunca enviam registros à URL real configurada.
+
 ## Deploy no Netlify
 
 1. Envie os arquivos ao repositório `jukozawa-sunsetlanguages/rtc-practice-missions`.
