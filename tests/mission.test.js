@@ -73,34 +73,38 @@ test('both missions score correctly; errors are preserved and difficult phrases 
     assert.equal(summarize(m, answered(m, false)).percentage, 0);
   }
 });
-test('registration with no endpoint returns actionable message without network access', async () => {
-  const context = vm.createContext({ fetch: () => assert.fail('An empty endpoint must never send a request') });
-  vm.runInContext(await sheetsSource(), context);
-  const result = await context.registerTraining({});
-  assert.equal(result.status, 'disconnected');
-  assert.match(result.message, /Registration not connected yet/);
-});
-test('authenticated registration copies data without anonymous network requests', async () => {
-  let copied;
-  const context=vm.createContext({navigator:{clipboard:{writeText:async text=>{copied=text;}}},fetch:()=>assert.fail('Must not fetch a login-protected endpoint anonymously')});
-  vm.runInContext(await sheetsSource('https://script.google.com/macros/s/test/exec'),context);
-  const result=await context.registerTraining({studentName:'Mateus',missionId:'test',registrationStatus:'old',registrationMessage:'old'});
-  assert.equal(result.status,'awaiting-login');
-  assert.match(result.message,/not registered yet/);
-  assert.deepEqual(JSON.parse(copied),{studentName:'Mateus',missionId:'test'});
-  context.navigator.clipboard.writeText=async()=>{throw Error('denied');};
-  const fallback=await context.registerTraining({studentName:'Mateus'});
-  assert.equal(fallback.status,'awaiting-login');
-  assert.match(fallback.message,/Copy the registration data below/);
-});
-test('invalid and whitespace-only endpoint configurations preserve the copy-result fallback', async () => {
-  for (const endpoint of ['   ', 'https://example.com/exec', 'https://script.google.com/macros/s/test/dev']) {
-    const context = vm.createContext({ fetch: () => assert.fail('Invalid endpoint must not send data') });
-    vm.runInContext(await sheetsSource(endpoint), context);
-    if (!endpoint.trim()) assert.equal((await context.registerTraining({})).status, 'disconnected');
-    else await assert.rejects(context.registerTraining({}), /Copy your result/);
+test('direct registration posts JSON and accepts only explicit confirmation', async () => {
+  let request;
+  const context = vm.createContext({ AbortController, setTimeout, clearTimeout, fetch: async (url, options) => {
+    request = {url, options}; return {ok:true, text:async () => '{"success":true}'};
+  }});
+  vm.runInContext(await sheetsSource('https://script.google.com/macros/s/test/exec'), context);
+  const payload = buildResult(missions[0], { ...answered(missions[0], true), repeat: [], listenedFullAudio: true, repeatedOutLoud: true, difficultAudioPhrase: '' }, 'test-agent');
+  payload.registrationStatus = 'error';
+  assert.equal((await context.submitTrainingLog(payload)).success, true);
+  assert.equal(request.options.method, 'POST');
+  assert.equal(request.options.headers['Content-Type'], 'text/plain;charset=utf-8');
+  const body = JSON.parse(request.options.body);
+  assert.equal(Object.keys(body).length, 22);
+  assert.equal(body.missionId, payload.missionId);
+  assert.equal(body.registrationStatus, undefined);
+  for (const [ok, text] of [[true, '<html>Sign in</html>'],[true,'null'],[true,'{}'],[true,'{"success":false,"error":"Sheet missing"}'],[false,'{"success":true}']]) {
+    context.fetch = async () => ({ok, text:async () => text});
+    assert.equal((await context.submitTrainingLog(payload)).success, false);
+  }
+  for (const name of ['Error','AbortError']) {
+    context.fetch = async () => { const e = new Error('request failed'); e.name = name; throw e; };
+    assert.equal((await context.submitTrainingLog(payload)).success, false);
   }
 });
+test('missing or invalid registration URL never sends data', async () => {
+  for (const endpoint of ['', '   ', 'https://example.com/exec', 'https://script.google.com/macros/s/test/dev']) {
+    const context = vm.createContext({fetch: () => assert.fail('Invalid endpoint sent a request')});
+    vm.runInContext(await sheetsSource(endpoint), context);
+    assert.equal((await context.submitTrainingLog({})).success, false);
+  }
+});
+
 test('Apps Script creates 23 columns, persists JSON, deduplicates and rejects malformed data', async () => {
   const rows = [];
   const sheet = { appendRow: row => rows.push(row), getLastRow: () => rows.length, setFrozenRows() {}, getRange: (r, c, n, w) => ({ setFontWeight() {}, getValues: () => rows.slice(r - 1, r - 1 + n).map(row => row.slice(c - 1, c - 1 + w)) }) };

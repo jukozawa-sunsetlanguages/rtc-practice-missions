@@ -1,23 +1,28 @@
-// Keep the deployed Web App restricted to users with a Google account.
 export const SHEETS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwCeaRB62wc_-v-kVG2uoesxG8w0UIeF5sOpdBB9TCzYDNrZA1uLG0Ibm80ne4qb8Q/exec';
 
+export const REGISTRATION_ERROR = 'I couldn’t register the training automatically. Copy your result and send it to your teacher.';
+const fields = ['studentName','missionId','missionName','week','missionVersion','statusAtCompletion','completedAt','totalScore','maxScore','percentage','listenedFullAudio','repeatedOutLoud','difficultAudioPhrase','listenRepeatCompleted','chooseMeaningScore','completePhraseScore','typeSentenceScore','finalMissionScore','difficultPhrases','wrongAnswers','copiedResultText','userAgent'];
 export function registrationData(payload) {
-  const { registrationStatus, registrationMessage, ...result } = payload;
-  return JSON.stringify(result);
+  return JSON.stringify(Object.fromEntries(fields.map(key => [key, payload[key]])));
 }
-
-export async function registerTraining(payload) {
+export async function submitTrainingLog(payload) {
   const endpoint = SHEETS_WEB_APP_URL.trim();
-  if (!endpoint) return { status: 'disconnected', message: 'Registration not connected yet. Copy your result and send it to your teacher.' };
-  if (!/^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(endpoint)) {
-    throw new Error('Registration is not configured correctly. Copy your result and send it to your teacher. The teacher should check the Apps Script /exec URL.');
-  }
-  let copied = false;
-  try { await navigator.clipboard.writeText(registrationData(payload)); copied = true; } catch { /* The UI provides selectable text. */ }
-  return {
-    status: 'awaiting-login',
-    message: copied
-      ? 'Registration data copied. Open Google Registration, sign in, paste the data, and confirm. Your training is not registered yet.'
-      : 'Copy the registration data below. Open Google Registration, sign in, paste the data, and confirm. Your training is not registered yet.'
-  };
+  if (!endpoint) return { success: false, error: 'Registration URL not configured.' };
+  if (!/^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(endpoint)) return { success: false, error: 'Invalid Apps Script /exec URL.' };
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 25000);
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: registrationData(payload), signal: controller.signal, credentials: 'omit', redirect: 'follow'
+    });
+    const text = await response.text();
+    let data;
+    try { data = JSON.parse(text); }
+    catch { return { success: false, error: 'Server did not return a JSON confirmation.' }; }
+    if (!response.ok || data?.success !== true) return { success: false, error: data?.error || 'Registration was not confirmed.' };
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.name === 'AbortError' ? 'Registration timed out; retry safely.' : (error.message || 'Network error.') };
+  } finally { clearTimeout(timer); }
 }

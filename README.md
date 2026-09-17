@@ -81,7 +81,7 @@ A Home contém Current Mission, Previous Missions e **My Last Result** (a conclu
 3. Cole o conteúdo de `apps-script/Code.gs`, substituindo o exemplo. Salve. No seletor de funções, escolha **setup** e clique em **Run / Executar** uma vez; autorize o acesso solicitado. Isso salva o ID da planilha nas propriedades do script para o Web App conseguir abri-la.
 4. Escolha **Deploy > New deployment > Web app**.
 5. Configure **Execute as: Me**.
-6. Configure **Who has access: Anyone with Google account**, ou restrinja à organização Workspace desejada. **Mantenha o login obrigatório**. Não selecione acesso anônimo. Use Execute as: Me para gravar na planilha da trainer sem conceder acesso direto à planilha ao aluno.
+6. Configure **Who has access: Anyone (Anyone with the link)**, sem login obrigatório, e **Execute as: Me**. A planilha permanece privada; o endpoint aceita registros sem autenticação.
 7. Copie a URL do Web App que termina em `/exec` (não `/dev`).
 8. Cole em `SHEETS_WEB_APP_URL` no arquivo `src/sheets.js`. Publique novamente o site.
 
@@ -91,24 +91,14 @@ Execute `setup()` no editor, não `doPost()` (que exige o corpo de uma requisiç
 
 Payload: `studentName`, `missionId`, `missionName`, `week`, `missionVersion`, `statusAtCompletion`, `completedAt`, `totalScore`, `maxScore`, `percentage`, `listenedFullAudio`, `repeatedOutLoud`, `difficultAudioPhrase`, `listenRepeatCompleted` (quantidade de frases marcadas), os quatro scores, `difficultPhrases`, `wrongAnswers`, `copiedResultText` e `userAgent`. `completedAt` é ISO com deslocamento local (por exemplo `2026-09-17T12:00:00.000-03:00`); Timestamp é a data de recebimento. O snapshot inclui também `practicedPhrases`, `completedItems`, `sectionTotals` e `answerSummary`; o Apps Script mantém os 23 cabeçalhos solicitados e grava a classificação dos erros no JSON de Wrong Answers.
 
-### Registro com login Google obrigatório
+### Google Sheets direct registration
 
-A prática continua no site estático. O registro é concluído na página hospedada pelo próprio Apps Script, protegida pelo login Google da implantação. O antigo envio anônimo por fetch e a consulta JSONP foram substituídos: eles não conseguiam realizar o login exigido pelo Web App.
+Register Training envia o resultado diretamente por fetch POST, com JSON no corpo e Content-Type text/plain;charset=utf-8. A URL fica em src/sheets.js. O app só confirma sucesso quando recebe JSON com success: true; HTML de login, falha de rede, timeout e erro do servidor oferecem Copy Result e registro manual como alternativa.
 
-1. No final da missão, clique **Register Training**. O aplicativo copia os dados de registro e mostra as instruções.
-2. Clique **Open Google Registration**, entre com uma conta autorizada e cole os dados no campo **Registration data**.
-3. Confira aluno, missão e nota na prévia e clique **Register Training** nessa página.
-4. Aguarde **Training registered ✅**, exibido somente após a resposta positiva da gravação. Retorne ao app quando terminar.
+Configure a implantação como Web App: Execute as: Me; Who has access: Anyone (Anyone with the link), sem exigir login Google. Use a URL /exec, nunca /dev. Isso permite envio anônimo ao endpoint; a planilha não precisa ser compartilhada publicamente. A configuração anterior com conta Google obrigatória impede o fluxo direto e deve ser alterada para habilitá-lo.
 
-Se a cópia automática for bloqueada, use **Copy registration data** ou selecione o texto manualmente no painel. Esse conteúdo é diferente do resumo **Copy Result**, que continua destinado ao WhatsApp. Os dados não são colocados na URL nem enviados automaticamente antes da confirmação. A página autenticada usa [google.script.run](https://developers.google.com/apps-script/guides/html/communication) para chamar o servidor no contexto do Google, sem depender de cookies de terceiros ou CORS do site estático.
+Para atualizar: Deploy > Manage deployments > Edit > New version > Deploy. O doPost já interpreta JSON.parse(e.postData.contents), independentemente do Content-Type. Se falhar no celular, use Copy Result e envie à professora. O link Open manual registration só aparece como alternativa após falha. Repetir o envio da mesma conclusão não duplica a linha.
 
-A confirmação aparece na página Google; o app original não afirma que registrou ao apenas abrir o fluxo. Dados locais permanecem disponíveis. Reenviar a mesma conclusão não duplica a linha. Se a sessão expirar, faça login novamente e cole os mesmos dados.
-
-**Atualizar uma implantação existente:** substitua todo o conteúdo de Code.gs pelo arquivo deste repositório, execute setup() se ainda não configurou a planilha e selecione **Deploy > Manage deployments > Edit > New version > Deploy**. Preserve a URL /exec e o acesso com login obrigatório. Não basta atualizar o GitHub: o código no Apps Script precisa ser publicado também. Tudo está no Code.gs; não é necessário criar um arquivo HTML separado.
-
-Se a URL abrir uma mensagem sobre recibo inválido ou função doGet ausente em vez do formulário, a implantação ainda está com a versão antiga. Se a conta não tiver acesso, use a conta permitida pela implantação. Em falhas de gravação, consulte **Executions** no Apps Script. Não remova o login para contornar o erro.
-
-O doPost continua disponível para clientes autenticados, mas o site não tenta enviar por fetch. Os testes automatizados usam mocks e nunca escrevem na planilha real.
 
 ## Deploy no Netlify
 

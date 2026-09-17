@@ -78,15 +78,14 @@ function receipt(token, status) {
   catch (error) { console.error('Receipt unavailable: ' + error); }
 }
 
-// Google enforces sign-in before serving this page. Deploy with access set to
-// "Anyone with Google account" (or the intended Workspace organization).
+// Optional manual fallback. Direct POST requires deployment access set to Anyone.
 function doGet() {
   return HtmlService.createHtmlOutput(registrationPage_())
     .setTitle('RTC Lab — Register Training')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
 
-// Called only from the authenticated Google-hosted page via google.script.run.
+// Called from the optional Google-hosted fallback via google.script.run.
 // Reuse the same validation, lock, 23-column mapping and deduplication as doPost.
 function registerAuthenticatedTraining(serialized) {
   if (typeof serialized !== 'string' || serialized.length > 100000) return { success: false, error: 'Invalid registration data' };
