@@ -1,3 +1,4 @@
+import { createRegistration, submissionId } from './registration.js';
 import { speechRates, preferredVoice, speechSegments, estimatedSeconds, timestamp } from './audio.js';
 import { missions } from './missions.js';
 import { evaluate, questionSections } from './scoring.js';
@@ -9,7 +10,9 @@ const steps = ['Mission Briefing', 'Full Audio Training', 'Listen & Repeat', 'Ch
 const current = missions.find(m => m.status === 'current');
 const visible = missions.filter(m => m.status === 'previous' || m === current);
 let mission, state, speechRun = 0, activeRecording, speechTimer;
-const pendingRegistrations = new Set();
+const registrations = createRegistration({read, write, submit: submitTrainingLog});
+const manualRegistrations = new Set();
+const justSubmitted = new Set();
 let storageWarning = false;
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const key = m => `rtc:progress:${m.id}:${m.missionVersion}`;
@@ -147,10 +150,22 @@ function finish() {
 }
 function renderComplete(saved = location.hash.startsWith('#result/')) {
   const r = state.result;
-  const pending = pendingRegistrations.has(resultKey(r));
-  const registered = r.registrationStatus === 'registered';
+  console.debug('Mission complete reached', submissionId(r));
+  let registrationStatus = registrations.status(r);
+  if (!registrationStatus) { void sendRegistration(mission, r); registrationStatus = 'pending'; }
+  const pending = registrationStatus === 'pending';
+  const registered = registrationStatus === 'submitted';
+  const message = pending ? 'Submitting training...' : registered ? (justSubmitted.has(r) ? 'Training submitted ✅' : 'Training already submitted ✅') : REGISTRATION_ERROR;
   const summary = r.answerSummary;
-  app.innerHTML = `<a class="back-link" href="#home">← Back to Missions</a><section class="complete-header"><span class="complete-icon">✓</span><span class="eyebrow">${esc(r.week)} · ${esc(r.missionName)} · ${esc(r.missionVersion)}</span><h1>${saved ? 'My Last Result' : 'Mission Complete ✅'}</h1><p>${esc(new Date(r.completedAt).toLocaleString())}</p></section><section class="panel result-panel"><div class="score-block"><div class="score-ring" style="--score:${Number(r.percentage) || 0}%"><strong>${r.percentage}<span>%</span></strong></div><div><span class="eyebrow">YOUR FINAL SCORE</span><h2>${r.totalScore} <span class="muted">/ ${r.maxScore} correct</span></h2><p class="muted">${r.listenRepeatCompleted} phrases practiced out loud</p>${r.completedItems != null ? `<p>Completed items: ${r.completedItems}</p><p class="small muted">Questions + repeated phrases + 2 audio confirmations</p>` : ''}</div></div>${summary ? `<p class="answer-summary">First answers: ${summary.correct} correct · ${summary.almost} almost · ${summary.incorrect} incorrect</p>` : ''}<div class="score-breakdown">${questionSections.map((s, i) => `<div><span>${steps[i + 3]}</span><strong>${r[s + 'Score']}${r.sectionTotals ? ' / ' + r.sectionTotals[s] : ''}</strong></div>`).join('')}</div><h3>Today you practiced</h3>${r.practicedPhrases ? `<div class="phrase-chips">${r.practicedPhrases.map(p => `<span>${esc(p)}</span>`).join('')}</div>` : '<p class="muted">See the saved result text below for phrases from this earlier version.</p>'}<h3 class="spaced">Difficult phrases</h3>${r.difficultPhrases.length ? `<ul class="difficult-list">${r.difficultPhrases.map(p => `<li>${esc(p)}</li>`).join('')}</ul>` : '<p class="muted">None reported. Keep practicing!</p>'}<div class="result-actions"><button class="button primary" data-action="copy">Copy Result ↗</button><button class="button secondary" data-action="register" ${pending || registered ? 'disabled' : ''}>${pending ? 'Registering...' : registered ? 'Registered ✅' : r.registrationStatus === 'sent' ? 'Try Registration Again' : 'Register Training'}</button>${saved ? `<a class="button quiet" href="#mission/${esc(mission.id)}">Open Mission</a>` : '<button class="button quiet" data-action="restart">Restart Mission</button>'}<a class="button quiet" href="#home">Back to Missions</a></div><p class="registration-message" role="status">${esc(pending ? 'Registering training...' : r.registrationMessage || state.registrationMessage || 'Share your progress with your teacher when you’re ready.')}</p>${!pending && SHEETS_WEB_APP_URL.trim() && r.registrationStatus === 'error' ? registrationPanel(r) : ''}<details><summary>View result text</summary><textarea class="copy-text" readonly rows="12" aria-label="Result summary">${esc(r.copiedResultText)}</textarea></details></section>`;
+  app.innerHTML = `<a class="back-link" href="#home">← Back to Missions</a><section class="complete-header"><span class="complete-icon">✓</span><span class="eyebrow">${esc(r.week)} · ${esc(r.missionName)} · ${esc(r.missionVersion)}</span><h1>${saved ? 'My Last Result' : 'Mission Complete ✅'}</h1><p>${esc(new Date(r.completedAt).toLocaleString())}</p></section><section class="panel result-panel"><div class="score-block"><div class="score-ring" style="--score:${Number(r.percentage) || 0}%"><strong>${r.percentage}<span>%</span></strong></div><div><span class="eyebrow">YOUR FINAL SCORE</span><h2>${r.totalScore} <span class="muted">/ ${r.maxScore} correct</span></h2><p class="muted">${r.listenRepeatCompleted} phrases practiced out loud</p>${r.completedItems != null ? `<p>Completed items: ${r.completedItems}</p><p class="small muted">Questions + repeated phrases + 2 audio confirmations</p>` : ''}</div></div>${summary ? `<p class="answer-summary">First answers: ${summary.correct} correct · ${summary.almost} almost · ${summary.incorrect} incorrect</p>` : ''}<div class="score-breakdown">${questionSections.map((s, i) => `<div><span>${steps[i + 3]}</span><strong>${r[s + 'Score']}${r.sectionTotals ? ' / ' + r.sectionTotals[s] : ''}</strong></div>`).join('')}</div><h3>Today you practiced</h3>${r.practicedPhrases ? `<div class="phrase-chips">${r.practicedPhrases.map(p => `<span>${esc(p)}</span>`).join('')}</div>` : '<p class="muted">See the saved result text below for phrases from this earlier version.</p>'}<h3 class="spaced">Difficult phrases</h3>${r.difficultPhrases.length ? `<ul class="difficult-list">${r.difficultPhrases.map(p => `<li>${esc(p)}</li>`).join('')}</ul>` : '<p class="muted">None reported. Keep practicing!</p>'}<div class="result-actions"><button class="button primary" data-action="copy">Copy Result ↗</button><button class="button secondary" data-action="register" ${pending || registered ? 'disabled' : ''}>${pending ? 'Submitting...' : registered ? 'Submitted ✅' : 'Try registering again'}</button>${saved ? `<a class="button quiet" href="#mission/${esc(mission.id)}">Open Mission</a>` : '<button class="button quiet" data-action="restart">Restart Mission</button>'}<a class="button quiet" href="#home">Back to Missions</a></div><p class="registration-message" role="status">${esc(message)}</p>${registered ? '<p>Your teacher can confirm it in the practice log.</p>' : ''}<button class="button quiet" data-action="manual-registration">Need manual registration?</button>${SHEETS_WEB_APP_URL.trim() && (registrationStatus === 'failed' || manualRegistrations.has(resultKey(r))) ? registrationPanel(r) : ''}<details><summary>View result text</summary><textarea class="copy-text" readonly rows="12" aria-label="Result summary">${esc(r.copiedResultText)}</textarea></details></section>`;
+}
+async function sendRegistration(submittedMission, result, retry = false) {
+  const status = await registrations.send(result, retry);
+  result.registrationStatus = status === 'submitted' ? 'registered' : 'error';
+  result.registrationMessage = status === 'submitted' ? 'Training submitted ✅' : REGISTRATION_ERROR;
+  if (status === 'submitted') justSubmitted.add(result);
+  persistRegistration(submittedMission, result);
+  if (state?.result && resultKey(state.result) === resultKey(result)) { state.result = result; renderComplete(); }
 }
 function registrationPanel(result) {
   return `<section class="callout registration-panel" aria-label="Google registration"><h3>Manual registration (optional)</h3><ol><li>Copy the registration data below.</li><li>Open the manual registration page.</li><li>Paste the data there, review your mission, and click Register Training.</li></ol><div class="card-actions"><button class="button secondary" data-action="copy-registration">Copy registration data</button><a class="button primary" href="${esc(SHEETS_WEB_APP_URL.trim())}" target="_blank" rel="noopener noreferrer">Open manual registration ↗</a></div><details><summary>Registration data — select and copy manually if needed</summary><textarea class="registration-data" readonly rows="6" aria-label="Registration data">${esc(registrationData(result))}</textarea></details><p class="small muted">The Google page confirms whether the result was saved. Then return here. Your local result stays available.</p></section>`;
@@ -243,21 +258,10 @@ app.addEventListener('click', async e => {
     try { await navigator.clipboard.writeText(registrationData(state.result)); toast('Registration data copied. Paste it on the Google registration page.'); }
     catch { const field = app.querySelector('.registration-data'); if (field) { field.closest('details').open = true; field.focus(); field.select(); } toast('Select and copy the registration data below.'); }
   }
+  if (action === 'manual-registration') { manualRegistrations.add(resultKey(state.result)); renderComplete(); }
   if (action === 'register') {
-    console.debug('Register Training clicked');
-    const submittedMission = mission, result = state.result, id = resultKey(result);
-    if (pendingRegistrations.has(id)) return;
-    pendingRegistrations.add(id); renderComplete();
-    try {
-      const response = await submitTrainingLog(result);
-      result.registrationStatus = response.success ? 'registered' : 'error';
-      result.registrationMessage = response.success ? 'Training registered successfully ✅' : REGISTRATION_ERROR;
-      if (!response.success) console.error('Training registration failed:', response.error);
-    } catch (error) { console.error('Register Training failed:', error); result.registrationStatus = 'error'; result.registrationMessage = REGISTRATION_ERROR; }
-    finally {
-      pendingRegistrations.delete(id); persistRegistration(submittedMission, result);
-      if (state?.result && resultKey(state.result) === id) { state.result = result; renderComplete(); }
-    }
+    const task = sendRegistration(mission, state.result, true);
+    renderComplete(); await task;
   }
 });
 app.addEventListener('play', e => {

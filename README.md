@@ -131,3 +131,6 @@ Os roteiros das Weeks 4 e 5 usam [pause] para 3 segundos de silêncio. Week 5 ap
 Diagnóstico de registro: o console mostra clique, payload enviado, status HTTP, resposta e JSON interpretado. Resultados antigos com listas serializadas em JSON são normalizados antes do POST. Invalid practice details indica difficultPhrases/wrongAnswers fora do formato de lista; não existe campo practiceDetails obrigatório. Não considerar HTML de login ou resposta opaca como sucesso.
 
 Verificação de produção: /build-info.json informa commit (COMMIT_REF), contexto e horário do build Netlify. Compare commit com git rev-parse HEAD; o marcador tem Cache-Control: no-store.
+
+### Registro automático
+Mission Complete envia uma vez por resultado. registrationStatus:{submissionId} guarda pending/submitted/failed; a identidade usa aluno, missão, versão e completedAt, como a deduplicação já existente no Apps Script. Resultados submetidos não são reenviados. Falhas ou envios interrompidos por recarga exigem Try registering again. A deduplicação no servidor evita nova linha quando o primeiro envio chegou mas a confirmação se perdeu. Copy Result permanece disponível; registro manual só aparece após falha ou Need manual registration?. O POST continua lendo confirmação JSON (não usa resposta opaca no-cors como sucesso).

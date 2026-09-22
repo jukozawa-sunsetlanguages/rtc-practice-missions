@@ -228,26 +228,49 @@ test('legacy practice arrays are normalized without discarding malformed answers
   assert.throws(()=>context.registrationData({wrongAnswers:'broken JSON'}),/Invalid saved wrongAnswers/);
 });
 
-test('Register Training click calls POST helper and persists success or failure', async () => {
-  const source = await readFile(new URL('../src/main.js', import.meta.url), 'utf8');
-  const start = source.indexOf("app.addEventListener('click', async e => {");
-  const end = source.indexOf("app.addEventListener('play'", start);
-  for (const success of [true, false]) {
-    let handler, calls = 0, saved, loading = false;
-    const result = {missionId:'test'};
-    const pending = new Set();
-    const context = vm.createContext({
-      app: {addEventListener: (event, callback) => { handler = callback; }},
-      mission: {id:'test'}, state: {result}, pendingRegistrations:pending,
-      resultKey: () => 'test', REGISTRATION_ERROR:'fallback', console:{debug(){},error(){}},
-      renderComplete: () => { if(pending.size) loading = true; },
-      submitTrainingLog: async payload => {calls++; assert.equal(payload,result); assert.equal(pending.size,1); return {success,error:'test failure'};},
-      persistRegistration: (mission, value) => {saved=value;}
-    });
-    vm.runInContext(source.slice(start,end),context);
-    await handler({target:{closest:()=>({dataset:{action:'register'}})}});
-    assert.equal(calls,1); assert.equal(loading,true); assert.equal(pending.size,0);
-    assert.equal(saved.registrationStatus,success?'registered':'error');
-    assert.equal(saved.registrationMessage,success?'Training registered successfully ✅':'fallback');
-  }
+
+test('automatic registration persists success across rerenders, reloads and repeated clicks', async () => {
+  const {createRegistration, submissionId} = await import('../src/registration.js');
+  const store=new Map(); let calls=0, resolve;
+  const options={read:key=>store.get(key),write:(key,value)=>store.set(key,value),submit:()=>{calls++;return new Promise(done=>{resolve=done;});}};
+  const service=createRegistration(options);
+  const result={studentName:'Test',missionId:'week-05',missionVersion:'v2',completedAt:'2026-09-22T12:00:00Z'};
+  const first=service.send(result);
+  assert.equal(service.status(result),'pending');
+  assert.equal(service.send(result,true),first);
+  await Promise.resolve(); assert.equal(calls,1);
+  resolve({success:true}); await first;
+  assert.equal(store.get('registrationStatus:'+submissionId(result)),'submitted');
+  await createRegistration(options).send({...result}); assert.equal(calls,1);
+  assert.equal(createRegistration(options).status({...result}),'submitted');
+});
+test('failed and interrupted submissions require explicit retry; new completions submit separately', async () => {
+  const {createRegistration, submissionId} = await import('../src/registration.js');
+  const store=new Map(); let calls=0;
+  const options={read:key=>store.get(key),write:(key,value)=>store.set(key,value),submit:async()=>{calls++;return {success:calls>1};}};
+  const result={studentName:'Test',missionId:'week-04',missionVersion:'v1',completedAt:'2026-09-22T12:00:00Z'};
+  const service=createRegistration(options);
+  assert.equal(await service.send(result),'failed');
+  await service.send(result); assert.equal(calls,1);
+  assert.equal(await service.send(result,true),'submitted'); assert.equal(calls,2);
+  const next={...result,completedAt:'2026-09-22T13:00:00Z'};
+  store.set('registrationStatus:'+submissionId(next),'pending');
+  const reloaded=createRegistration(options);
+  assert.equal(reloaded.status(next),'failed'); await reloaded.send(next); assert.equal(calls,2);
+  await reloaded.send(next,true); assert.equal(calls,3);
+});
+test('Mission Complete starts automatic registration and retry uses the same coordinator', async () => {
+  const source = await readFile(new URL('../src/main.js',import.meta.url),'utf8');
+  const start=source.indexOf('function renderComplete('), end=source.indexOf('function registrationPanel(',start);
+  let calls=0, resolve;
+  const {createRegistration}=await import('../src/registration.js');
+  const store=new Map(); const result={studentName:'Test',missionId:'test',missionVersion:'v1',completedAt:'2026-09-22T12:00:00Z',difficultPhrases:[],totalScore:0,maxScore:0};
+  const registrations=createRegistration({read:k=>store.get(k),write:(k,v)=>store.set(k,v),submit:()=>{calls++;return new Promise(done=>resolve=done);}});
+  const context=vm.createContext({console:{debug(){}},location:{hash:'#result/test'},state:{result},mission:{id:'test'},registrations,submissionId:()=> 'test',resultKey:()=> 'test',justSubmitted:new Set(),manualRegistrations:new Set(),esc:String,app:{innerHTML:''},questionSections:[],REGISTRATION_ERROR:'fallback',SHEETS_WEB_APP_URL:'',persistRegistration(){}});
+  vm.runInContext(source.slice(start,end),context);
+  context.renderComplete(); context.renderComplete();
+  await Promise.resolve(); assert.equal(calls,1); assert.match(context.app.innerHTML,/Submitting training/);
+  resolve({success:true}); await new Promise(done=>setTimeout(done,0));
+  assert.match(context.app.innerHTML,/Training submitted ✅/); assert.match(context.app.innerHTML,/Copy Result/);
+  context.renderComplete(); assert.equal(calls,1);
 });
