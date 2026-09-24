@@ -1,3 +1,4 @@
+import { missionLabel } from './labels.js';
 import { questionSections, summarize } from './scoring.js';
 
 export function localISO(date = new Date()) {
@@ -8,7 +9,7 @@ export function localISO(date = new Date()) {
 }
 
 export function resultText(result) {
-  return `RTC Lab Practice Mission completed ✅\n\nStudent: ${result.studentName}\nMission: ${result.week} — ${result.missionName}\nScore: ${result.totalScore} / ${result.maxScore} (${result.percentage}%)\n\nI practiced:\n${result.practicedPhrases.map(p => '- ' + p).join('\n')}\n\nDifficult phrases:\n${result.difficultPhrases.length ? result.difficultPhrases.map(p => '- ' + p).join('\n') : 'None reported'}\n\nSend this result to your teacher on WhatsApp.`;
+  return `RTC Lab Practice Mission completed ✅\n\nStudent: ${result.studentName}\nMission: ${missionLabel(result.week)} — ${result.missionName}\nScore: ${result.totalScore} / ${result.maxScore} (${result.percentage}%)\n\nI practiced:\n${result.practicedPhrases.map(p => '- ' + p).join('\n')}\n\nDifficult phrases:\n${result.difficultPhrases.length ? result.difficultPhrases.map(p => '- ' + p).join('\n') : 'None reported'}\n\nSend this result to your teacher on WhatsApp.`;
 }
 
 export function buildResult(mission, state, userAgent, date = new Date()) {

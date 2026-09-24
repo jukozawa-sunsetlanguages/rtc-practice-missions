@@ -134,3 +134,6 @@ Verificação de produção: /build-info.json informa commit (COMMIT_REF), conte
 
 ### Registro automático
 Mission Complete envia uma vez por resultado. registrationStatus:{submissionId} guarda pending/submitted/failed; a identidade usa aluno, missão, versão e completedAt, como a deduplicação já existente no Apps Script. Resultados submetidos não são reenviados. Falhas ou envios interrompidos por recarga exigem Try registering again. A deduplicação no servidor evita nova linha quando o primeiro envio chegou mas a confirmação se perdeu. Copy Result permanece disponível; registro manual só aparece após falha ou Need manual registration?. O POST continua lendo confirmação JSON (não usa resposta opaca no-cors como sucesso).
+
+### Travel Review Pack
+Três missões de revisão em Previous Missions: Mission 1 — Travel Survival, Mission 2 — Airport Day e Mission 3 — Hotel Day. Conteúdo editável em src/missions.js, status previous, categoria Travel Review Pack. Incluem roteiro de repetição com pausas, traduções, exercícios, cenários finais e mensagens de conclusão. A missão atual e os IDs antigos foram preservados. O campo interno week e as colunas do Sheets permanecem compatíveis; a interface e o resumo para WhatsApp usam Mission. O fluxo de registro automático não foi alterado.

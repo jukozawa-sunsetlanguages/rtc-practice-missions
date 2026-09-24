@@ -1384,5 +1384,1316 @@ Keep going.`,
         ]
       }
     ]
-  }
+  },
+{
+  "id": "mission-1-travel-survival",
+  "week": "Mission 1",
+  "title": "Travel Survival",
+  "shortTitle": "Travel Survival",
+  "status": "previous",
+  "missionVersion": "v1",
+  "studentName": "Mateus",
+  "category": "Travel Review Pack",
+  "keyPhrase": "Don’t freeze. Ask for help.",
+  "goal": "You are traveling in the United States.\nSometimes you don’t understand.\nSometimes people speak fast.\nYour mission is to ask for help, ask people to repeat, and keep going.",
+  "todayYouPractice": [
+    "asking for help",
+    "saying you don’t understand",
+    "asking people to repeat",
+    "asking people to speak slowly",
+    "asking for water",
+    "asking for the bathroom",
+    "using “Let me think.”"
+  ],
+  "fullAudioUrl": "",
+  "fallbackAudioScript": "This is your Travel Survival review. Repeat out loud.\n\nCan you help me?\n\n[pause]\n\nI need help.\n\n[pause]\n\nI don’t understand.\n\n[pause]\n\nCan you repeat, please?\n\n[pause]\n\nCan you speak slowly, please?\n\n[pause]\n\nLet me think.\n\n[pause]\n\nWhere is the bathroom?\n\n[pause]\n\nCan I have water, please?\n\n[pause]\n\nSorry, I don’t know.\n\n[pause]\n\nThank you.\n\n[pause]",
+  "targetPhrases": [
+    {
+      "english": "Can you help me?",
+      "portuguese": "Você pode me ajudar?"
+    },
+    {
+      "english": "I need help.",
+      "portuguese": "Eu preciso de ajuda."
+    },
+    {
+      "english": "I don’t understand.",
+      "portuguese": "Eu não entendo."
+    },
+    {
+      "english": "Can you repeat, please?",
+      "portuguese": "Você pode repetir, por favor?"
+    },
+    {
+      "english": "Can you speak slowly, please?",
+      "portuguese": "Você pode falar devagar, por favor?"
+    },
+    {
+      "english": "Let me think.",
+      "portuguese": "Me deixe pensar."
+    },
+    {
+      "english": "Where is the bathroom?",
+      "portuguese": "Onde é o banheiro?"
+    },
+    {
+      "english": "Can I have water, please?",
+      "portuguese": "Posso pegar água, por favor?"
+    },
+    {
+      "english": "Sorry, I don’t know.",
+      "portuguese": "Desculpe, eu não sei."
+    },
+    {
+      "english": "Thank you.",
+      "portuguese": "Obrigado."
+    }
+  ],
+  "vocabulary": [
+    {
+      "english": "Can you help me?",
+      "portuguese": "Você pode me ajudar?"
+    },
+    {
+      "english": "I need help.",
+      "portuguese": "Eu preciso de ajuda."
+    },
+    {
+      "english": "I don’t understand.",
+      "portuguese": "Eu não entendo."
+    }
+  ],
+  "recognitionPhrases": [],
+  "chooseMeaningQuestions": [
+    {
+      "prompt": "Can you help me?",
+      "options": [
+        "Você pode me ajudar?",
+        "Você pode pagar para mim?",
+        "Você pode esperar aqui?"
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "I don’t understand.",
+      "options": [
+        "Eu não sei.",
+        "Eu não entendo.",
+        "Eu não quero."
+      ],
+      "answer": 1
+    },
+    {
+      "prompt": "Can you repeat, please?",
+      "options": [
+        "Você pode repetir, por favor?",
+        "Você pode falar comigo?",
+        "Você pode me levar?"
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Can you speak slowly, please?",
+      "options": [
+        "Você pode escrever, por favor?",
+        "Você pode falar devagar, por favor?",
+        "Você pode ajudar minha mãe?"
+      ],
+      "answer": 1
+    },
+    {
+      "prompt": "Let me think.",
+      "options": [
+        "Me deixe tentar.",
+        "Me deixe pensar.",
+        "Me deixe comprar."
+      ],
+      "answer": 1
+    },
+    {
+      "prompt": "Where is the bathroom?",
+      "options": [
+        "Onde é o banheiro?",
+        "Onde é o hotel?",
+        "Onde é o portão?"
+      ],
+      "answer": 0
+    }
+  ],
+  "completePhraseQuestions": [
+    {
+      "prompt": "Can you ______ me?",
+      "answers": [
+        "help"
+      ],
+      "fullPhrase": "Can you help me?"
+    },
+    {
+      "prompt": "I need ______.",
+      "answers": [
+        "help"
+      ],
+      "fullPhrase": "I need help."
+    },
+    {
+      "prompt": "I don’t ______.",
+      "answers": [
+        "understand"
+      ],
+      "fullPhrase": "I don’t understand."
+    },
+    {
+      "prompt": "Can you ______, please?",
+      "answers": [
+        "repeat"
+      ],
+      "fullPhrase": "Can you repeat, please?"
+    },
+    {
+      "prompt": "Can you speak ______, please?",
+      "answers": [
+        "slowly"
+      ],
+      "fullPhrase": "Can you speak slowly, please?"
+    },
+    {
+      "prompt": "Let me ______.",
+      "answers": [
+        "think"
+      ],
+      "fullPhrase": "Let me think."
+    },
+    {
+      "prompt": "Where is the ______?",
+      "answers": [
+        "bathroom"
+      ],
+      "fullPhrase": "Where is the bathroom?"
+    },
+    {
+      "prompt": "Can I have ______, please?",
+      "answers": [
+        "water"
+      ],
+      "fullPhrase": "Can I have water, please?"
+    }
+  ],
+  "typeSentenceQuestions": [
+    {
+      "prompt": "Você pode me ajudar?",
+      "answers": [
+        "Can you help me?",
+        "Can you help me please?",
+        "Can you help me, please?"
+      ]
+    },
+    {
+      "prompt": "Eu preciso de ajuda.",
+      "answers": [
+        "I need help."
+      ]
+    },
+    {
+      "prompt": "Eu não entendo.",
+      "answers": [
+        "I don’t understand.",
+        "I don't understand.",
+        "Sorry, I don't understand."
+      ]
+    },
+    {
+      "prompt": "Você pode repetir, por favor?",
+      "answers": [
+        "Can you repeat, please?",
+        "Repeat, please.",
+        "Can repeat, please?"
+      ]
+    },
+    {
+      "prompt": "Você pode falar devagar, por favor?",
+      "answers": [
+        "Can you speak slowly, please?"
+      ]
+    },
+    {
+      "prompt": "Me deixa pensar.",
+      "answers": [
+        "Let me think."
+      ]
+    },
+    {
+      "prompt": "Onde é o banheiro?",
+      "answers": [
+        "Where is the bathroom?"
+      ]
+    },
+    {
+      "prompt": "Posso pegar água, por favor?",
+      "answers": [
+        "Can I have water, please?",
+        "Can I have a water, please?",
+        "Water, please."
+      ]
+    }
+  ],
+  "finalMissionScenario": "You are in the United States.\nSomeone speaks fast.\nYou don’t understand.\nYou need help and water.",
+  "finalMissionQuestions": [
+    {
+      "prompt": "You need help.",
+      "answers": [
+        "Can you help me?"
+      ]
+    },
+    {
+      "prompt": "You don’t understand.",
+      "answers": [
+        "I don’t understand."
+      ]
+    },
+    {
+      "prompt": "The person speaks fast.",
+      "answers": [
+        "Can you speak slowly, please?"
+      ]
+    },
+    {
+      "prompt": "You need the person to say it again.",
+      "answers": [
+        "Can you repeat, please?"
+      ]
+    },
+    {
+      "prompt": "You need time to think.",
+      "answers": [
+        "Let me think."
+      ]
+    },
+    {
+      "prompt": "You need the bathroom.",
+      "answers": [
+        "Where is the bathroom?"
+      ]
+    },
+    {
+      "prompt": "You want water.",
+      "answers": [
+        "Can I have water, please?"
+      ]
+    }
+  ],
+  "missionCompleteMessage": "Good job.\nYou practiced survival phrases.\n\nRemember:\nDon’t freeze.\nAsk for help.\nAsk people to repeat.\nKeep going.",
+  "mainPhrases": [
+    "Can you help me?",
+    "I don’t understand.",
+    "Can you repeat, please?",
+    "Can you speak slowly, please?",
+    "Let me think."
+  ]
+},
+{
+  "id": "mission-2-airport-day",
+  "week": "Mission 2",
+  "title": "Airport Day",
+  "shortTitle": "Airport Day",
+  "status": "previous",
+  "missionVersion": "v1",
+  "studentName": "Mateus",
+  "category": "Travel Review Pack",
+  "keyPhrase": "Find the gate. Ask for help.",
+  "goal": "You are at the airport.\nYou need to check in, show your passport, find your gate, understand boarding time, and ask for help with luggage.",
+  "todayYouPractice": [
+    "saying where you are going",
+    "saying who you are traveling with",
+    "showing passport and ticket",
+    "asking where the gate is",
+    "asking boarding time",
+    "asking for help with luggage",
+    "understanding basic airport words"
+  ],
+  "fullAudioUrl": "",
+  "fallbackAudioScript": "This is your Airport Day review. Repeat out loud.\n\nI’m going to Orlando.\n\n[pause]\n\nI’m traveling with my parents.\n\n[pause]\n\nThis is my passport.\n\n[pause]\n\nHere is my passport.\n\n[pause]\n\nI have my ticket.\n\n[pause]\n\nI have my boarding pass.\n\n[pause]\n\nI have one bag.\n\n[pause]\n\nI have a carry-on.\n\n[pause]\n\nI don’t have checked luggage.\n\n[pause]\n\nWhere is gate 12?\n\n[pause]\n\nWhat time is boarding?\n\n[pause]\n\nIs this the right gate?\n\n[pause]\n\nI need help with my luggage.\n\n[pause]\n\nMy bag is heavy.\n\n[pause]\n\nCan you help me, please?\n\n[pause]\n\nCan you repeat, please?\n\n[pause]\n\nCan you speak slowly, please?\n\n[pause]\n\nI don’t understand.\n\n[pause]\n\nLet me think.\n\n[pause]",
+  "targetPhrases": [
+    {
+      "english": "I’m going to Orlando.",
+      "portuguese": "Eu estou indo para Orlando."
+    },
+    {
+      "english": "I’m traveling with my parents.",
+      "portuguese": "Estou viajando com meus pais."
+    },
+    {
+      "english": "This is my passport.",
+      "portuguese": "Aqui está meu passaporte."
+    },
+    {
+      "english": "Here is my passport.",
+      "portuguese": "Aqui está meu passaporte."
+    },
+    {
+      "english": "I have my ticket.",
+      "portuguese": "Eu tenho minha passagem."
+    },
+    {
+      "english": "I have my boarding pass.",
+      "portuguese": "Eu tenho meu cartão de embarque."
+    },
+    {
+      "english": "I have one bag.",
+      "portuguese": "Eu tenho uma mala."
+    },
+    {
+      "english": "I have a carry-on.",
+      "portuguese": "Eu tenho uma mala de mão."
+    },
+    {
+      "english": "I don’t have checked luggage.",
+      "portuguese": "Eu não tenho bagagem despachada."
+    },
+    {
+      "english": "Where is gate 12?",
+      "portuguese": "Onde é o portão 12?"
+    },
+    {
+      "english": "What time is boarding?",
+      "portuguese": "Que horas é o embarque?"
+    },
+    {
+      "english": "Is this the right gate?",
+      "portuguese": "Este é o portão certo?"
+    },
+    {
+      "english": "I need help with my luggage.",
+      "portuguese": "Eu preciso de ajuda com minha bagagem."
+    },
+    {
+      "english": "My bag is heavy.",
+      "portuguese": "Minha mala está pesada."
+    },
+    {
+      "english": "Can you help me, please?",
+      "portuguese": "Você pode me ajudar?"
+    },
+    {
+      "english": "Can you repeat, please?",
+      "portuguese": "Você pode repetir, por favor?"
+    },
+    {
+      "english": "Can you speak slowly, please?",
+      "portuguese": "Você pode falar devagar, por favor?"
+    },
+    {
+      "english": "I don’t understand.",
+      "portuguese": "Eu não entendo."
+    },
+    {
+      "english": "Let me think.",
+      "portuguese": "Me deixe pensar."
+    }
+  ],
+  "vocabulary": [
+    {
+      "english": "passport",
+      "portuguese": "passaporte"
+    },
+    {
+      "english": "ticket",
+      "portuguese": "passagem"
+    },
+    {
+      "english": "boarding pass",
+      "portuguese": "cartão de embarque"
+    },
+    {
+      "english": "gate",
+      "portuguese": "portão"
+    },
+    {
+      "english": "luggage",
+      "portuguese": "bagagem"
+    },
+    {
+      "english": "bag",
+      "portuguese": "mala / bolsa"
+    },
+    {
+      "english": "suitcase",
+      "portuguese": "mala"
+    },
+    {
+      "english": "carry-on",
+      "portuguese": "mala de mão"
+    },
+    {
+      "english": "flight",
+      "portuguese": "voo"
+    },
+    {
+      "english": "help",
+      "portuguese": "ajuda"
+    },
+    {
+      "english": "parents",
+      "portuguese": "pais"
+    }
+  ],
+  "recognitionPhrases": [
+    {
+      "english": "check-in counter",
+      "portuguese": "balcão de check-in"
+    },
+    {
+      "english": "security",
+      "portuguese": "segurança"
+    },
+    {
+      "english": "boarding",
+      "portuguese": "embarque"
+    },
+    {
+      "english": "departure",
+      "portuguese": "partida"
+    },
+    {
+      "english": "arrival",
+      "portuguese": "chegada"
+    },
+    {
+      "english": "seat",
+      "portuguese": "assento"
+    },
+    {
+      "english": "row",
+      "portuguese": "fileira"
+    },
+    {
+      "english": "aisle",
+      "portuguese": "corredor"
+    },
+    {
+      "english": "window seat",
+      "portuguese": "assento na janela"
+    },
+    {
+      "english": "boarding time",
+      "portuguese": "horário do embarque"
+    },
+    {
+      "english": "flight number",
+      "portuguese": "número do voo"
+    },
+    {
+      "english": "destination",
+      "portuguese": "destino"
+    },
+    {
+      "english": "checked bag",
+      "portuguese": "mala despachada"
+    },
+    {
+      "english": "overhead bin",
+      "portuguese": "compartimento superior"
+    },
+    {
+      "english": "line",
+      "portuguese": "fila"
+    },
+    {
+      "english": "ID",
+      "portuguese": "documento de identificação"
+    }
+  ],
+  "chooseMeaningQuestions": [
+    {
+      "prompt": "Passport",
+      "options": [
+        "Passaporte",
+        "Mala",
+        "Portão"
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Boarding pass",
+      "options": [
+        "Cartão de embarque",
+        "Número do hotel",
+        "Conta do restaurante"
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Gate",
+      "options": [
+        "Portão",
+        "Assento",
+        "Mala"
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Luggage",
+      "options": [
+        "Bagagem",
+        "Passaporte",
+        "Bebida"
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Carry-on",
+      "options": [
+        "Mala de mão",
+        "Mala despachada",
+        "Banheiro"
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Checked bag",
+      "options": [
+        "Mala despachada",
+        "Mala de mão",
+        "Sacola de loja"
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Where is gate 12?",
+      "options": [
+        "Onde é o portão 12?",
+        "Onde é o assento 12?",
+        "Onde é o hotel 12?"
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "What time is boarding?",
+      "options": [
+        "Que horas é o embarque?",
+        "Que horas é o café?",
+        "Que horas é o check-out?"
+      ],
+      "answer": 0
+    }
+  ],
+  "completePhraseQuestions": [
+    {
+      "prompt": "I’m going to ______.",
+      "answers": [
+        "Orlando"
+      ],
+      "fullPhrase": "I’m going to Orlando."
+    },
+    {
+      "prompt": "I’m traveling with my ______.",
+      "answers": [
+        "parents"
+      ],
+      "fullPhrase": "I’m traveling with my parents."
+    },
+    {
+      "prompt": "Here is my ______.",
+      "answers": [
+        "passport"
+      ],
+      "fullPhrase": "Here is my passport."
+    },
+    {
+      "prompt": "I have my boarding ______.",
+      "answers": [
+        "pass"
+      ],
+      "fullPhrase": "I have my boarding pass."
+    },
+    {
+      "prompt": "I have one ______.",
+      "answers": [
+        "bag"
+      ],
+      "fullPhrase": "I have one bag."
+    },
+    {
+      "prompt": "I have a ______.",
+      "answers": [
+        "carry-on"
+      ],
+      "fullPhrase": "I have a carry-on."
+    },
+    {
+      "prompt": "Where is ______ 12?",
+      "answers": [
+        "gate"
+      ],
+      "fullPhrase": "Where is gate 12?"
+    },
+    {
+      "prompt": "What time is ______?",
+      "answers": [
+        "boarding"
+      ],
+      "fullPhrase": "What time is boarding?"
+    },
+    {
+      "prompt": "Is this the right ______?",
+      "answers": [
+        "gate"
+      ],
+      "fullPhrase": "Is this the right gate?"
+    },
+    {
+      "prompt": "I need help with my ______.",
+      "answers": [
+        "luggage"
+      ],
+      "fullPhrase": "I need help with my luggage."
+    }
+  ],
+  "typeSentenceQuestions": [
+    {
+      "prompt": "Eu estou indo para Orlando.",
+      "answers": [
+        "I’m going to Orlando.",
+        "I am going to Orlando."
+      ]
+    },
+    {
+      "prompt": "Estou viajando com meus pais.",
+      "answers": [
+        "I’m traveling with my parents.",
+        "I am traveling with my parents."
+      ]
+    },
+    {
+      "prompt": "Aqui está meu passaporte.",
+      "answers": [
+        "Here is my passport.",
+        "This is my passport."
+      ]
+    },
+    {
+      "prompt": "Eu tenho meu cartão de embarque.",
+      "answers": [
+        "I have my boarding pass."
+      ]
+    },
+    {
+      "prompt": "Eu tenho uma mala de mão.",
+      "answers": [
+        "I have a carry-on.",
+        "I have a carry-on bag."
+      ]
+    },
+    {
+      "prompt": "Onde é o portão 12?",
+      "answers": [
+        "Where is gate 12?",
+        "Where is the gate 12?"
+      ]
+    },
+    {
+      "prompt": "Que horas é o embarque?",
+      "answers": [
+        "What time is boarding?"
+      ]
+    },
+    {
+      "prompt": "Este é o portão certo?",
+      "answers": [
+        "Is this the right gate?"
+      ]
+    },
+    {
+      "prompt": "Eu preciso de ajuda com minha bagagem.",
+      "answers": [
+        "I need help with my luggage."
+      ]
+    },
+    {
+      "prompt": "Minha mala está pesada.",
+      "answers": [
+        "My bag is heavy."
+      ]
+    }
+  ],
+  "finalMissionScenario": "You are at the airport.\nYou need to check in and find your gate.\nAnswer the airport worker.",
+  "finalMissionQuestions": [
+    {
+      "prompt": "Where are you going today?",
+      "answers": [
+        "I’m going to Orlando."
+      ]
+    },
+    {
+      "prompt": "Who are you traveling with?",
+      "answers": [
+        "I’m traveling with my parents."
+      ]
+    },
+    {
+      "prompt": "Can I see your passport?",
+      "answers": [
+        "Here is my passport."
+      ]
+    },
+    {
+      "prompt": "Do you have your boarding pass?",
+      "answers": [
+        "Yes. I have my boarding pass.",
+        "I have my boarding pass."
+      ]
+    },
+    {
+      "prompt": "Do you have checked luggage?",
+      "answers": [
+        "I don’t have checked luggage.",
+        "No, I don’t."
+      ]
+    },
+    {
+      "prompt": "You need gate 12.",
+      "answers": [
+        "Where is gate 12?"
+      ]
+    },
+    {
+      "prompt": "You want to know boarding time.",
+      "answers": [
+        "What time is boarding?"
+      ]
+    },
+    {
+      "prompt": "You want to confirm the gate.",
+      "answers": [
+        "Is this the right gate?"
+      ]
+    },
+    {
+      "prompt": "Your bag is heavy.",
+      "answers": [
+        "I need help with my luggage.",
+        "Can you help me with my luggage?"
+      ]
+    },
+    {
+      "prompt": "The person speaks fast.",
+      "answers": [
+        "Can you speak slowly, please?"
+      ]
+    }
+  ],
+  "missionCompleteMessage": "Good job.\nYou practiced airport survival.\n\nRemember:\nShow your passport.\nFind the gate.\nAsk for boarding time.\nAsk for help.\nRecover when confused.",
+  "mainPhrases": [
+    "I’m going to Orlando.",
+    "Here is my passport.",
+    "Where is gate 12?",
+    "What time is boarding?",
+    "Is this the right gate?",
+    "I need help with my luggage."
+  ]
+},
+{
+  "id": "mission-3-hotel-day",
+  "week": "Mission 3",
+  "title": "Hotel Day",
+  "shortTitle": "Hotel Day",
+  "status": "previous",
+  "missionVersion": "v1",
+  "studentName": "Mateus",
+  "category": "Travel Review Pack",
+  "keyPhrase": "Check in. Ask for what you need.",
+  "goal": "You are at the hotel.\nYou need to check in, show your passport, ask for your room number, ask about Wi-Fi, ask for water or a towel, and explain simple problems.",
+  "todayYouPractice": [
+    "checking in",
+    "saying you have a reservation",
+    "showing passport",
+    "asking for room number",
+    "asking for elevator and Wi-Fi",
+    "asking for water and towel",
+    "saying something doesn’t work",
+    "asking for help"
+  ],
+  "fullAudioUrl": "",
+  "fallbackAudioScript": "This is your Hotel Day review. Repeat out loud.\n\nI have a reservation.\n\n[pause]\n\nMy name is Mateus.\n\n[pause]\n\nHere is my passport.\n\n[pause]\n\nWhat is my room number?\n\n[pause]\n\nWhere is the elevator?\n\n[pause]\n\nWhat is the Wi-Fi password?\n\n[pause]\n\nCan I have water, please?\n\n[pause]\n\nCan I have a towel, please?\n\n[pause]\n\nI need help.\n\n[pause]\n\nI have a problem.\n\n[pause]\n\nThe Wi-Fi doesn’t work.\n\n[pause]\n\nThe shower doesn’t work.\n\n[pause]\n\nCan you help me, please?\n\n[pause]\n\nCan you repeat, please?\n\n[pause]\n\nCan you speak slowly, please?\n\n[pause]\n\nSorry, I don’t know.\n\n[pause]\n\nI don’t understand.\n\n[pause]\n\nLet me think.\n\n[pause]",
+  "targetPhrases": [
+    {
+      "english": "I have a reservation.",
+      "portuguese": "Eu tenho uma reserva."
+    },
+    {
+      "english": "My name is Mateus.",
+      "portuguese": "Meu nome é Mateus."
+    },
+    {
+      "english": "Here is my passport.",
+      "portuguese": "Aqui está meu passaporte."
+    },
+    {
+      "english": "What is my room number?",
+      "portuguese": "Qual é o número do meu quarto?"
+    },
+    {
+      "english": "Where is the elevator?",
+      "portuguese": "Onde é o elevador?"
+    },
+    {
+      "english": "What is the Wi-Fi password?",
+      "portuguese": "Qual é a senha do Wi-Fi?"
+    },
+    {
+      "english": "Can I have water, please?",
+      "portuguese": "Posso pegar água, por favor?"
+    },
+    {
+      "english": "Can I have a towel, please?",
+      "portuguese": "Posso pegar uma toalha, por favor?"
+    },
+    {
+      "english": "I need help.",
+      "portuguese": "Eu preciso de ajuda."
+    },
+    {
+      "english": "I have a problem.",
+      "portuguese": "Eu tenho um problema."
+    },
+    {
+      "english": "The Wi-Fi doesn’t work.",
+      "portuguese": "O Wi-Fi não funciona."
+    },
+    {
+      "english": "The shower doesn’t work.",
+      "portuguese": "O chuveiro não funciona."
+    },
+    {
+      "english": "Can you help me, please?",
+      "portuguese": "Você pode me ajudar, por favor?"
+    },
+    {
+      "english": "Can you repeat, please?",
+      "portuguese": "Você pode repetir, por favor?"
+    },
+    {
+      "english": "Can you speak slowly, please?",
+      "portuguese": "Você pode falar devagar, por favor?"
+    },
+    {
+      "english": "Sorry, I don’t know.",
+      "portuguese": "Desculpe, eu não sei."
+    },
+    {
+      "english": "I don’t understand.",
+      "portuguese": "Eu não entendo."
+    },
+    {
+      "english": "Let me think.",
+      "portuguese": "Me deixe pensar."
+    }
+  ],
+  "vocabulary": [
+    {
+      "english": "hotel",
+      "portuguese": "hotel"
+    },
+    {
+      "english": "reservation",
+      "portuguese": "reserva"
+    },
+    {
+      "english": "room",
+      "portuguese": "quarto"
+    },
+    {
+      "english": "room number",
+      "portuguese": "número do quarto"
+    },
+    {
+      "english": "key",
+      "portuguese": "chave"
+    },
+    {
+      "english": "passport",
+      "portuguese": "passaporte"
+    },
+    {
+      "english": "Wi-Fi",
+      "portuguese": "Wi-Fi"
+    },
+    {
+      "english": "water",
+      "portuguese": "água"
+    },
+    {
+      "english": "towel",
+      "portuguese": "toalha"
+    },
+    {
+      "english": "bathroom",
+      "portuguese": "banheiro"
+    },
+    {
+      "english": "problem",
+      "portuguese": "problema"
+    },
+    {
+      "english": "help",
+      "portuguese": "ajuda"
+    },
+    {
+      "english": "elevator",
+      "portuguese": "elevador"
+    },
+    {
+      "english": "breakfast",
+      "portuguese": "café da manhã"
+    }
+  ],
+  "recognitionPhrases": [
+    {
+      "english": "front desk",
+      "portuguese": "recepção"
+    },
+    {
+      "english": "check-in",
+      "portuguese": "entrada / check-in"
+    },
+    {
+      "english": "check-out",
+      "portuguese": "saída / check-out"
+    },
+    {
+      "english": "floor",
+      "portuguese": "andar"
+    },
+    {
+      "english": "lobby",
+      "portuguese": "saguão"
+    },
+    {
+      "english": "card key",
+      "portuguese": "cartão-chave"
+    },
+    {
+      "english": "shower",
+      "portuguese": "chuveiro"
+    },
+    {
+      "english": "air conditioning",
+      "portuguese": "ar-condicionado"
+    },
+    {
+      "english": "remote control",
+      "portuguese": "controle remoto"
+    },
+    {
+      "english": "second floor",
+      "portuguese": "segundo andar"
+    },
+    {
+      "english": "breakfast time",
+      "portuguese": "horário do café da manhã"
+    }
+  ],
+  "chooseMeaningQuestions": [
+    {
+      "prompt": "I have a reservation.",
+      "options": [
+        "Eu tenho uma reserva.",
+        "Eu tenho uma mala.",
+        "Eu tenho uma conta."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Room number",
+      "options": [
+        "Número do quarto",
+        "Número do portão",
+        "Número do voo"
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Where is the elevator?",
+      "options": [
+        "Onde é o elevador?",
+        "Onde é o banheiro?",
+        "Onde é o restaurante?"
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Wi-Fi password",
+      "options": [
+        "Senha do Wi-Fi",
+        "Chave do quarto",
+        "Conta do restaurante"
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Can I have a towel, please?",
+      "options": [
+        "Posso pegar uma toalha, por favor?",
+        "Posso pegar uma passagem, por favor?",
+        "Posso pegar uma sobremesa, por favor?"
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "The shower doesn’t work.",
+      "options": [
+        "O chuveiro não funciona.",
+        "O elevador não funciona.",
+        "O cartão não funciona."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Breakfast",
+      "options": [
+        "Café da manhã",
+        "Almoço",
+        "Jantar"
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Check-out is at 11.",
+      "options": [
+        "O check-out é às 11.",
+        "O café é às 11.",
+        "O embarque é às 11."
+      ],
+      "answer": 0
+    }
+  ],
+  "completePhraseQuestions": [
+    {
+      "prompt": "I have a ______.",
+      "answers": [
+        "reservation"
+      ],
+      "fullPhrase": "I have a reservation."
+    },
+    {
+      "prompt": "My name is ______.",
+      "answers": [
+        "Mateus"
+      ],
+      "fullPhrase": "My name is Mateus."
+    },
+    {
+      "prompt": "Here is my ______.",
+      "answers": [
+        "passport"
+      ],
+      "fullPhrase": "Here is my passport."
+    },
+    {
+      "prompt": "What is my room ______?",
+      "answers": [
+        "number"
+      ],
+      "fullPhrase": "What is my room number?"
+    },
+    {
+      "prompt": "Where is the ______?",
+      "answers": [
+        "elevator"
+      ],
+      "fullPhrase": "Where is the elevator?"
+    },
+    {
+      "prompt": "What is the Wi-Fi ______?",
+      "answers": [
+        "password"
+      ],
+      "fullPhrase": "What is the Wi-Fi password?"
+    },
+    {
+      "prompt": "Can I have a ______, please?",
+      "answers": [
+        "towel"
+      ],
+      "fullPhrase": "Can I have a towel, please?"
+    },
+    {
+      "prompt": "I have a ______.",
+      "answers": [
+        "problem"
+      ],
+      "fullPhrase": "I have a problem."
+    },
+    {
+      "prompt": "The Wi-Fi doesn’t ______.",
+      "answers": [
+        "work"
+      ],
+      "fullPhrase": "The Wi-Fi doesn’t work."
+    },
+    {
+      "prompt": "The shower doesn’t ______.",
+      "answers": [
+        "work"
+      ],
+      "fullPhrase": "The shower doesn’t work."
+    }
+  ],
+  "typeSentenceQuestions": [
+    {
+      "prompt": "Eu tenho uma reserva.",
+      "answers": [
+        "I have a reservation."
+      ]
+    },
+    {
+      "prompt": "Meu nome é Mateus.",
+      "answers": [
+        "My name is Mateus."
+      ]
+    },
+    {
+      "prompt": "Aqui está meu passaporte.",
+      "answers": [
+        "Here is my passport."
+      ]
+    },
+    {
+      "prompt": "Qual é o número do meu quarto?",
+      "answers": [
+        "What is my room number?",
+        "What’s my room number?"
+      ]
+    },
+    {
+      "prompt": "Onde é o elevador?",
+      "answers": [
+        "Where is the elevator?"
+      ]
+    },
+    {
+      "prompt": "Qual é a senha do Wi-Fi?",
+      "answers": [
+        "What is the Wi-Fi password?",
+        "What’s the Wi-Fi password?"
+      ]
+    },
+    {
+      "prompt": "Posso pegar uma toalha, por favor?",
+      "answers": [
+        "Can I have a towel, please?"
+      ]
+    },
+    {
+      "prompt": "Eu tenho um problema.",
+      "answers": [
+        "I have a problem."
+      ]
+    },
+    {
+      "prompt": "O Wi-Fi não funciona.",
+      "answers": [
+        "The Wi-Fi doesn’t work."
+      ]
+    },
+    {
+      "prompt": "O chuveiro não funciona.",
+      "answers": [
+        "The shower doesn’t work."
+      ]
+    },
+    {
+      "prompt": "Você pode me ajudar, por favor?",
+      "answers": [
+        "Can you help me, please?"
+      ]
+    }
+  ],
+  "finalMissionScenario": "You are at the hotel front desk.\nYou need to check in, ask for information, and explain one problem.",
+  "finalMissionQuestions": [
+    {
+      "prompt": "Hello. Do you have a reservation?",
+      "answers": [
+        "Yes. I have a reservation."
+      ]
+    },
+    {
+      "prompt": "What is your name?",
+      "answers": [
+        "My name is Mateus."
+      ]
+    },
+    {
+      "prompt": "Can I see your passport?",
+      "answers": [
+        "Here is my passport."
+      ]
+    },
+    {
+      "prompt": "You need your room number.",
+      "answers": [
+        "What is my room number?"
+      ]
+    },
+    {
+      "prompt": "You need the elevator.",
+      "answers": [
+        "Where is the elevator?"
+      ]
+    },
+    {
+      "prompt": "You need Wi-Fi.",
+      "answers": [
+        "What is the Wi-Fi password?"
+      ]
+    },
+    {
+      "prompt": "You need a towel.",
+      "answers": [
+        "Can I have a towel, please?"
+      ]
+    },
+    {
+      "prompt": "The Wi-Fi has a problem.",
+      "answers": [
+        "The Wi-Fi doesn’t work."
+      ]
+    },
+    {
+      "prompt": "The shower has a problem.",
+      "answers": [
+        "The shower doesn’t work."
+      ]
+    },
+    {
+      "prompt": "You need help.",
+      "answers": [
+        "Can you help me, please?"
+      ]
+    },
+    {
+      "prompt": "The person speaks fast.",
+      "answers": [
+        "Can you speak slowly, please?"
+      ]
+    },
+    {
+      "prompt": "You don’t understand.",
+      "answers": [
+        "I don’t understand.",
+        "Sorry, I don’t understand."
+      ]
+    }
+  ],
+  "missionCompleteMessage": "Good job.\nYou practiced hotel survival.\n\nRemember:\nCheck in.\nAsk for your room number.\nAsk for Wi-Fi.\nAsk for what you need.\nExplain simple problems.\nRecover when confused.",
+  "mainPhrases": [
+    "I have a reservation.",
+    "Here is my passport.",
+    "What is my room number?",
+    "Where is the elevator?",
+    "What is the Wi-Fi password?",
+    "Can I have a towel, please?",
+    "The Wi-Fi doesn’t work.",
+    "The shower doesn’t work."
+  ]
+}
 ];

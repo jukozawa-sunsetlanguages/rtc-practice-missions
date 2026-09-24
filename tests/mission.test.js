@@ -266,11 +266,23 @@ test('Mission Complete starts automatic registration and retry uses the same coo
   const {createRegistration}=await import('../src/registration.js');
   const store=new Map(); const result={studentName:'Test',missionId:'test',missionVersion:'v1',completedAt:'2026-09-22T12:00:00Z',difficultPhrases:[],totalScore:0,maxScore:0};
   const registrations=createRegistration({read:k=>store.get(k),write:(k,v)=>store.set(k,v),submit:()=>{calls++;return new Promise(done=>resolve=done);}});
-  const context=vm.createContext({console:{debug(){}},location:{hash:'#result/test'},state:{result},mission:{id:'test'},registrations,submissionId:()=> 'test',resultKey:()=> 'test',justSubmitted:new Set(),manualRegistrations:new Set(),esc:String,app:{innerHTML:''},questionSections:[],REGISTRATION_ERROR:'fallback',SHEETS_WEB_APP_URL:'',persistRegistration(){}});
+  const context=vm.createContext({missionLabel: value => String(value ?? '').replace(/Week/g,'Mission'),console:{debug(){}},location:{hash:'#result/test'},state:{result},mission:{id:'test'},registrations,submissionId:()=> 'test',resultKey:()=> 'test',justSubmitted:new Set(),manualRegistrations:new Set(),esc:String,app:{innerHTML:''},questionSections:[],REGISTRATION_ERROR:'fallback',SHEETS_WEB_APP_URL:'',persistRegistration(){}});
   vm.runInContext(source.slice(start,end),context);
   context.renderComplete(); context.renderComplete();
   await Promise.resolve(); assert.equal(calls,1); assert.match(context.app.innerHTML,/Submitting training/);
   resolve({success:true}); await new Promise(done=>setTimeout(done,0));
   assert.match(context.app.innerHTML,/Training submitted ✅/); assert.match(context.app.innerHTML,/Copy Result/);
   context.renderComplete(); assert.equal(calls,1);
+});
+
+test('Travel Review Pack has complete previous missions and accepted answers', () => {
+ const reviews=missions.filter(m=>m.category==='Travel Review Pack');
+ assert.equal(reviews.length,3);
+ assert.deepEqual(reviews.map(m=>questionSections.map(s=>m[s+'Questions'].length)),[[6,8,8,7],[8,10,10,10],[8,10,11,12]]);
+ assert.equal(missions.find(m=>m.status==='current').id,'week-05-transportation');
+ for(const m of reviews) {
+  assert.equal(m.status,'previous'); assert.ok(m.finalMissionScenario); assert.ok(m.missionCompleteMessage); assert.ok(m.mainPhrases.length);
+  for(const section of questionSections.slice(1)) for(const q of m[section+'Questions']) for(const answer of q.answers) assert.equal(evaluate(answer,q.answers),'correct');
+ }
+ assert.ok(reviews[0].typeSentenceQuestions[3].answers.includes('Can repeat, please?'));
 });
