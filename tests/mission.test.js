@@ -286,3 +286,21 @@ test('Travel Review Pack has complete previous missions and accepted answers', (
  }
  assert.ok(reviews[0].typeSentenceQuestions[3].answers.includes('Can repeat, please?'));
 });
+
+test('completion resets saved practice while preserving result and submission screen', async () => {
+ const source=await readFile(new URL('../src/main.js',import.meta.url),'utf8');
+ const store=new Map(); const m={id:'test',missionVersion:'v1'};
+ const result={missionId:'test',completedAt:'2026-09-29T12:00:00Z'};
+ let rendered=0;
+ const ctx=vm.createContext({questionSections,read:k=>store.get(k),write:(k,v)=>store.set(k,v),key:()=> 'progress',mission:m,state:{step:6},navigator:{userAgent:'test'},buildResult:()=>result,renderComplete:()=>rendered++,focusTop(){}});
+ vm.runInContext(source.slice(source.indexOf('function fresh()'), source.indexOf('function save()')),ctx);
+ vm.runInContext(source.slice(source.indexOf('function finish()'),source.indexOf('function renderComplete(')),ctx);
+ ctx.finish();
+ assert.equal(rendered,1); assert.equal(ctx.state.result,result); assert.equal(ctx.state.step,7);
+ assert.equal(store.get('rtc:last:test'),result); assert.equal(store.get('progress').step,0);
+ assert.equal(ctx.load(m).completedAt,null);
+ store.set('progress',{step:7,completedAt:result.completedAt,result});
+ assert.equal(ctx.load(m).step,0);
+ store.set('progress',{step:3,answers:{},repeat:[],completedAt:null});
+ assert.equal(ctx.load(m).step,3);
+});

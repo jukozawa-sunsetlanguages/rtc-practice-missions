@@ -39,6 +39,8 @@ function audioSettings() {
 function fresh() { return { step: 0, listenedFullAudio: false, repeatedOutLoud: false, difficultAudioPhrase: '', repeat: [], answers: Object.fromEntries(questionSections.map(s => [s, {}])), drafts: {}, completedAt: null, result: null }; }
 function load(m) {
   const saved = read(key(m));
+  // Completed attempts remain in Last Result; opening the mission starts a new practice.
+  if (saved?.completedAt && saved.result) return fresh();
   if (!saved || !Number.isInteger(saved.step) || saved.step < 0 || saved.step > 7 || !saved.answers || !Array.isArray(saved.repeat) || (saved.step === 7 && (!saved.completedAt || !saved.result))) return fresh();
   return { ...fresh(), ...saved, drafts: saved.drafts || {}, answers: { ...fresh().answers, ...saved.answers } };
 }
@@ -150,7 +152,9 @@ function updateContinue() { const button = app.querySelector('[data-action="next
 function finish() {
   state.result = buildResult(mission, state, navigator.userAgent);
   state.completedAt = state.result.completedAt; state.step = 7;
-  save(); write(`rtc:last:${mission.id}`, state.result); renderComplete(); focusTop();
+  write(`rtc:last:${mission.id}`, state.result);
+  write(key(mission), fresh());
+  renderComplete(); focusTop();
 }
 function renderComplete(saved = location.hash.startsWith('#result/')) {
   const r = state.result;

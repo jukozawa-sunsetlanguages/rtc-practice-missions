@@ -137,3 +137,5 @@ Mission Complete envia uma vez por resultado. registrationStatus:{submissionId} 
 
 ### Travel Review Pack
 Três missões de revisão em Previous Missions: Mission 1 — Travel Survival, Mission 2 — Airport Day e Mission 3 — Hotel Day. Conteúdo editável em src/missions.js, status previous, categoria Travel Review Pack. Incluem roteiro de repetição com pausas, traduções, exercícios, cenários finais e mensagens de conclusão. A missão atual e os IDs antigos foram preservados. O campo interno week e as colunas do Sheets permanecem compatíveis; a interface e o resumo para WhatsApp usam Mission. O fluxo de registro automático não foi alterado.
+
+Após concluir, a tentativa fica em My Last Result e a missão fica pronta para começar novamente no briefing. A tela Mission Complete e o envio automático continuam ativos. Treinos ainda não concluídos continuam de onde pararam.
