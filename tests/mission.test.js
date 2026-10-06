@@ -1,3 +1,5 @@
+import { expressionChunks, chunkAnswer } from '../src/build.js';
+import { preferredVoice } from '../src/audio.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
@@ -390,7 +392,7 @@ async function appHarness(saved = []) {
   const handlers = {}, store = new Map(saved), requests = [], clipboard = [];
   const control = {focus(){},matches:()=>true,disabled:false,setAttribute(){},classList:{add(){},remove(){}}};
   const app = {innerHTML:'',focus(){},querySelector:()=>control,querySelectorAll:()=>[],addEventListener:(name,fn)=>handlers[name]=fn};
-  const context = vm.createContext({ ...registration,...audio,...results,...labels,phases,shuffledIndices,starText,completionFeedback,addReward,rewardSummary,missions,evaluate,questionSections,acceptedAnswers,normalize,reviewItems,uniquePhrases,
+  const context = vm.createContext({ ...registration,...audio,...results,...labels,phases,shuffledIndices,starText,completionFeedback,addReward,rewardSummary,expressionChunks,chunkAnswer,missions,evaluate,questionSections,acceptedAnswers,normalize,reviewItems,uniquePhrases,
     console:{debug(){}},document:{querySelector:selector=>selector==='#app'?app:control},location:{hash:'#home'},navigator:{userAgent:'isolated-test',clipboard:{writeText:async text=>clipboard.push(text)}},
     window:{addEventListener(){},scrollTo(){}},localStorage:{getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v)},
     setTimeout:()=>0,clearTimeout(){},submitTrainingLog:async r=>{requests.push(JSON.parse(JSON.stringify(r)));return {success:true};},REGISTRATION_ERROR:'fallback',registrationData:JSON.stringify,SHEETS_WEB_APP_URL:''
@@ -403,7 +405,7 @@ async function appHarness(saved = []) {
     const form={dataset:{section,question:String(index)},elements:{answer:input}};
     handlers.submit({preventDefault(){},target:{closest:()=>form}});
   };
-  return {context,app,store,requests,clipboard,click,submit};
+  return {context,app,store,requests,clipboard,click,submit,handlers};
 }
 
 test('actual app handlers preserve first scores through hard mode, retry, completion and review', async () => {
@@ -471,9 +473,67 @@ test('old partial progress resumes; phrase practice needs one confirmation and t
   assert.match(h.app.innerHTML,/3 \/ 16 phrases/);assert.match(h.app.innerHTML,/<summary>Show meaning/);
   await h.click('said');
   assert.deepEqual(JSON.parse(h.store.get(`rtc:progress:${m.id}:${m.missionVersion}`)).repeat,[0,1,2]);
-  h.context.location.hash='#mission/mission-6-shopping-buying';h.context.route();
+  h.context.location.hash='#mission/week-04-food-ordering';h.context.route();
   vm.runInContext('state.step=4;renderMission()',h.context);
   assert.match(h.app.innerHTML,/<form id="answer-form"/);
   assert.doesNotMatch(h.app.innerHTML,/Hard mode/);
-  h.submit('completePhrase',0,'gift');assert.match(h.app.innerHTML,/Correct ✓/);
+  h.submit('completePhrase',0,missions.find(m=>m.id==='week-04-food-ordering').completePhraseQuestions[0].answers[0]);assert.match(h.app.innerHTML,/Correct ✓/);
+});
+
+test('natural American voices outrank legacy voices, with a safe fallback', () => {
+  const old = {name:'Microsoft David',lang:'en-US'};
+  const natural = {name:'Microsoft Andrew Online (Natural)',lang:'en-US'};
+  const google = {name:'Google US English',lang:'en-US'};
+  assert.equal(preferredVoice([old,natural]),natural);
+  assert.equal(preferredVoice([old,google]),google);
+  assert.equal(preferredVoice([old]),old);
+  assert.equal(preferredVoice([]),null);
+});
+
+test('chunks preserve accepted sentences, duplicate tokens and reject incomplete selections', () => {
+  for (const mission of missions) for (const q of mission.typeSentenceQuestions) {
+    const chunks=expressionChunks(q);
+    if(chunks.length) assert.equal(evaluate(chunkAnswer(chunks,chunks.map((_,i)=>i)),q),'correct');
+  }
+  assert.equal(chunkAnswer(['I','need','help'],[0,1]),null);
+  assert.equal(chunkAnswer(['I','need','help'],[0,0,1]),null);
+  assert.equal(chunkAnswer(['go','go'],[0,1]),'go go');
+  assert.deepEqual(expressionChunks({answers:['I need help.'],chunks:['Wrong','sentence']}),[]);
+});
+
+test('Build chunk retry keeps first score and resumes selected chunks', async () => {
+  const h=await appHarness(), m=missions.find(m=>m.status==='current');
+  h.context.location.hash='#mission/'+m.id;h.context.route();
+  vm.runInContext('state.step=5;renderMission()',h.context);
+  assert.match(h.app.innerHTML,/Check order/);
+  const chunks=expressionChunks(m.typeSentenceQuestions[0]);
+  for(let i=chunks.length-1;i>=0;i--) await h.click('add-chunk',{index:String(i)});
+  await h.click('check-chunks');
+  assert.match(h.app.innerHTML,/Correct version/);
+  await h.click('retry',{section:'typeSentence',index:'0'});
+  await h.click('add-chunk',{index:'0'});
+  const reload=await appHarness([...h.store]);reload.context.location.hash='#mission/'+m.id;reload.context.route();
+  assert.equal(vm.runInContext('state.chunkSelections.typeSentence0.length',reload.context),1);
+  for(let i=1;i<chunks.length;i++) await reload.click('add-chunk',{index:String(i)});
+  await reload.click('check-chunks');
+  assert.match(reload.app.innerHTML,/Correct ✓/);
+  assert.equal(vm.runInContext('state.answers.typeSentence[0].attempts[0].correct',reload.context),false);
+  assert.equal(vm.runInContext('state.answers.typeSentence[0].attempts.length',reload.context),2);
+});
+
+
+test('audio checkbox persists independently and old typed answers remain visible', async () => {
+  const h=await appHarness(), m=missions.find(m=>m.status==='current');
+  h.context.location.hash='#mission/'+m.id;h.context.route();
+  vm.runInContext('state.step=1;renderMission()',h.context);
+  assert.match(h.app.innerHTML,/type="checkbox" id="listenedFullAudio"/);
+  h.handlers.change({target:{id:'listenedFullAudio',checked:true}});
+  assert.equal(vm.runInContext('state.listenedFullAudio',h.context),true);
+  assert.equal(vm.runInContext('state.repeatedOutLoud',h.context),false);
+  h.handlers.change({target:{id:'listenedFullAudio',checked:false}});
+  assert.equal(vm.runInContext('state.listenedFullAudio',h.context),false);
+  vm.runInContext('state.step=5;renderMission()',h.context);
+  h.submit('typeSentence',0,m.typeSentenceQuestions[0].answers[0]);
+  assert.match(h.app.innerHTML,/id="answer-form"/);
+  assert.doesNotMatch(h.app.innerHTML,/Build your sentence here/);
 });

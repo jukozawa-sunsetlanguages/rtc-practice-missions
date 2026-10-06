@@ -187,7 +187,7 @@ As chaves `rtc:progress:<id>:<version>` e `rtc:last:<id>` foram mantidas. O prog
 
 ### Limites deliberados
 
-Blocos para montar sentenças, bônus por repetições/hard mode/revisão, badges e analytics adicionais foram adiados. A versão mantém produção digitada confiável. Não há botões fictícios ou recursos TODO. Nenhuma dependência foi adicionada.
+Bônus por repetições/hard mode/revisão, badges e analytics adicionais foram adiados. A digitação permanece disponível em Hard mode e na Final Mission. Não há botões fictícios ou recursos TODO. Nenhuma dependência foi adicionada.
 
 `src/sheets.js`, `src/registration.js`, `apps-script/Code.gs` e a URL de produção permanecem inalterados. A única proteção visual nova evita que uma resposta assíncrona de registro interrompa uma revisão já aberta; o envio e a persistência do status continuam iguais. Copy Result e fallback de cópia manual estão preservados.
 
@@ -196,3 +196,14 @@ Blocos para montar sentenças, bônus por repetições/hard mode/revisão, badge
 Execute `npm test`, `node --check src/main.js` e `node scripts/build-info.js` (comando usado pelo Netlify). Não existe script npm build nem instalação necessária. Testes usam armazenamento e transporte isolados, sem inserir tentativas artificiais na planilha da trainer.
 
 No Chrome do Mateus: abra Mission 5, teste a lacuna com `UBER!`, uma frase com espaços/apóstrofos e a resposta final `I need an Uber.`; erre uma resposta e acerte no Practice Again, verificando que a nota inicial não muda. Feche/reabra durante a prática. Confira teclado, Check/Next, voz, Pause/Resume, ritmo, revisão e cópia para WhatsApp. Na conclusão real, confirme Training submitted e a linha na planilha; reabra o resultado e confirme ausência de nova linha e de XP duplicado. Teste também uma missão sem wordBank.
+
+
+### Build e voz (outubro de 2026)
+
+- Mission 5 e Mission 6 usam bancos explícitos de alternativas em Complete the Phrase. Missões sem `wordBank` continuam com digitação.
+- Build the Sentence mostra chunks embaralhados, derivados de grupos contíguos da resposta esperada. O campo opcional `chunks: ["I’m looking", "for a", "t-shirt."]` permite escolher os grupos manualmente. Chunks inválidos voltam à digitação. Hard mode mantém o teclado disponível; a primeira resposta continua determinando a nota.
+- Seleções parciais, alternativas embaralhadas e modo escolhido ficam no progresso salvo. Respostas digitadas anteriormente continuam visíveis.
+- “I listened to the full audio” agora é um checkbox com persistência, independente da confirmação de repetição.
+- A voz do navegador prioriza vozes americanas naturais/enhanced e permite seleção manual. Isso não garante a mesma qualidade em todo aparelho.
+- Para voz ElevenLabs consistente, exporte o roteiro para MP3 e configure `fullAudioUrl` (ou `targetPhrases[].audioUrl` por frase). Nenhuma chave deve entrar no JavaScript público. O player usa a gravação como padrão, com voz do navegador como alternativa. Os três ritmos continuam disponíveis.
+- O fluxo e a URL do Google Sheets não foram alterados.

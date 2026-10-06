@@ -5,7 +5,7 @@ export const phases = [
   { number: 2, name: 'Hear & Repeat', part: 'Part B · Phrase Practice' },
   { number: 3, name: 'Recognize', part: 'Choose the Meaning' },
   { number: 4, name: 'Build', part: 'Part A · Complete the Phrase' },
-  { number: 4, name: 'Build', part: 'Part B · Type the Sentence' },
+  { number: 4, name: 'Build', part: 'Part B · Build the Sentence' },
   { number: 5, name: 'Final Mission', part: 'Final round' }
 ];
 export function shuffledIndices(length, random = Math.random) {

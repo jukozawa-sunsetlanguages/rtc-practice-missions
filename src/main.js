@@ -1,3 +1,4 @@
+import { expressionChunks, chunkAnswer } from './build.js';
 import { phases, shuffledIndices, starText, completionFeedback, addReward, rewardSummary } from './practice.js';
 import { missionLabel } from './labels.js';
 import { createRegistration, submissionId } from './registration.js';
@@ -40,8 +41,13 @@ function chapterControls() {
     return '<button class="button secondary" data-action="audio-chapter" data-index="'+index+'">'+timestamp(estimatedSeconds(mission.fallbackAudioScript.slice(0, offset), audioRate()))+' · '+esc(chapter.title)+'</button>';
   }).join(' ') + '</div>';
 }
+function voiceOptions() {
+  const voices = 'speechSynthesis' in window ? window.speechSynthesis.getVoices().filter(v => /^en[-_]US$/i.test(v.lang)) : [];
+  const selected = read('rtc:audio:voice');
+  return '<option value="">Automatic · best available American voice</option>' + voices.map(v => `<option value="${esc(v.voiceURI)}" ${v.voiceURI === selected ? 'selected' : ''}>${esc(v.name)}</option>`).join('');
+}
 function audioSettings() {
-  return '<fieldset class="audio-settings"><legend>Ritmo da fala</legend><div class="audio-buttons">' + Object.entries({slow:'Lento',normal:'Normal',fast:'Rápido'}).map(([value,label]) => '<button type="button" class="button secondary" data-action="audio-pace" data-pace="'+value+'" aria-pressed="'+(speechPace === value)+'">'+label+'</button>').join('') + '</div><p class="small muted">Voz masculina americana quando disponível no dispositivo.</p></fieldset>';
+  return '<fieldset class="audio-settings"><legend>Ritmo da fala</legend><div class="audio-buttons">' + Object.entries({slow:'Lento',normal:'Normal',fast:'Rápido'}).map(([value,label]) => '<button type="button" class="button secondary" data-action="audio-pace" data-pace="'+value+'" aria-pressed="'+(speechPace === value)+'">'+label+'</button>').join('') + '</div><details><summary>Browser voice options</summary><p class="small muted">Prioriza vozes americanas naturais quando disponíveis. A qualidade depende do aparelho.</p><label for="voice-choice">American voice</label><select id="voice-choice">' + voiceOptions() + '</select><button class="button quiet" data-action="voice-preview">▶ Test voice</button></details></fieldset>';
 }
 function fresh() { return { step: 0, listenedFullAudio: false, repeatedOutLoud: false, difficultAudioPhrase: '', repeat: [], answers: Object.fromEntries(questionSections.map(s => [s, {}])), drafts: {}, completedAt: null, result: null }; }
 function load(m) {
@@ -76,7 +82,7 @@ function speak(text) {
     const utterance = new SpeechSynthesisUtterance(item.text);
     utterance.lang = 'en-US'; utterance.rate = audioRate();
     const voices = window.speechSynthesis.getVoices();
-    utterance.voice = preferredVoice(voices);
+    utterance.voice = voices.find(v => v.voiceURI === read('rtc:audio:voice') && /^en[-_]US$/i.test(v.lang)) || preferredVoice(voices);
     utterance.onend = next;
     utterance.onerror = e => { if (!['canceled', 'interrupted'].includes(e.error)) { stopAudio(); toast('Audio could not play. Use the written script or try another browser.'); } };
     window.speechSynthesis.speak(utterance);
@@ -155,10 +161,28 @@ function phraseIndex() {
   }
   return Math.min(state.phraseCursor, mission.targetPhrases.length - 1);
 }
+function chunksFor(section, q, i) {
+  const answer = answerFor(section, i);
+  // Keep historical typed answers visible when resuming pre-chunk progress.
+  if (answer && !answer.retrying && !(review || state).chunkSelections?.[section + i]?.length) return [];
+  return section === 'typeSentence' && !(review || state).hardModes?.[section + i] ? expressionChunks(q) : [];
+}
+function selectedChunks(section, i) {
+  const owner = review || state; owner.chunkSelections ||= {};
+  return owner.chunkSelections[section + i] ||= [];
+}
+function chunkCard(section, q, i, locked) {
+  const chunks = chunksFor(section, q, i), selected = selectedChunks(section, i);
+  const order = orderFor('chunks-' + section, i, chunks.length);
+  // Avoid presenting the completed answer as the initial tile order.
+  if (order.every((n, j) => n === j)) { order.push(order.shift()); save(); }
+  return `<p class="small muted">Tap the chunks in order. Tap a chosen chunk to remove it.</p><div class="chunk-answer" aria-label="Your sentence">${selected.length ? selected.map((n, position) => `<button class="button secondary" data-action="remove-chunk" data-index="${position}" ${locked ? 'disabled' : ''}>${esc(chunks[n])}</button>`).join('') : '<span class="muted">Build your sentence here…</span>'}</div><div class="chunk-bank" aria-label="Available chunks">${order.map(n => `<button class="button secondary" data-action="add-chunk" data-index="${n}" ${locked || selected.includes(n) ? 'disabled' : ''}>${esc(chunks[n])}</button>`).join('')}</div>${!locked ? `<button class="button quiet" data-action="clear-chunks">Clear</button><button class="button quiet" data-action="hard-mode" data-section="${section}" data-index="${i}">Hard mode · Type the sentence</button>` : ''}`;
+}
 function primaryAction() {
   if (review || state.step >= 3) {
     const section = sectionNow(), i = indexNow(), q = mission[section + 'Questions'][i], answer = answerFor(section, i);
     if (!answer || answer.retrying) {
+      if (chunksFor(section, q, i).length) return `<button class="button primary" data-action="check-chunks" ${selectedChunks(section, i).length === chunksFor(section, q, i).length ? '' : 'disabled'}>Check order</button>`;
       if (section === 'chooseMeaning' || (q.wordBank?.length && !(review || state).hardModes?.[section + i])) return '<span class="small muted">Choose an answer above</span>';
       return `<button class="button primary" type="submit" form="answer-form">${section === 'finalMission' ? 'Check response' : 'Check'}</button>`;
     }
@@ -180,7 +204,7 @@ function vocabulary(title, items) {
 }
 function stepBody(step) {
   if (step === 0) return `<h2 class="brief-title">${esc(mission.keyPhrase)}</h2><p>${esc(mission.goal.length > 180 ? `Practice ${mission.shortTitle.toLowerCase()} in real travel situations. Ask for what you need.` : mission.goal)}</p><p class="mission-meta">${effort(mission)}</p><p class="stars">Up to ★★★ + ${90 + questionSections.reduce((n, section) => n + mission[section + 'Questions'].length * 5, 0)} XP</p><details><summary>What you will practice</summary>${mission.goal.length > 180 ? `<p>${esc(mission.goal)}</p>` : ''}<ul class="practice-list">${mission.todayYouPractice.map(p => `<li>${esc(p)}</li>`).join('')}</ul></details>${vocabulary('Vocabulary', mission.vocabulary)}`;
-  if (step === 1) return `<p class="lead">Listen to the full training first.</p><p class="muted">You don’t need to understand everything.<br>Listen, repeat out loud, and keep going.</p>${audioSettings()}${chapterControls()}${mission.fullAudioUrl ? `<audio controls preload="none" src="${esc(mission.fullAudioUrl)}">Your browser does not support audio.</audio><p class="small muted">If the recording does not load, use text-to-speech below.</p>` : ''}<div class="audio-buttons"><button class="button secondary" data-action="full-audio">▶ Play / Restart voice</button><button class="button quiet" data-action="pause-audio">Pause</button><button class="button quiet" data-action="stop-audio">■ Stop audio</button></div><details><summary>Read the full audio script</summary><p class="script">${esc(mission.fallbackAudioScript)}</p></details><button class="button ${state.listenedFullAudio ? 'success-button' : 'secondary'}" data-action="listened" aria-pressed="${state.listenedFullAudio}">${state.listenedFullAudio ? '✓ ' : ''}I listened to the full audio</button>${check('repeatedOutLoud', 'I repeated (out loud, quietly or in my head)', state.repeatedOutLoud)}<label class="field-label" for="difficultAudioPhrase">What phrase was difficult? <span class="muted">(optional)</span></label><textarea id="difficultAudioPhrase" rows="2" maxlength="1000" placeholder="A word or phrase to practice again…">${esc(state.difficultAudioPhrase)}</textarea><p class="small muted">Confirm that you listened and repeated to continue.</p>`;
+  if (step === 1) return `<p class="lead">Listen to the full training first.</p><p class="muted">You don’t need to understand everything.<br>Listen, repeat out loud, and keep going.</p>${audioSettings()}${chapterControls()}${mission.fullAudioUrl ? `<audio id="training-audio" controls preload="none" src="${esc(mission.fullAudioUrl)}">Your browser does not support audio.</audio><p class="small muted">Natural voice recording. Use Play, Pause or the player to continue.</p>` : ''}<div class="audio-buttons"><button class="button secondary" data-action="full-audio">▶ Play / Restart ${mission.fullAudioUrl ? 'training' : 'voice'}</button><button class="button quiet" data-action="pause-audio">Pause</button><button class="button quiet" data-action="stop-audio">■ Stop audio</button></div>${mission.fullAudioUrl ? `<details><summary>Recording not playing?</summary><button class="button secondary" data-action="fallback-audio">Use browser voice</button></details>` : ''}<details><summary>Read the full audio script</summary><p class="script">${esc(mission.fallbackAudioScript)}</p></details>${check('listenedFullAudio', 'I listened to the full audio', state.listenedFullAudio)}${check('repeatedOutLoud', 'I repeated (out loud, quietly or in my head)', state.repeatedOutLoud)}<label class="field-label" for="difficultAudioPhrase">What phrase was difficult? <span class="muted">(optional)</span></label><textarea id="difficultAudioPhrase" rows="2" maxlength="1000" placeholder="A word or phrase to practice again…">${esc(state.difficultAudioPhrase)}</textarea><p class="small muted">Confirm that you listened and repeated to continue.</p>`;
   if (step === 2) {
     const i = phraseIndex(), p = mission.targetPhrases[i];
     return `<p class="eyebrow">${i + 1} / ${mission.targetPhrases.length} phrases</p><article class="phrase-card"><h2>${esc(p.english)}</h2><button class="button secondary" data-action="phrase-audio" data-index="${i}">▶ Play phrase</button><details><summary>Show meaning</summary><p lang="pt-BR">${esc(p.portuguese)}</p></details>${state.repeat.includes(i) ? '<p class="positive">✓ Practiced</p>' : '<p>Listen. Repeat. Say it.</p>'}</article><p class="small muted">Can't speak out loud? Say it quietly or practice in your head.</p><p class="small muted">${state.repeat.length} / ${mission.targetPhrases.length} practiced</p>${i > 0 ? '<button class="button quiet" data-action="previous-phrase">← Previous phrase</button>' : ''}${vocabulary('Vocabulary', mission.vocabulary)}${vocabulary('Useful recognition phrases', mission.recognitionPhrases)}`;
@@ -195,7 +219,7 @@ function questionCard(section, q, i) {
   const progress = review ? `${review.cursor + 1} / ${review.items.length}` : `${i + 1} / ${mission[section + 'Questions'].length}`;
   const options = section === 'chooseMeaning' ? q.options : bank ? q.wordBank : null;
   const draft = (review || state).drafts?.[section + i] || '';
-  return `<article class="question-card" data-item="${i}"><span class="eyebrow">${section === 'finalMission' ? 'FINAL MISSION' : review ? 'REVIEW' : steps[questionSections.indexOf(section) + 3]} · ${progress}</span><h3 ${section === 'typeSentence' ? 'lang="pt-BR"' : ''}>${esc(q.prompt)}</h3>${q.hint ? `<p class="question-hint" lang="pt-BR">${esc(q.hint)}</p>` : ''}${options ? `<div class="options">${orderFor(section, i, options.length).map((j, position) => `<button class="option ${locked && (bank ? evaluate(options[j], q) === 'correct' : j === q.answer) ? 'correct-option' : ''} ${locked && answer.value === options[j] && !answer.correct ? 'wrong-option' : ''}" data-action="${bank ? 'bank' : 'choose'}" data-section="${section}" data-index="${i}" data-option="${j}" ${locked ? 'disabled' : ''}><span>${String.fromCharCode(65 + position)}</span>${esc(options[j])}</button>`).join('')}</div>${bank && !answer ? `<button class="button quiet" data-action="hard-mode" data-section="${section}" data-index="${i}">Hard mode · Type it</button>` : ''}` : `<form id="answer-form" data-question="${i}" data-section="${section}"><label class="sr-only" for="answer-${i}">Answer to ${esc(q.prompt)}</label><input id="answer-${i}" name="answer" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="${section === 'completePhrase' ? 60 : 240}" minlength="${section === 'completePhrase' ? 1 : 3}" placeholder="${section === 'completePhrase' ? 'Missing word…' : 'Your answer in English…'}" value="${esc(answer?.retrying ? draft : answer?.value ?? draft)}" ${locked ? 'disabled' : ''} required></form>`}${locked ? `<div class="feedback ${answer.correct ? 'positive' : 'negative'}" role="status">${answer.correct ? 'Correct ✓' : section === 'chooseMeaning' ? `Not this one. Correct: <strong>${esc(version)}</strong>` : `Correct version: <strong>${esc(version)}</strong>`}<p class="small">${review ? 'Review practice. Original score unchanged.' : 'Your first answer determines the score.'}</p></div>${!answer.correct ? `<button class="button quiet retry-button" data-action="retry" data-section="${section}" data-index="${i}">Practice Again</button>` : ''}<button class="button quiet" data-action="correct-audio" data-section="${section}" data-index="${i}">▶ Play correct phrase</button>` : ''}</article>`;
+  return `<article class="question-card" data-item="${i}"><span class="eyebrow">${section === 'finalMission' ? 'FINAL MISSION' : review ? 'REVIEW' : section === 'typeSentence' ? 'Build the Sentence' : steps[questionSections.indexOf(section) + 3]} · ${progress}</span><h3 ${section === 'typeSentence' ? 'lang="pt-BR"' : ''}>${esc(q.prompt)}</h3>${q.hint ? `<p class="question-hint" lang="pt-BR">${esc(q.hint)}</p>` : ''}${chunksFor(section, q, i).length ? chunkCard(section, q, i, locked) : options ? `<div class="options">${orderFor(section, i, options.length).map((j, position) => `<button class="option ${locked && (bank ? evaluate(options[j], q) === 'correct' : j === q.answer) ? 'correct-option' : ''} ${locked && answer.value === options[j] && !answer.correct ? 'wrong-option' : ''}" data-action="${bank ? 'bank' : 'choose'}" data-section="${section}" data-index="${i}" data-option="${j}" ${locked ? 'disabled' : ''}><span>${String.fromCharCode(65 + position)}</span>${esc(options[j])}</button>`).join('')}</div>${bank && !answer ? `<button class="button quiet" data-action="hard-mode" data-section="${section}" data-index="${i}">Hard mode · Type it</button>` : ''}` : `<form id="answer-form" data-question="${i}" data-section="${section}"><label class="sr-only" for="answer-${i}">Answer to ${esc(q.prompt)}</label><input id="answer-${i}" name="answer" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="${section === 'completePhrase' ? 60 : 240}" minlength="${section === 'completePhrase' ? 1 : 3}" placeholder="${section === 'completePhrase' ? 'Missing word…' : 'Your answer in English…'}" value="${esc(answer?.retrying ? draft : answer?.value ?? draft)}" ${locked ? 'disabled' : ''} required></form>`}${locked ? `<div class="feedback ${answer.correct ? 'positive' : 'negative'}" role="status">${answer.correct ? 'Correct ✓' : section === 'chooseMeaning' ? `Not this one. Correct: <strong>${esc(version)}</strong>` : `Correct version: <strong>${esc(version)}</strong>`}<p class="small">${review ? 'Review practice. Original score unchanged.' : 'Your first answer determines the score.'}</p></div>${!answer.correct ? `<button class="button quiet retry-button" data-action="retry" data-section="${section}" data-index="${i}">Practice Again</button>` : ''}<button class="button quiet" data-action="correct-audio" data-section="${section}" data-index="${i}">▶ Play correct phrase</button>` : ''}</article>`;
 }
 function canContinue() {
   if (state.step === 0) return true;
@@ -268,7 +292,9 @@ app.addEventListener('input', e => {
 });
 app.addEventListener('change', e => {
   if (!mission) return;
-  if (e.target.id === 'repeatedOutLoud') state.repeatedOutLoud = e.target.checked;
+  if (e.target.id === 'voice-choice') { write('rtc:audio:voice', e.target.value); stopAudio(); return; }
+  if (e.target.id === 'listenedFullAudio') state.listenedFullAudio = e.target.checked;
+  else if (e.target.id === 'repeatedOutLoud') state.repeatedOutLoud = e.target.checked;
   else if (e.target.dataset.repeat !== undefined) {
     const i = Number(e.target.dataset.repeat);
     state.repeat = state.repeat.filter(n => n !== i); if (e.target.checked) state.repeat.push(i);
@@ -286,6 +312,7 @@ app.addEventListener('submit', e => {
 app.addEventListener('click', async e => {
   const button = e.target.closest('[data-action]'); if (!button || button.disabled || !mission) return;
   const action = button.dataset.action;
+  if (action === 'voice-preview') speak('Hi, Mateus. Ready for your next conversation? Let’s practice together.');
   if (action === 'audio-pace') {
     speechPace = button.dataset.pace;
     write('rtc:audio:pace', speechPace);
@@ -306,8 +333,22 @@ app.addEventListener('click', async e => {
     const end = chapters[index + 1] ? mission.fallbackAudioScript.indexOf(chapters[index + 1].startsAt) : undefined;
     speak(mission.fallbackAudioScript.slice(start, end));
   }
-  if (action === 'full-audio') { speak(mission.fallbackAudioScript); app.querySelector('[data-action="pause-audio"]').textContent = 'Pause'; }
+  if (action === 'full-audio') {
+    const recording = app.querySelector('#training-audio');
+    if (mission.fullAudioUrl && recording) {
+      stopAudio(); activeRecording = recording;
+      recording.currentTime = 0; recording.playbackRate = audioRate();
+      recording.play().catch(() => toast('Recording could not play. Try the player or use Browser voice below.'));
+    } else speak(mission.fallbackAudioScript);
+    app.querySelector('[data-action="pause-audio"]').textContent = 'Pause';
+  }
+  if (action === 'fallback-audio') speak(mission.fallbackAudioScript);
   if (action === 'pause-audio') {
+    if (activeRecording) {
+      if (activeRecording.paused) { activeRecording.play().catch(() => toast('Tap Play to resume the recording.')); button.textContent = 'Pause'; }
+      else { activeRecording.pause(); button.textContent = 'Resume'; }
+      return;
+    }
     if (!('speechSynthesis' in window)) return;
     speechPaused = !speechPaused;
     if (speechPaused) window.speechSynthesis.pause();
@@ -317,14 +358,30 @@ app.addEventListener('click', async e => {
   if (action === 'stop-audio') { stopAudio(); const pause = app.querySelector('[data-action="pause-audio"]'); if (pause) pause.textContent = 'Pause'; }
 
   if (action === 'phrase-audio') playPhrase(mission.targetPhrases[Number(button.dataset.index)]);
-  if (action === 'listened') { state.listenedFullAudio = !state.listenedFullAudio; save(); button.setAttribute('aria-pressed', state.listenedFullAudio); button.classList.toggle('success-button', state.listenedFullAudio); button.textContent = `${state.listenedFullAudio ? '✓ ' : ''}I listened to the full audio`; updateContinue(); }
+
   if (action === 'choose') {
     const i = Number(button.dataset.index), selected = Number(button.dataset.option), q = mission.chooseMeaningQuestions[i];
     record('chooseMeaning', i, { selected, value: q.options[selected], correct: selected === q.answer, verdict: selected === q.answer ? 'correct' : 'incorrect' });
   }
   if (action === 'retry') {
     const section = button.dataset.section, i = Number(button.dataset.index);
-    (review ? review.answers : state.answers)[section][i].retrying = true; (review || state).drafts[section + i] = ''; save(); refreshQuestion(section, i);
+    (review ? review.answers : state.answers)[section][i].retrying = true; (review || state).drafts[section + i] = ''; if ((review || state).chunkSelections) (review || state).chunkSelections[section + i] = []; save(); refreshQuestion(section, i);
+  }
+  if (['add-chunk', 'remove-chunk', 'clear-chunks', 'check-chunks'].includes(action)) {
+    const section = sectionNow(), i = indexNow(), q = mission[section + 'Questions'][i];
+    const answer = answerFor(section, i); if (answer && !answer.retrying) return;
+    const chunks = chunksFor(section, q, i), selected = selectedChunks(section, i), n = Number(button.dataset.index);
+    if (action === 'add-chunk' && Number.isInteger(n) && chunks[n] && !selected.includes(n)) selected.push(n);
+    if (action === 'remove-chunk') selected.splice(n, 1);
+    if (action === 'clear-chunks') selected.splice(0);
+    if (action === 'check-chunks') {
+      const value = chunkAnswer(chunks, selected); if (value === null) return;
+      const verdict = evaluate(value, q); record(section, i, { value, verdict, correct: verdict === 'correct' });
+    } else {
+      save(); renderMission();
+      const next = app.querySelector('[data-action="add-chunk"]:not(:disabled)') || app.querySelector('[data-action="check-chunks"]');
+      next?.focus({ preventScroll: true });
+    }
   }
   if (action === 'hard-mode') {
     const owner = review || state; owner.hardModes ||= {}; owner.hardModes[button.dataset.section + button.dataset.index] = true; save(); renderMission();
@@ -380,8 +437,13 @@ app.addEventListener('play', e => {
   if (e.target.tagName !== 'AUDIO') return;
   e.target.playbackRate = audioRate();
   speechRun++; if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-  if (activeRecording) { activeRecording.pause(); activeRecording = null; }
+  if (activeRecording && activeRecording !== e.target) activeRecording.pause();
+  activeRecording = e.target;
 }, true);
 window.addEventListener('hashchange', () => { route(); focusTop(); });
 window.addEventListener('pagehide', stopAudio);
 route();
+
+if ('speechSynthesis' in window) window.speechSynthesis.addEventListener('voiceschanged', () => {
+  const select = app.querySelector('#voice-choice'); if (select) select.innerHTML = voiceOptions();
+});

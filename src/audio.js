@@ -3,7 +3,13 @@ export const speechRates = { slow: 0.75, normal: 1, fast: 1.2 };
 // SpeechSynthesisVoice has no gender field. Prefer known American male voices.
 export function preferredVoice(voices) {
   const american = voices.filter(voice => /^en[-_]US$/i.test(voice.lang));
-  return american.find(voice => /\b(David|Guy|Christopher|Eric|Roger|Steffan|Andrew|Brian|Davis|Tony|Jason|Alex|Fred|Tom|Aaron|Evan|Nathan|Joey|Matthew)\b/i.test(voice.name))
+  // Prefer enhanced voices before legacy system voices such as Microsoft David.
+  const natural = voice => /natural|neural|enhanced|premium|online/i.test(voice.name);
+  const male = voice => /\b(Guy|Christopher|Andrew|Brian|Davis|Tony|Jason|Alex|Tom|Aaron|Evan|Nathan|Joey|Matthew)\b/i.test(voice.name);
+  return american.find(voice => natural(voice) && male(voice))
+    || american.find(natural)
+    || american.find(voice => /google/i.test(voice.name))
+    || american.find(male)
     || american[0] || voices.find(voice => /^en[-_]/i.test(voice.lang)) || null;
 }
 

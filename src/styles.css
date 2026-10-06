@@ -1187,6 +1187,10 @@ details p {
 .stars { color:var(--gold); letter-spacing:.04em; margin:12px 0; }
 .compact-intro { padding:24px 0; }
 .home-mission-heading { font-size:1.1rem; letter-spacing:0; }
+.audio-settings select { display:block; width:100%; margin:10px 0; padding:12px; min-height:48px; color:var(--text); background:#142639; border:1px solid #42566a; border-radius:8px; font-size:1rem; }
+.chunk-answer, .chunk-bank { display:flex; flex-wrap:wrap; gap:10px; margin:18px 0; }
+.chunk-answer { min-height:74px; border:1px dashed var(--gold); border-radius:10px; padding:12px; align-items:center; }
+.chunk-answer .button, .chunk-bank .button { padding:12px; overflow-wrap:anywhere; max-width:100%; }
 .mission-card-content > .button { margin-top:20px; }
 .flow-actions { align-items:center; }
 .flow-actions > .primary { min-width:150px; }

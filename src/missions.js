@@ -338,98 +338,158 @@ export const missions = [
     }
   ],
   "completePhraseQuestions": [
-    {
-      "prompt": "I’m looking for a ______.",
-      "answers": [
-        "t-shirt",
-        "gift",
-        "souvenir"
-      ],
-      "fullPhrase": "I’m looking for a t-shirt."
-    },
-    {
-      "prompt": "I want a blue ______.",
-      "answers": [
-        "t-shirt"
-      ],
-      "fullPhrase": "I want a blue t-shirt."
-    },
-    {
-      "prompt": "Do you have this in ______?",
-      "answers": [
-        "medium",
-        "blue",
-        "large",
-        "extra large"
-      ],
-      "fullPhrase": "Do you have this in medium?"
-    },
-    {
-      "prompt": "How much ______ it?",
-      "answers": [
-        "is"
-      ],
-      "fullPhrase": "How much is it?"
-    },
-    {
-      "prompt": "Can I try it ______?",
-      "answers": [
-        "on"
-      ],
-      "fullPhrase": "Can I try it on?"
-    },
-    {
-      "prompt": "I’ll take this ______.",
-      "answers": [
-        "one"
-      ],
-      "fullPhrase": "I’ll take this one."
-    },
-    {
-      "prompt": "Can I pay by ______?",
-      "answers": [
-        "card"
-      ],
-      "fullPhrase": "Can I pay by card?"
-    },
-    {
-      "prompt": "Can I have a ______, please?",
-      "answers": [
-        "receipt",
-        "bag"
-      ],
-      "fullPhrase": "Can I have a receipt, please?"
-    },
-    {
-      "prompt": "That’s ______, thank you.",
-      "answers": [
-        "all"
-      ],
-      "fullPhrase": "That’s all, thank you."
-    },
-    {
-      "prompt": "Can you ______, please?",
-      "answers": [
-        "repeat",
-        "help"
-      ],
-      "fullPhrase": "Can you repeat, please?"
-    },
-    {
-      "prompt": "Can you speak ______, please?",
-      "answers": [
-        "slowly"
-      ],
-      "fullPhrase": "Can you speak slowly, please?"
-    },
-    {
-      "prompt": "It doesn’t ______.",
-      "answers": [
-        "fit"
-      ],
-      "fullPhrase": "It doesn’t fit."
-    }
-  ],
+  {
+    "prompt": "I’m looking for a ______.",
+    "answers": [
+      "t-shirt",
+      "gift",
+      "souvenir"
+    ],
+    "fullPhrase": "I’m looking for a t-shirt.",
+    "wordBank": [
+      "t-shirt",
+      "station",
+      "driver"
+    ]
+  },
+  {
+    "prompt": "I want a blue ______.",
+    "answers": [
+      "t-shirt"
+    ],
+    "fullPhrase": "I want a blue t-shirt.",
+    "wordBank": [
+      "t-shirt",
+      "receipt",
+      "ticket"
+    ]
+  },
+  {
+    "prompt": "Do you have this in ______?",
+    "answers": [
+      "medium",
+      "blue",
+      "large",
+      "extra large"
+    ],
+    "fullPhrase": "Do you have this in medium?",
+    "wordBank": [
+      "medium",
+      "receipt",
+      "cash"
+    ]
+  },
+  {
+    "prompt": "How much ______ it?",
+    "answers": [
+      "is"
+    ],
+    "fullPhrase": "How much is it?",
+    "wordBank": [
+      "is",
+      "are",
+      "do"
+    ]
+  },
+  {
+    "prompt": "Can I try it ______?",
+    "answers": [
+      "on"
+    ],
+    "fullPhrase": "Can I try it on?",
+    "wordBank": [
+      "on",
+      "at",
+      "by"
+    ]
+  },
+  {
+    "prompt": "I’ll take this ______.",
+    "answers": [
+      "one"
+    ],
+    "fullPhrase": "I’ll take this one.",
+    "wordBank": [
+      "one",
+      "on",
+      "at"
+    ]
+  },
+  {
+    "prompt": "Can I pay by ______?",
+    "answers": [
+      "card"
+    ],
+    "fullPhrase": "Can I pay by card?",
+    "wordBank": [
+      "card",
+      "size",
+      "color"
+    ]
+  },
+  {
+    "prompt": "Can I have a ______, please?",
+    "answers": [
+      "receipt",
+      "bag"
+    ],
+    "fullPhrase": "Can I have a receipt, please?",
+    "wordBank": [
+      "receipt",
+      "price",
+      "color"
+    ]
+  },
+  {
+    "prompt": "That’s ______, thank you.",
+    "answers": [
+      "all"
+    ],
+    "fullPhrase": "That’s all, thank you.",
+    "wordBank": [
+      "all",
+      "one",
+      "on"
+    ]
+  },
+  {
+    "prompt": "Can you ______, please?",
+    "answers": [
+      "repeat",
+      "help"
+    ],
+    "fullPhrase": "Can you repeat, please?",
+    "wordBank": [
+      "repeat",
+      "receipt",
+      "size"
+    ]
+  },
+  {
+    "prompt": "Can you speak ______, please?",
+    "answers": [
+      "slowly"
+    ],
+    "fullPhrase": "Can you speak slowly, please?",
+    "wordBank": [
+      "slowly",
+      "blue",
+      "medium"
+    ]
+  },
+  {
+    "prompt": "It doesn’t ______.",
+    "answers": [
+      "fit"
+    ],
+    "fullPhrase": "It doesn’t fit.",
+    "wordBank": [
+      "fit",
+      "pay",
+      "choose"
+    ]
+  }
+],
   "typeSentenceQuestions": [
     {
       "prompt": "Estou procurando uma camiseta.",
