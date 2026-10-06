@@ -22,7 +22,7 @@ export const missions = [
     "asking for a bag",
     "using recovery phrases"
   ],
-  "fullAudioUrl": "",
+  "fullAudioUrl": "/audio/mission-6-shopping-roger-v1.mp3",
   "targetPhrases": [
     {
       "english": "I’m looking for a t-shirt.",
