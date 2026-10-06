@@ -139,3 +139,5 @@ Mission Complete envia uma vez por resultado. registrationStatus:{submissionId} 
 Três missões de revisão em Previous Missions: Mission 1 — Travel Survival, Mission 2 — Airport Day e Mission 3 — Hotel Day. Conteúdo editável em src/missions.js, status previous, categoria Travel Review Pack. Incluem roteiro de repetição com pausas, traduções, exercícios, cenários finais e mensagens de conclusão. A missão atual e os IDs antigos foram preservados. O campo interno week e as colunas do Sheets permanecem compatíveis; a interface e o resumo para WhatsApp usam Mission. O fluxo de registro automático não foi alterado.
 
 Após concluir, a tentativa fica em My Last Result e a missão fica pronta para começar novamente no briefing. A tela Mission Complete e o envio automático continuam ativos. Treinos ainda não concluídos continuam de onde pararam.
+
+Mission 7 — Problems & Help é a missão atual: 20 frases e 44 questões (8 significado, 12 lacunas, 14 traduções, 10 situações). Mission 5 passou a previous, mantendo ID, versão e conteúdo. A Mission 6 não estava no repositório sincronizado; seu conteúdo não foi criado neste pedido. Registro automático permanece inalterado.

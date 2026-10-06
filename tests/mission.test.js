@@ -79,7 +79,7 @@ test('direct registration posts JSON and accepts only explicit confirmation', as
     request = {url, options}; return {ok:true, text:async () => '{"success":true}'};
   }});
   vm.runInContext(await sheetsSource('https://script.google.com/macros/s/test/exec'), context);
-  const payload = buildResult(missions[0], { ...answered(missions[0], true), repeat: [], listenedFullAudio: true, repeatedOutLoud: true, difficultAudioPhrase: '' }, 'test-agent');
+  const payload = buildResult(missions.find(m => m.id === 'week-05-transportation'), { ...answered(missions.find(m => m.id === 'week-05-transportation'), true), repeat: [], listenedFullAudio: true, repeatedOutLoud: true, difficultAudioPhrase: '' }, 'test-agent');
   payload.registrationStatus = 'error';
   assert.equal((await context.submitTrainingLog(payload)).success, true);
   assert.equal(request.options.method, 'POST');
@@ -114,7 +114,7 @@ test('Apps Script creates 23 columns, persists JSON, deduplicates and rejects ma
   const book = { getId: () => 'test-sheet-id', getSheetByName: () => created ? sheet : null, insertSheet: name => { assert.equal(name, 'RTC Lab Practice Logs'); created = true; return sheet; } };
   const context = vm.createContext({ console: { error() {}, log() {} }, CacheService: { getScriptCache: () => ({ put: (key, value) => receipts.set(key, value), get: key => receipts.get(key) }) }, PropertiesService: { getScriptProperties: () => ({ setProperty: (key, value) => properties.set(key, value), getProperty: key => properties.get(key) }) }, LockService: { getScriptLock: () => ({ waitLock() {}, hasLock: () => true, releaseLock() {} }) }, SpreadsheetApp: { flush() {}, getActiveSpreadsheet: () => book, openById: id => { assert.equal(id, 'test-sheet-id'); return book; } }, ContentService: { MimeType: { JSON: 'json', JAVASCRIPT: 'js' }, createTextOutput: value => ({ setMimeType: type => type === 'js' ? value : Object.assign(JSON.parse(value), { getContent: () => value }) }) } });
   vm.runInContext(await readFile(new URL('../apps-script/Code.gs', import.meta.url), 'utf8'), context);
-  const m = missions[0];
+  const m = missions.find(m => m.id === 'week-05-transportation');
   const payload = { studentName: m.studentName, missionId: m.id, missionName: m.title, week: m.week, missionVersion: m.missionVersion, statusAtCompletion: m.status, completedAt: '2026-09-16T12:00:00.000Z', ...summarize(m, answered(m)), listenedFullAudio: true, repeatedOutLoud: true, difficultAudioPhrase: '=IMPORTXML("test")', listenRepeatCompleted: 16, copiedResultText: 'summary', userAgent: 'test' };
   payload.registrationToken = 'a'.repeat(32);
   const submit = p => context.doPost({ postData: { contents: JSON.stringify(p) } });
@@ -145,7 +145,7 @@ test('Apps Script creates 23 columns, persists JSON, deduplicates and rejects ma
 });
 
 test('practice retries preserve first score, verdicts and repeated-prompt identities', () => {
-  const m = missions[0], state = answered(m);
+  const m = missions.find(m => m.id === 'week-05-transportation'), state = answered(m);
   state.answers.completePhrase[5] = { correct: true, value: 'right', verdict: 'correct', attempts: [{ correct: false, value: 'righ', verdict: 'almost' }, { correct: true, value: 'right', verdict: 'correct' }] };
   state.answers.completePhrase[6] = { correct: false, value: 'straight', verdict: 'incorrect' };
   const result = summarize(m, state);
@@ -159,7 +159,7 @@ test('practice retries preserve first score, verdicts and repeated-prompt identi
 });
 
 test('result is a historical snapshot, with local ISO, completed items and WhatsApp list', () => {
-  const m = missions[0], state = { ...answered(m), repeat: m.targetPhrases.map((_, i) => i), listenedFullAudio: true, repeatedOutLoud: true };
+  const m = missions.find(m => m.id === 'week-05-transportation'), state = { ...answered(m), repeat: m.targetPhrases.map((_, i) => i), listenedFullAudio: true, repeatedOutLoud: true };
   const date = new Date('2026-09-17T15:00:00.000Z');
   const result = buildResult(m, state, 'test', date);
   assert.equal(result.maxScore, 43); assert.equal(result.completedItems, 61);
@@ -205,14 +205,14 @@ test('Google registration page previews data and confirms only after server succ
 test('audio scripts preserve pauses and chapter boundaries at all speeds', async () => {
   const { speechSegments, estimatedSeconds, speechRates } = await import('../src/audio.js');
   assert.deepEqual(speechSegments('Hello. [pause] Again.'), [{text:'Hello.'},{pause:3000},{text:'Again.'}]);
-  const m = missions[0];
+  const m = missions.find(m => m.id === 'week-05-transportation');
   assert.equal(m.audioRateMultiplier, 0.9);
   assert.deepEqual(m.audioChapters.map(c => c.title), ['Core Training', 'Extra Directions Review']);
   const offset = m.fallbackAudioScript.indexOf(m.audioChapters[1].startsAt);
   assert.ok(offset > 0);
   assert.equal(m.fallbackAudioScript.match(/You want to see the map/g).length, 1);
-  assert.match(missions[1].fallbackAudioScript, /I went to the supermarket/);
-  assert.match(missions[1].fallbackAudioScript, /I’ll be back right away/);
+  assert.match(missions.find(m => m.id === 'week-04-food-ordering').fallbackAudioScript, /I went to the supermarket/);
+  assert.match(missions.find(m => m.id === 'week-04-food-ordering').fallbackAudioScript, /I’ll be back right away/);
   const prefix = m.fallbackAudioScript.slice(0, offset);
   assert.ok(estimatedSeconds(prefix, speechRates.slow * .9) > estimatedSeconds(prefix, speechRates.normal * .9));
   assert.ok(speechSegments(m.fallbackAudioScript).every(item => item.pause || !item.text.includes('[pause]')));
@@ -279,7 +279,7 @@ test('Travel Review Pack has complete previous missions and accepted answers', (
  const reviews=missions.filter(m=>m.category==='Travel Review Pack');
  assert.equal(reviews.length,3);
  assert.deepEqual(reviews.map(m=>questionSections.map(s=>m[s+'Questions'].length)),[[6,8,8,7],[8,10,10,10],[8,10,11,12]]);
- assert.equal(missions.find(m=>m.status==='current').id,'week-05-transportation');
+ assert.equal(missions.find(m=>m.status==='current').id,'mission-7-problems-help');
  for(const m of reviews) {
   assert.equal(m.status,'previous'); assert.ok(m.finalMissionScenario); assert.ok(m.missionCompleteMessage); assert.ok(m.mainPhrases.length);
   for(const section of questionSections.slice(1)) for(const q of m[section+'Questions']) for(const answer of q.answers) assert.equal(evaluate(answer,q.answers),'correct');
@@ -303,4 +303,14 @@ test('completion resets saved practice while preserving result and submission sc
  assert.equal(ctx.load(m).step,0);
  store.set('progress',{step:3,answers:{},repeat:[],completedAt:null});
  assert.equal(ctx.load(m).step,3);
+});
+
+test('Mission 7 is current with all phrases, exercises and accepted answers', () => {
+const m=missions.find(m=>m.id==='mission-7-problems-help');
+assert.equal(m.status,'current');assert.equal(m.week,'Mission 7');assert.equal(m.targetPhrases.length,20);
+assert.deepEqual(questionSections.map(s=>m[s+'Questions'].length),[8,12,14,10]);
+for(const s of questionSections.slice(1))for(const q of m[s+'Questions'])for(const answer of q.answers)assert.equal(evaluate(answer,q.answers),'correct');
+assert.equal(evaluate('big',m.completePhraseQuestions[6].answers),'correct');
+assert.equal(summarize(m,answered(m,true)).maxScore,44);
+assert.equal(missions.find(m=>m.id==='week-05-transportation').status,'previous');
 });

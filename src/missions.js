@@ -1,12 +1,526 @@
 // Edit weekly content here. Keep exactly one current mission.
 // Bump missionVersion when questions change. Optional target phrase audioUrl supports recordings.
 export const missions = [
+{
+  "id": "mission-7-problems-help",
+  "week": "Mission 7",
+  "title": "Problems & Help",
+  "shortTitle": "Problems & Help",
+  "status": "current",
+  "missionVersion": "v1",
+  "studentName": "Mateus",
+  "keyPhrase": "Something is wrong. Ask for help.",
+  "goal": "You are traveling in the United States.\n\nSometimes something is wrong.\n\nThe Wi-Fi doesn’t work.\nThe t-shirt doesn’t fit.\nYour order is wrong.\nYou are lost.\n\nYour mission is to explain the problem and ask for help.",
+  "todayYouPractice": [
+    "saying you have a problem",
+    "asking for help",
+    "saying something doesn’t work",
+    "saying something doesn’t fit",
+    "saying you are lost",
+    "asking for a different size",
+    "using recovery phrases"
+  ],
+  "fullAudioUrl": "",
+  "fallbackAudioScript": "This is your Problems and Help training.\nListen. Repeat out loud.\nDon’t just read.\nSpeak.\n\nI have a problem.\n\n[pause]\n\nI need help.\n\n[pause]\n\nSomething is wrong.\n\n[pause]\n\nThis is wrong.\n\n[pause]\n\nIt doesn’t work.\n\n[pause]\n\nThis doesn’t work.\n\n[pause]\n\nThe Wi-Fi doesn’t work.\n\n[pause]\n\nThe shower doesn’t work.\n\n[pause]\n\nThe card key doesn’t work.\n\n[pause]\n\nIt doesn’t fit.\n\n[pause]\n\nIt’s too small.\n\n[pause]\n\nIt’s too big.\n\n[pause]\n\nDo you have a different size?\n\n[pause]\n\nI’m lost.\n\n[pause]\n\nI need help with the address.\n\n[pause]\n\nMy order is wrong.\n\n[pause]\n\nI didn’t order this.\n\n[pause]\n\nCan you help me, please?\n\n[pause]\n\nCan you repeat, please?\n\n[pause]\n\nCan you speak slowly, please?\n\n[pause]",
+  "targetPhrases": [
+    {
+      "english": "I have a problem.",
+      "portuguese": "Eu tenho um problema."
+    },
+    {
+      "english": "I need help.",
+      "portuguese": "Eu preciso de ajuda."
+    },
+    {
+      "english": "Something is wrong.",
+      "portuguese": "Algo está errado."
+    },
+    {
+      "english": "This is wrong.",
+      "portuguese": "Isso está errado."
+    },
+    {
+      "english": "It doesn’t work.",
+      "portuguese": "Não funciona."
+    },
+    {
+      "english": "This doesn’t work.",
+      "portuguese": "Isso não funciona."
+    },
+    {
+      "english": "The Wi-Fi doesn’t work.",
+      "portuguese": "O Wi-Fi não funciona."
+    },
+    {
+      "english": "The shower doesn’t work.",
+      "portuguese": "O chuveiro não funciona."
+    },
+    {
+      "english": "The card key doesn’t work.",
+      "portuguese": "O cartão-chave não funciona."
+    },
+    {
+      "english": "It doesn’t fit.",
+      "portuguese": "Não serviu / não cabe."
+    },
+    {
+      "english": "It’s too small.",
+      "portuguese": "Está muito pequeno."
+    },
+    {
+      "english": "It’s too big.",
+      "portuguese": "Está muito grande."
+    },
+    {
+      "english": "Do you have a different size?",
+      "portuguese": "Você tem outro tamanho?"
+    },
+    {
+      "english": "I’m lost.",
+      "portuguese": "Estou perdido."
+    },
+    {
+      "english": "I need help with the address.",
+      "portuguese": "Preciso de ajuda com o endereço."
+    },
+    {
+      "english": "My order is wrong.",
+      "portuguese": "Meu pedido está errado."
+    },
+    {
+      "english": "I didn’t order this.",
+      "portuguese": "Eu não pedi isso."
+    },
+    {
+      "english": "Can you help me, please?",
+      "portuguese": "Você pode me ajudar, por favor?"
+    },
+    {
+      "english": "Can you repeat, please?",
+      "portuguese": "Você pode repetir, por favor?"
+    },
+    {
+      "english": "Can you speak slowly, please?",
+      "portuguese": "Você pode falar devagar, por favor?"
+    }
+  ],
+  "vocabulary": [
+    {
+      "english": "problem",
+      "portuguese": "problema"
+    },
+    {
+      "english": "help",
+      "portuguese": "ajuda"
+    },
+    {
+      "english": "size",
+      "portuguese": "tamanho"
+    },
+    {
+      "english": "lost",
+      "portuguese": "perdido"
+    },
+    {
+      "english": "order",
+      "portuguese": "pedido"
+    },
+    {
+      "english": "card key",
+      "portuguese": "cartão-chave"
+    }
+  ],
+  "chooseMeaningQuestions": [
+    {
+      "prompt": "I have a problem.",
+      "options": [
+        "Eu tenho um problema.",
+        "Eu tenho uma reserva.",
+        "Eu tenho uma sacola."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Something is wrong.",
+      "options": [
+        "Algo está errado.",
+        "Algo está barato.",
+        "Algo está perto."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "It doesn’t work.",
+      "options": [
+        "Não funciona.",
+        "Não cabe.",
+        "Não custa."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "It doesn’t fit.",
+      "options": [
+        "Não serviu / não cabe.",
+        "Não funciona.",
+        "Não está aberto."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "I’m lost.",
+      "options": [
+        "Estou perdido.",
+        "Estou com fome.",
+        "Estou pagando."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Do you have a different size?",
+      "options": [
+        "Você tem outro tamanho?",
+        "Você tem outra sacola?",
+        "Você tem outro recibo?"
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "My order is wrong.",
+      "options": [
+        "Meu pedido está errado.",
+        "Meu quarto está errado.",
+        "Meu portão está errado."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "I didn’t order this.",
+      "options": [
+        "Eu não pedi isso.",
+        "Eu não comprei isso.",
+        "Eu não provei isso."
+      ],
+      "answer": 0
+    }
+  ],
+  "completePhraseQuestions": [
+    {
+      "prompt": "I have a ______.",
+      "answers": [
+        "problem"
+      ],
+      "fullPhrase": "I have a problem."
+    },
+    {
+      "prompt": "I need ______.",
+      "answers": [
+        "help"
+      ],
+      "fullPhrase": "I need help."
+    },
+    {
+      "prompt": "Something is ______.",
+      "answers": [
+        "wrong"
+      ],
+      "fullPhrase": "Something is wrong."
+    },
+    {
+      "prompt": "It doesn’t ______.",
+      "answers": [
+        "work"
+      ],
+      "fullPhrase": "It doesn’t work.",
+      "hint": "Não funciona."
+    },
+    {
+      "prompt": "The Wi-Fi doesn’t ______.",
+      "answers": [
+        "work"
+      ],
+      "fullPhrase": "The Wi-Fi doesn’t work."
+    },
+    {
+      "prompt": "It doesn’t ______.",
+      "answers": [
+        "fit"
+      ],
+      "fullPhrase": "It doesn’t fit.",
+      "hint": "Não serviu / não cabe."
+    },
+    {
+      "prompt": "It’s too ______.",
+      "answers": [
+        "small",
+        "big"
+      ],
+      "fullPhrase": "It’s too small."
+    },
+    {
+      "prompt": "Do you have a different ______?",
+      "answers": [
+        "size"
+      ],
+      "fullPhrase": "Do you have a different size?"
+    },
+    {
+      "prompt": "I’m ______.",
+      "answers": [
+        "lost"
+      ],
+      "fullPhrase": "I’m lost."
+    },
+    {
+      "prompt": "My order is ______.",
+      "answers": [
+        "wrong"
+      ],
+      "fullPhrase": "My order is wrong."
+    },
+    {
+      "prompt": "I didn’t ______ this.",
+      "answers": [
+        "order"
+      ],
+      "fullPhrase": "I didn’t order this."
+    },
+    {
+      "prompt": "Can you ______ me, please?",
+      "answers": [
+        "help"
+      ],
+      "fullPhrase": "Can you help me, please?"
+    }
+  ],
+  "typeSentenceQuestions": [
+    {
+      "prompt": "Eu tenho um problema.",
+      "answers": [
+        "I have a problem.",
+        "I have problem."
+      ]
+    },
+    {
+      "prompt": "Eu preciso de ajuda.",
+      "answers": [
+        "I need help."
+      ]
+    },
+    {
+      "prompt": "Algo está errado.",
+      "answers": [
+        "Something is wrong.",
+        "This is wrong."
+      ]
+    },
+    {
+      "prompt": "Não funciona.",
+      "answers": [
+        "It doesn’t work.",
+        "It doesn't work.",
+        "This doesn’t work.",
+        "This doesn't work."
+      ]
+    },
+    {
+      "prompt": "O Wi-Fi não funciona.",
+      "answers": [
+        "The Wi-Fi doesn’t work.",
+        "The wifi doesn't work.",
+        "Wi-Fi doesn’t work.",
+        "Wifi doesn’t work.",
+        "The WiFi doesn’t work.",
+        "The WiFi doesn't work."
+      ]
+    },
+    {
+      "prompt": "O chuveiro não funciona.",
+      "answers": [
+        "The shower doesn’t work.",
+        "The shower doesn't work.",
+        "Shower doesn’t work.",
+        "Shower doesn't work."
+      ]
+    },
+    {
+      "prompt": "Não serviu / não cabe.",
+      "answers": [
+        "It doesn’t fit.",
+        "It doesn't fit.",
+        "This doesn’t fit.",
+        "This doesn't fit."
+      ]
+    },
+    {
+      "prompt": "Está muito pequeno.",
+      "answers": [
+        "It’s too small.",
+        "It's too small.",
+        "Too small."
+      ]
+    },
+    {
+      "prompt": "Você tem outro tamanho?",
+      "answers": [
+        "Do you have a different size?",
+        "Do you have another size?",
+        "Different size, please."
+      ]
+    },
+    {
+      "prompt": "Estou perdido.",
+      "answers": [
+        "I’m lost.",
+        "I'm lost.",
+        "I am lost."
+      ]
+    },
+    {
+      "prompt": "Meu pedido está errado.",
+      "answers": [
+        "My order is wrong.",
+        "The order is wrong.",
+        "This is wrong."
+      ]
+    },
+    {
+      "prompt": "Eu não pedi isso.",
+      "answers": [
+        "I didn’t order this.",
+        "I didn't order this.",
+        "I did not order this."
+      ]
+    },
+    {
+      "prompt": "Você pode me ajudar, por favor?",
+      "answers": [
+        "Can you help me, please?",
+        "Can you help me please?",
+        "Can you help me?"
+      ]
+    },
+    {
+      "prompt": "Você pode repetir, por favor?",
+      "answers": [
+        "Can you repeat, please?",
+        "Can you repeat please?",
+        "Repeat, please."
+      ]
+    }
+  ],
+  "finalMissionScenario": "You are traveling in the United States.\n\nDifferent things go wrong.\n\nUse English to explain the problem.\nAsk for help.\nRecover if needed.",
+  "finalMissionQuestions": [
+    {
+      "prompt": "You are at the hotel. The Wi-Fi doesn’t work.",
+      "answers": [
+        "I have a problem. The Wi-Fi doesn’t work.",
+        "The Wi-Fi doesn’t work.",
+        "I need help. The Wi-Fi doesn’t work.",
+        "The wifi doesn't work.",
+        "The WiFi doesn't work."
+      ]
+    },
+    {
+      "prompt": "You are at the hotel. The shower doesn’t work.",
+      "answers": [
+        "The shower doesn’t work.",
+        "I have a problem. The shower doesn’t work.",
+        "The shower doesn't work.",
+        "Shower doesn't work."
+      ]
+    },
+    {
+      "prompt": "You are in a store. The t-shirt is too small.",
+      "answers": [
+        "It’s too small.",
+        "It's too small.",
+        "It doesn’t fit.",
+        "It doesn't fit.",
+        "Do you have a different size?"
+      ]
+    },
+    {
+      "prompt": "You need a different size.",
+      "answers": [
+        "Do you have a different size?",
+        "Do you have another size?",
+        "Different size, please."
+      ]
+    },
+    {
+      "prompt": "You are lost.",
+      "answers": [
+        "I’m lost. Can you help me, please?",
+        "I’m lost.",
+        "I'm lost.",
+        "I am lost.",
+        "Can you help me, please?"
+      ]
+    },
+    {
+      "prompt": "You need help with the address.",
+      "answers": [
+        "I need help with the address.",
+        "Can you help me with the address?"
+      ]
+    },
+    {
+      "prompt": "You are at a restaurant. Your order is wrong.",
+      "answers": [
+        "My order is wrong.",
+        "This is wrong.",
+        "The order is wrong.",
+        "I didn’t order this."
+      ]
+    },
+    {
+      "prompt": "You did not order this food.",
+      "answers": [
+        "I didn’t order this.",
+        "I didn't order this.",
+        "I did not order this."
+      ]
+    },
+    {
+      "prompt": "The person speaks fast.",
+      "answers": [
+        "Can you speak slowly, please?",
+        "Can you speak slowly please?",
+        "Speak slowly, please."
+      ]
+    },
+    {
+      "prompt": "You don’t understand.",
+      "answers": [
+        "Can you repeat, please?",
+        "I don’t understand.",
+        "I don't understand.",
+        "Can you repeat please?",
+        "Repeat, please."
+      ]
+    }
+  ],
+  "missionCompleteMessage": "Good job.\n\nYou practiced problems and help.\n\nRemember:\n\nSay the problem.\nAsk for help.\nRecover when confused.",
+  "mainPhrases": [
+    "I have a problem.",
+    "I need help.",
+    "Something is wrong.",
+    "It doesn’t work.",
+    "It doesn’t fit.",
+    "I’m lost.",
+    "My order is wrong.",
+    "Can you help me, please?",
+    "Can you repeat, please?",
+    "Can you speak slowly, please?"
+  ]
+},
   {
     "id": "week-05-transportation",
     "week": "Week 5",
     "title": "Transportation & Directions",
     "shortTitle": "Transportation",
-    "status": "current",
+    "status": "previous",
     "missionVersion": "v2",
     "studentName": "Mateus",
     "keyPhrase": "Ask. Move. Confirm.",
