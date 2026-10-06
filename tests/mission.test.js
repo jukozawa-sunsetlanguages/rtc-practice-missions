@@ -1,3 +1,4 @@
+import { practiceXP, localDay, dailySummary } from '../src/motivation.js';
 import { expressionChunks, chunkAnswer } from '../src/build.js';
 import { preferredVoice } from '../src/audio.js';
 import test from 'node:test';
@@ -392,7 +393,7 @@ async function appHarness(saved = []) {
   const handlers = {}, store = new Map(saved), requests = [], clipboard = [];
   const control = {focus(){},matches:()=>true,disabled:false,setAttribute(){},classList:{add(){},remove(){}}};
   const app = {innerHTML:'',focus(){},querySelector:()=>control,querySelectorAll:()=>[],addEventListener:(name,fn)=>handlers[name]=fn};
-  const context = vm.createContext({ ...registration,...audio,...results,...labels,phases,shuffledIndices,starText,completionFeedback,addReward,rewardSummary,expressionChunks,chunkAnswer,missions,evaluate,questionSections,acceptedAnswers,normalize,reviewItems,uniquePhrases,
+  const context = vm.createContext({ ...registration,...audio,...results,...labels,practiceXP,localDay,dailySummary,phases,shuffledIndices,starText,completionFeedback,addReward,rewardSummary,expressionChunks,chunkAnswer,missions,evaluate,questionSections,acceptedAnswers,normalize,reviewItems,uniquePhrases,
     console:{debug(){}},document:{querySelector:selector=>selector==='#app'?app:control},location:{hash:'#home'},navigator:{userAgent:'isolated-test',clipboard:{writeText:async text=>clipboard.push(text)}},
     window:{addEventListener(){},scrollTo(){}},localStorage:{getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v)},
     setTimeout:()=>0,clearTimeout(){},submitTrainingLog:async r=>{requests.push(JSON.parse(JSON.stringify(r)));return {success:true};},REGISTRATION_ERROR:'fallback',registrationData:JSON.stringify,SHEETS_WEB_APP_URL:''
@@ -536,4 +537,37 @@ test('audio checkbox persists independently and old typed answers remain visible
   h.submit('typeSentence',0,m.typeSentenceQuestions[0].answers[0]);
   assert.match(h.app.innerHTML,/id="answer-form"/);
   assert.doesNotMatch(h.app.innerHTML,/Build your sentence here/);
+});
+
+
+test('live XP uses first attempts and does not double-credit retries or navigation', () => {
+  const m=missions[0], state={step:1,repeat:[],answers:{},listenedFullAudio:false,repeatedOutLoud:false};
+  assert.equal(practiceXP(m,state),10);
+  state.answers.completePhrase={0:{correct:true,attempts:[{correct:false},{correct:true}]}};
+  assert.equal(practiceXP(m,state),10);
+  state.answers.completePhrase[1]={correct:true};
+  assert.equal(practiceXP(m,state),15);
+  state.listenedFullAudio=true;state.repeatedOutLoud=true;
+  assert.equal(practiceXP(m,state),25);
+});
+test('daily practice deduplicates items; goals and streaks survive reload', async () => {
+  const h=await appHarness(); h.context.location.hash='#mission/'+missions[0].id;h.context.route();
+  h.context.markPractice('phrase:0');h.context.markPractice('phrase:0');
+  const log=JSON.parse(h.store.get('rtc:activity:v1'));
+  assert.equal(dailySummary(log).count,1);
+  assert.equal(dailySummary({'2026-10-05':['x'],'2026-10-06':['y']},new Date(2026,9,6)).streak,2);
+  assert.equal(dailySummary({'2026-10-05':['x']},new Date(2026,9,7)).streak,0);
+});
+test('home explains local counts and actually unlocks the next mission on completion', async () => {
+  const h=await appHarness(), current=missions.find(m=>m.status==='current'), next=missions.find(m=>m.isNext);
+  assert.match(h.app.innerHTML,/Recorded on this browser/);
+  assert.match(h.app.innerHTML,/85%/);
+  assert.match(h.app.innerHTML,/8-minute sessions/);
+  h.context.location.hash='#mission/'+next.id;h.context.route();
+  assert.match(h.app.innerHTML,/TODAY'S MISSION/);
+  h.store.set('rtc:last:'+current.id,JSON.stringify({missionId:current.id,completedAt:new Date().toISOString(),percentage:50}));
+  h.context.route();
+  assert.match(h.app.innerHTML,/Briefing/);
+  assert.match(h.app.innerHTML,/Problems/);
+  assert.equal(h.requests.length,0);
 });

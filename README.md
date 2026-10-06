@@ -207,3 +207,16 @@ No Chrome do Mateus: abra Mission 5, teste a lacuna com `UBER!`, uma frase com e
 - A voz do navegador prioriza vozes americanas naturais/enhanced e permite seleção manual. Isso não garante a mesma qualidade em todo aparelho.
 - Para voz ElevenLabs consistente, exporte o roteiro para MP3 e configure `fullAudioUrl` (ou `targetPhrases[].audioUrl` por frase). Nenhuma chave deve entrar no JavaScript público. O player usa a gravação como padrão, com voz do navegador como alternativa. Os três ritmos continuam disponíveis.
 - O fluxo e a URL do Google Sheets não foram alterados.
+
+
+### Home, sessões e motivação
+
+A Home diferencia número do tópico de conclusões registradas neste navegador. A trilha ordena M1–M7 e mantém todas as missões anteriores acessíveis. M7 passa a abrir quando existe uma conclusão local de M6 (qualquer nota); as demais drafts continuam ocultas. Limpar dados locais também remove esse desbloqueio.
+
+“~8-minute sessions” é um convite para dividir o treino: não promete que o conteúdo integral leva oito minutos, não pula etapas nem envia resultado parcial. O tempo integral permanece em “Time & rewards”. “Save & finish this session” volta à Home e mantém o progresso; o registro só ocorre na conclusão integral original.
+
+O XP durante a missão deriva de passos concluídos e primeiras respostas corretas, sem creditar retries. O total e o nível (350 XP por nível) usam o ledger de conclusões existente. Meta diária: cinco itens distintos praticados (frases ou questões, mesmo incorretas). `rtc:activity:v1` armazena IDs por data local, com deduplicação e sequência de dias; não reconstrói práticas anteriores à atualização. Não há perda de XP ao interromper a sequência.
+
+`practice-reminder.ics` oferece importação opcional de lembrete diário às 19h no fuso local do calendário, editável pelo aluno. Não envia notificações pelo site nem exige permissões. Reimportar pode duplicar eventos dependendo do calendário; importe apenas uma vez.
+
+Estrelas preservam os limiares existentes: 85% e 60%. Payload, URL, envio automático, notas e Copy Result permanecem inalterados.

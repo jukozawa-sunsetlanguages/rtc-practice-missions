@@ -1,0 +1,19 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//WorkSpeak RTC Lab//Practice Reminder//EN
+BEGIN:VEVENT
+UID:rtc-practice-daily@sunsetlanguages.com.br
+DTSTAMP:20261006T000000Z
+DTSTART:20261006T190000
+DURATION:PT8M
+RRULE:FREQ=DAILY
+SUMMARY:RTC Lab - 8 minutes of English
+DESCRIPTION:Continue your saved practice.
+URL:https://rtc-mission-practice.sunsetlanguages.com.br/
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:PT0M
+DESCRIPTION:Time for a short English practice.
+END:VALARM
+END:VEVENT
+END:VCALENDAR

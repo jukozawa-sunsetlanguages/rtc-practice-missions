@@ -1,3 +1,4 @@
+import { practiceXP, localDay, dailySummary } from './motivation.js';
 import { expressionChunks, chunkAnswer } from './build.js';
 import { phases, shuffledIndices, starText, completionFeedback, addReward, rewardSummary } from './practice.js';
 import { missionLabel } from './labels.js';
@@ -57,7 +58,7 @@ function load(m) {
   if (!saved || !Number.isInteger(saved.step) || saved.step < 0 || saved.step > 7 || !saved.answers || !Array.isArray(saved.repeat) || (saved.step === 7 && (!saved.completedAt || !saved.result))) return fresh();
   return { ...fresh(), ...saved, drafts: saved.drafts || {}, answers: { ...fresh().answers, ...saved.answers } };
 }
-function save() { if (!review) write(key(mission), state); }
+function save() { if (!review) { if (state.step > 0) state.started = true; write(key(mission), state); } }
 function toast(message) {
   const box = document.querySelector('#toast'); box.textContent = message; box.classList.add('visible');
   clearTimeout(toast.timer); toast.timer = setTimeout(() => box.classList.remove('visible'), 7000);
@@ -103,7 +104,7 @@ function route() {
   stopAudio(); mission = null; state = null; review = null;
   const [page, id] = location.hash.slice(1).split('/');
   if (page === 'previous') return renderPrevious();
-  mission = visible.find(m => m.id === id);
+  mission = availableMissions().find(m => m.id === id);
   if (mission && page === 'result') {
     const result = read(`rtc:last:${mission.id}`);
     if (result) { state = { ...fresh(), result, completedAt: result.completedAt }; return renderComplete(true); }
@@ -122,15 +123,37 @@ function effort(m) {
   const minutes = Math.ceil(estimatedSeconds(m.fallbackAudioScript, speechRates.normal * (m.audioRateMultiplier || 1)) / 60 + m.targetPhrases.length / 10 + questionSections.reduce((n, section) => n + m[section + 'Questions'].length, 0) / 5);
   return `About ${minutes}–${minutes + 5} min with full audio`;
 }
+function nextUnlocked() {
+  return Boolean(current && read(`rtc:last:${current.id}`)?.completedAt);
+}
+function availableMissions() { return nextMission && nextUnlocked() ? [...visible, nextMission] : visible; }
+function markPractice(item) {
+  const log = read('rtc:activity:v1') || {}, day = localDay();
+  const identity = `${mission.id}:${mission.missionVersion}:${item}`;
+  log[day] ||= [];
+  if (!log[day].includes(identity)) log[day].push(identity);
+  write('rtc:activity:v1', log);
+}
+function trail() {
+  return `<ol class="mission-trail">${[...visible, ...(nextMission ? [nextMission] : [])].sort((a,b) => Number(a.week.match(/\d+/)?.[0]) - Number(b.week.match(/\d+/)?.[0])).map(m => {
+    const last = read(`rtc:last:${m.id}`), locked = m === nextMission && !nextUnlocked();
+    return `<li class="${m === current ? 'trail-current' : ''}"><span class="trail-number">${esc(missionLabel(m.week).replace('Mission ', 'M'))}</span><div><strong>${esc(m.title)}</strong><p class="small muted">${last ? starText(last.percentage) + ' · Completed on this device' : locked ? '🔒 Complete ' + missionLabel(current.week) + ' to unlock' : m === current ? 'Your current training' : 'Available to practice'}</p></div>${locked ? '' : `<a class="button quiet" href="#mission/${esc(m.id)}" aria-label="${last ? 'Review' : 'Open'} ${esc(missionLabel(m.week))}">${last ? 'Review' : 'Open'} →</a>`}</li>`;
+  }).join('')}</ol>`;
+}
 function renderHome() {
   const progress = current ? load(current) : null;
   const rewards = rewardSummary(read('rtc:rewards:v1') || {});
-  const last = visible.map(m => read(`rtc:last:${m.id}`)).filter(Boolean).sort((a, b) => Date.parse(b.completedAt) - Date.parse(a.completedAt))[0];
-  app.innerHTML = `<section class="home-intro compact-intro"><p>Hi, ${esc(current?.studentName || 'there')}. Ready for your next conversation?</p><p class="small muted">${rewards.xp} XP · ${rewards.completed} missions completed</p></section>
+  const results = availableMissions().map(m => read(`rtc:last:${m.id}`)).filter(Boolean);
+  const completed = new Set([...Object.values(read('rtc:rewards:v1') || {}).map(r => r.missionId), ...results.map(r => r.missionId)]).size;
+  const last = results.sort((a,b) => Date.parse(b.completedAt) - Date.parse(a.completedAt))[0];
+  const activity = dailySummary(read('rtc:activity:v1') || {}), level = Math.floor(rewards.xp / 350) + 1;
+  app.innerHTML = `<section class="home-intro compact-intro"><p>Hi, ${esc(current?.studentName || 'there')}. Ready for your next conversation?</p></section>
     <section aria-labelledby="current-heading"><div class="section-heading"><h1 id="current-heading" class="home-mission-heading">TODAY'S MISSION</h1></div>
-    ${current ? `<article class="current-card"><div class="mission-card-content"><span class="eyebrow">${esc(missionLabel(current.week))}</span><h3>${esc(current.title)}</h3><p class="key-phrase">${esc(current.keyPhrase)}</p><p class="small muted">${effort(current)} · ★★★ available</p><a class="button primary" href="#mission/${esc(current.id)}">${progress.step || progress.listenedFullAudio ? 'CONTINUE MISSION' : 'START MISSION'} →</a><span class="saved-label">${progress.step ? `In progress · Phase ${phases[progress.step].number} of 5` : 'Listen. Practice. Use it.'}</span></div>${routeArt()}</article>` : '<div class="panel">Your next mission is coming soon.</div>'}</section>
-    ${nextMission ? `<section aria-labelledby="next-heading"><div class="section-heading"><h2 id="next-heading">Next Mission</h2><span class="pill">COMING NEXT</span></div><article class="panel"><span class="eyebrow">${esc(missionLabel(nextMission.week))}</span><h3>${esc(nextMission.title)}</h3><p>${esc(nextMission.keyPhrase)}</p></article></section>` : ''}
-    <section class="home-secondary"><article class="panel"><h2>Previous Missions</h2><p class="muted">Return to earlier missions and keep your phrases fresh.</p><a class="button secondary" href="#previous">Review Previous Missions →</a></article><article class="panel"><h2>My Last Result</h2>${last ? `<p>${esc(missionLabel(last.week))} — ${esc(last.missionName)}</p><p class="last-score">${last.totalScore} / ${last.maxScore} <span class="muted">(${last.percentage}%)</span></p><p class="small muted">${esc(new Date(last.completedAt).toLocaleString())} · ${esc(last.missionVersion)}</p><a class="button secondary" href="#result/${esc(last.missionId)}">View Last Result →</a>` : '<p class="small muted">FIRST RESULT LOCKED 🔒<br>Complete one mission to unlock your result.</p>'}</article></section>`;
+    ${current ? `<article class="current-card"><div class="mission-card-content"><span class="eyebrow">${esc(missionLabel(current.week))} · Current topic</span><h3>${esc(current.title)}</h3><p class="key-phrase">${esc(current.keyPhrase)}</p><p class="session-time">Practice in ~8-minute sessions</p><p class="small muted">Pause whenever you need. Continue from your saved place next time.</p><a class="button primary" href="#mission/${esc(current.id)}">${progress.step || progress.listenedFullAudio ? 'CONTINUE PRACTICE' : 'START PRACTICE'} →</a><p class="saved-label">${progress.step ? `In progress · Phase ${phases[progress.step].number} of 5` : 'One small session today.'}</p><p class="small stars">★★★ = 85%+ correct · ★★☆ = 60%+ · ★☆☆ = complete</p><details><summary>Time & rewards</summary><p class="small">Full mission: ${effort(current)}. An 8-minute session does not skip questions or finish the mission automatically.</p><p class="stars">★★★ 85%+ · ★★☆ 60%+ · ★☆☆ complete</p><p class="small">+10 XP per completed step · +5 per first-try correct answer · +20 on mission completion. XP is saved to your total when you finish.</p></details></div>${routeArt()}</article>` : '<div class="panel">Your next mission is coming soon.</div>'}</section>
+    <section class="panel practice-dashboard" aria-labelledby="practice-heading"><h2 id="practice-heading">Your practice</h2><div class="practice-stats"><div><strong>${rewards.xp} XP</strong><span>Level ${level} · ${350 - rewards.xp % 350} XP to next level</span></div><div><strong>${completed} ${completed === 1 ? 'topic' : 'topics'} completed</strong><span>Recorded on this browser</span></div><div><strong>${activity.streak} practice days in a row</strong><span>${activity.days} days tracked since this update · every return counts</span></div></div><p class="small muted">Mission numbers identify topics, not your completion count. Earlier classroom practice is not tracked here.</p><h3>Today's goal: practice 5 items</h3><progress max="5" value="${Math.min(5,activity.count)}" aria-label="Today's practice goal"></progress><p class="small">${Math.min(5,activity.count)} / 5 · ${activity.count >= 5 ? 'Goal reached. Nice work!' : 'Say a phrase or answer a question. Correct or incorrect, practice counts.'}</p><a class="button quiet" href="/practice-reminder.ics" download="rtc-practice-reminder.ics">Add a practice reminder →</a><p class="small muted">Optional calendar reminder · daily at 19:00, your local time. Edit the time in your calendar before saving. No browser notifications.</p></section>
+    <section aria-labelledby="trail-heading"><div class="section-heading"><h2 id="trail-heading">Your mission trail</h2><a href="#previous">Previous Missions →</a></div>${trail()}</section>
+    ${nextMission ? `<section aria-labelledby="next-heading"><div class="section-heading"><h2 id="next-heading">Next Mission</h2><span class="pill">${nextUnlocked() ? 'UNLOCKED' : '🔒 LOCKED'}</span></div><article class="panel"><span class="eyebrow">${esc(missionLabel(nextMission.week))}</span><h3>${esc(nextMission.title)}</h3><p>${esc(nextMission.keyPhrase)}</p>${nextUnlocked() ? `<a class="button secondary" href="#mission/${esc(nextMission.id)}">Start ${esc(missionLabel(nextMission.week))} →</a>` : `<p class="small muted">Complete ${esc(missionLabel(current.week))} to unlock. Any completed score counts.</p>`}</article></section>` : ''}
+    <section class="panel home-last-result"><h2>My Last Result</h2>${last ? `<p>${esc(missionLabel(last.week))} — ${esc(last.missionName)}</p><p class="last-score">${last.totalScore} / ${last.maxScore} <span class="muted">(${last.percentage}%)</span></p><a class="button secondary" href="#result/${esc(last.missionId)}">View Last Result →</a>` : '<p class="small muted">Your first completed mission will appear here.</p>'}</section>`;
 }
 function renderPrevious() {
   const previous = visible.filter(m => m.status === 'previous').sort((a, b) =>
@@ -195,7 +218,7 @@ function primaryAction() {
 function renderMission() {
   if (!review && state.completedAt && state.result) return renderComplete();
   const step = state.step, phase = review ? { number: 5, name: 'Train What I Missed', part: 'Practice only · original score stays saved' } : phases[step];
-  app.innerHTML = `<a class="back-link" href="#home">← Back to Missions</a><div class="flow-heading"><div><span class="eyebrow">${esc(missionLabel(mission.week))} · ${esc(mission.title)}</span><h1>${phase.name}</h1><p class="small muted">${phase.part}</p></div><span class="step-count">${String(phase.number).padStart(2, '0')}<span> / 05</span></span></div><progress class="mission-progress" max="5" value="${phase.number}" aria-label="Phase ${phase.number} of 5"></progress><section class="panel flow-panel ${!review && step === 6 ? 'final-round' : ''}">${review ? questionCard(sectionNow(), mission[sectionNow() + 'Questions'][indexNow()], indexNow()) : stepBody(step)}</section><div class="flow-actions">${review ? '<button class="button quiet" data-action="exit-review">Back to result</button>' : step > 0 ? '<button class="button quiet" data-action="back">← Back</button>' : '<span></span>'}${primaryAction()}</div><p class="save-note">${review ? 'Review never changes your original score.' : 'Progress saves on this device. First answers count toward your score.'}</p>`;
+  app.innerHTML = `<a class="back-link" href="#home">← Back to Missions</a><div class="flow-heading"><div><span class="eyebrow">${esc(missionLabel(mission.week))} · ${esc(mission.title)}</span><h1>${phase.name}</h1><p class="small muted">${phase.part}</p></div><span class="step-count">${String(phase.number).padStart(2, '0')}<span> / 05</span></span></div><progress class="mission-progress" max="5" value="${phase.number}" aria-label="Phase ${phase.number} of 5"></progress><p class="live-xp" role="status">${review ? 'Review practice · original rewards unchanged' : `+${practiceXP(mission, state)} XP this mission · +10 per step · +5 per first-try correct answer`}</p><a class="session-exit" href="#home">Save & finish this session →</a><section class="panel flow-panel ${!review && step === 6 ? 'final-round' : ''}">${review ? questionCard(sectionNow(), mission[sectionNow() + 'Questions'][indexNow()], indexNow()) : stepBody(step)}</section><div class="flow-actions">${review ? '<button class="button quiet" data-action="exit-review">Back to result</button>' : step > 0 ? '<button class="button quiet" data-action="back">← Back</button>' : '<span></span>'}${primaryAction()}</div><p class="save-note">${review ? 'Review never changes your original score.' : 'Progress saves on this device. First answers count toward your score.'}</p>`;
 }
 function check(id, label, checked, data = '') { return `<label class="check-row"><input type="checkbox" id="${id}" ${checked ? 'checked' : ''} ${data}><span>${label}</span></label>`; }
 function vocabulary(title, items) {
@@ -228,7 +251,7 @@ function canContinue() {
   const section = questionSections[state.step - 3];
   return mission[section + 'Questions'].every((_, i) => !!state.answers[section][i] && !state.answers[section][i].retrying);
 }
-function updateContinue() { const button = app.querySelector('[data-action="next"]'); if (button) button.disabled = !canContinue(); }
+function updateContinue() { const button = app.querySelector('[data-action="next"]'); if (button) button.disabled = !canContinue(); const xp = app.querySelector('.live-xp'); if (xp && !review) xp.textContent = `+${practiceXP(mission, state)} XP this mission · +10 per step · +5 per first-try correct answer`; }
 function finish() {
   state.result = buildResult(mission, state, navigator.userAgent);
   state.completedAt = state.result.completedAt; state.step = 7;
@@ -275,6 +298,7 @@ function record(section, i, attempt) {
   if (previous && !previous.retrying) return;
   const attempts = previous ? previous.attempts || [{ value: previous.value, correct: previous.correct, verdict: previous.verdict }] : [];
   target[section][i] = { ...attempt, attempts: [...attempts, attempt], retrying: false };
+  if (!review) markPractice(`${section}:${i}`);
   save(); refreshQuestion();
 }
 function persistRegistration(m, result) {
@@ -396,7 +420,7 @@ app.addEventListener('click', async e => {
   }
   if (action === 'previous-phrase') { stopAudio(); state.phraseCursor = Math.max(0, phraseIndex() - 1); save(); renderMission(); focusTop(); }
   if (action === 'said') {
-    stopAudio(); const i = phraseIndex(); if (!state.repeat.includes(i)) state.repeat.push(i);
+    stopAudio(); const i = phraseIndex(); markPractice(`phrase:${i}`); if (!state.repeat.includes(i)) state.repeat.push(i);
     if (i < mission.targetPhrases.length - 1) state.phraseCursor = i + 1;
     else if (canContinue()) state.step++;
     else state.phraseCursor = mission.targetPhrases.findIndex((_, i) => !state.repeat.includes(i));
