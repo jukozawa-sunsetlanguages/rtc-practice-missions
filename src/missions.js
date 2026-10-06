@@ -2,11 +2,705 @@
 // Bump missionVersion when questions change. Optional target phrase audioUrl supports recordings.
 export const missions = [
 {
+  "id": "mission-6-shopping-buying",
+  "week": "Mission 6",
+  "title": "Shopping & Buying Things",
+  "shortTitle": "Shopping",
+  "status": "current",
+  "missionVersion": "v1",
+  "studentName": "Mateus",
+  "keyPhrase": "Find. Choose. Pay.",
+  "goal": "You are traveling in the United States.\n\nYou are in a store.\nYou want to buy something.\n\nMaybe a t-shirt.\nMaybe a gift.\nMaybe a souvenir.\n\nYour mission is to find what you need, choose the item, and pay.",
+  "todayYouPractice": [
+    "looking for an item",
+    "choosing size and color",
+    "asking the price",
+    "trying clothes on",
+    "buying the item",
+    "paying by card",
+    "asking for a receipt",
+    "asking for a bag",
+    "using recovery phrases"
+  ],
+  "fullAudioUrl": "",
+  "targetPhrases": [
+    {
+      "english": "I’m looking for a t-shirt.",
+      "portuguese": "Estou procurando uma camiseta."
+    },
+    {
+      "english": "I’m looking for a gift.",
+      "portuguese": "Estou procurando um presente."
+    },
+    {
+      "english": "I’m looking for a souvenir.",
+      "portuguese": "Estou procurando uma lembrancinha/souvenir."
+    },
+    {
+      "english": "I want a blue t-shirt.",
+      "portuguese": "Eu quero uma camiseta azul."
+    },
+    {
+      "english": "Do you have this in medium?",
+      "portuguese": "Você tem este no tamanho médio?"
+    },
+    {
+      "english": "Do you have this in blue?",
+      "portuguese": "Você tem este no azul?"
+    },
+    {
+      "english": "How much is it?",
+      "portuguese": "Quanto custa?"
+    },
+    {
+      "english": "Can I try it on?",
+      "portuguese": "Posso provar?"
+    },
+    {
+      "english": "Can I try this on?",
+      "portuguese": "Posso provar isto?"
+    },
+    {
+      "english": "I’ll take this one.",
+      "portuguese": "Vou levar este aqui."
+    },
+    {
+      "english": "I’ll take it.",
+      "portuguese": "Vou levar."
+    },
+    {
+      "english": "Can I pay by card?",
+      "portuguese": "Posso pagar com cartão?"
+    },
+    {
+      "english": "Can I have a receipt, please?",
+      "portuguese": "Posso pegar um recibo, por favor?"
+    },
+    {
+      "english": "Can I have a bag, please?",
+      "portuguese": "Posso pegar uma sacola, por favor?"
+    },
+    {
+      "english": "That’s all, thank you.",
+      "portuguese": "É só isso, obrigado."
+    },
+    {
+      "english": "Can you repeat, please?",
+      "portuguese": "Você pode repetir, por favor?"
+    },
+    {
+      "english": "Can you speak slowly, please?",
+      "portuguese": "Você pode falar devagar, por favor?"
+    }
+  ],
+  "recognitionPhrases": [
+    {
+      "english": "Can I help you?",
+      "portuguese": "Posso ajudar?"
+    },
+    {
+      "english": "What are you looking for?",
+      "portuguese": "O que você está procurando?"
+    },
+    {
+      "english": "What size?",
+      "portuguese": "Qual tamanho?"
+    },
+    {
+      "english": "What color?",
+      "portuguese": "Qual cor?"
+    },
+    {
+      "english": "Do you want to try it on?",
+      "portuguese": "Você quer provar?"
+    },
+    {
+      "english": "Would you like to try it on?",
+      "portuguese": "Você gostaria de provar?"
+    },
+    {
+      "english": "Does it fit you well?",
+      "portuguese": "Serviu bem em você?"
+    },
+    {
+      "english": "Cash or card?",
+      "portuguese": "Dinheiro ou cartão?"
+    },
+    {
+      "english": "Do you want a receipt?",
+      "portuguese": "Você quer um recibo?"
+    },
+    {
+      "english": "Do you need a bag?",
+      "portuguese": "Você precisa de uma sacola?"
+    },
+    {
+      "english": "Anything else?",
+      "portuguese": "Mais alguma coisa?"
+    },
+    {
+      "english": "Have a nice day.",
+      "portuguese": "Tenha um bom dia."
+    }
+  ],
+  "vocabulary": [
+    {
+      "english": "store",
+      "portuguese": "loja"
+    },
+    {
+      "english": "mall",
+      "portuguese": "shopping center"
+    },
+    {
+      "english": "shopping",
+      "portuguese": "compras"
+    },
+    {
+      "english": "t-shirt",
+      "portuguese": "camiseta"
+    },
+    {
+      "english": "gift",
+      "portuguese": "presente"
+    },
+    {
+      "english": "souvenir",
+      "portuguese": "lembrancinha"
+    },
+    {
+      "english": "size",
+      "portuguese": "tamanho"
+    },
+    {
+      "english": "color",
+      "portuguese": "cor"
+    },
+    {
+      "english": "medium",
+      "portuguese": "médio"
+    },
+    {
+      "english": "large",
+      "portuguese": "grande"
+    },
+    {
+      "english": "extra large",
+      "portuguese": "extra grande"
+    },
+    {
+      "english": "blue",
+      "portuguese": "azul"
+    },
+    {
+      "english": "price",
+      "portuguese": "preço"
+    },
+    {
+      "english": "card",
+      "portuguese": "cartão"
+    },
+    {
+      "english": "cash",
+      "portuguese": "dinheiro"
+    },
+    {
+      "english": "receipt",
+      "portuguese": "recibo"
+    },
+    {
+      "english": "bag",
+      "portuguese": "sacola"
+    },
+    {
+      "english": "fitting room",
+      "portuguese": "provador"
+    },
+    {
+      "english": "changing room",
+      "portuguese": "provador"
+    },
+    {
+      "english": "keychain",
+      "portuguese": "chaveiro"
+    },
+    {
+      "english": "magnet",
+      "portuguese": "ímã"
+    },
+    {
+      "english": "plain",
+      "portuguese": "liso"
+    },
+    {
+      "english": "stamped",
+      "portuguese": "estampado"
+    },
+    {
+      "english": "checked",
+      "portuguese": "xadrez"
+    },
+    {
+      "english": "striped",
+      "portuguese": "listrado"
+    }
+  ],
+  "chooseMeaningQuestions": [
+    {
+      "prompt": "I’m looking for a t-shirt.",
+      "options": [
+        "Estou procurando uma camiseta.",
+        "Estou pagando uma camiseta.",
+        "Estou provando uma camiseta."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Do you have this in medium?",
+      "options": [
+        "Você tem este no tamanho médio?",
+        "Você tem isto no azul?",
+        "Você tem isto em dinheiro?"
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "How much is it?",
+      "options": [
+        "Quanto custa?",
+        "Onde fica?",
+        "Qual é o tamanho?"
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Can I try it on?",
+      "options": [
+        "Posso provar?",
+        "Posso pagar?",
+        "Posso repetir?"
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "I’ll take this one.",
+      "options": [
+        "Vou levar este aqui.",
+        "Vou devolver este aqui.",
+        "Vou procurar este aqui."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Can I pay by card?",
+      "options": [
+        "Posso pagar com cartão?",
+        "Posso pagar em dinheiro?",
+        "Posso pedir uma sacola?"
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Can I have a receipt, please?",
+      "options": [
+        "Posso pegar um recibo, por favor?",
+        "Posso pegar uma sacola, por favor?",
+        "Posso pegar uma camiseta, por favor?"
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "That’s all, thank you.",
+      "options": [
+        "É só isso, obrigado.",
+        "É muito caro, obrigado.",
+        "Está errado, obrigado."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "It doesn’t fit.",
+      "options": [
+        "Não serviu / não coube.",
+        "Não funciona.",
+        "Não custa."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "I’m just browsing.",
+      "options": [
+        "Estou só dando uma olhada.",
+        "Estou só pagando.",
+        "Estou só perdido."
+      ],
+      "answer": 0
+    }
+  ],
+  "completePhraseQuestions": [
+    {
+      "prompt": "I’m looking for a ______.",
+      "answers": [
+        "t-shirt",
+        "gift",
+        "souvenir"
+      ],
+      "fullPhrase": "I’m looking for a t-shirt."
+    },
+    {
+      "prompt": "I want a blue ______.",
+      "answers": [
+        "t-shirt"
+      ],
+      "fullPhrase": "I want a blue t-shirt."
+    },
+    {
+      "prompt": "Do you have this in ______?",
+      "answers": [
+        "medium",
+        "blue",
+        "large",
+        "extra large"
+      ],
+      "fullPhrase": "Do you have this in medium?"
+    },
+    {
+      "prompt": "How much ______ it?",
+      "answers": [
+        "is"
+      ],
+      "fullPhrase": "How much is it?"
+    },
+    {
+      "prompt": "Can I try it ______?",
+      "answers": [
+        "on"
+      ],
+      "fullPhrase": "Can I try it on?"
+    },
+    {
+      "prompt": "I’ll take this ______.",
+      "answers": [
+        "one"
+      ],
+      "fullPhrase": "I’ll take this one."
+    },
+    {
+      "prompt": "Can I pay by ______?",
+      "answers": [
+        "card"
+      ],
+      "fullPhrase": "Can I pay by card?"
+    },
+    {
+      "prompt": "Can I have a ______, please?",
+      "answers": [
+        "receipt",
+        "bag"
+      ],
+      "fullPhrase": "Can I have a receipt, please?"
+    },
+    {
+      "prompt": "That’s ______, thank you.",
+      "answers": [
+        "all"
+      ],
+      "fullPhrase": "That’s all, thank you."
+    },
+    {
+      "prompt": "Can you ______, please?",
+      "answers": [
+        "repeat",
+        "help"
+      ],
+      "fullPhrase": "Can you repeat, please?"
+    },
+    {
+      "prompt": "Can you speak ______, please?",
+      "answers": [
+        "slowly"
+      ],
+      "fullPhrase": "Can you speak slowly, please?"
+    },
+    {
+      "prompt": "It doesn’t ______.",
+      "answers": [
+        "fit"
+      ],
+      "fullPhrase": "It doesn’t fit."
+    }
+  ],
+  "typeSentenceQuestions": [
+    {
+      "prompt": "Estou procurando uma camiseta.",
+      "answers": [
+        "I’m looking for a t-shirt.",
+        "I'm looking for a t-shirt.",
+        "I am looking for a t-shirt.",
+        "I’m looking for a shirt."
+      ]
+    },
+    {
+      "prompt": "Estou procurando um presente.",
+      "answers": [
+        "I’m looking for a gift.",
+        "I'm looking for a gift.",
+        "I am looking for a gift."
+      ]
+    },
+    {
+      "prompt": "Estou procurando uma lembrancinha/souvenir.",
+      "answers": [
+        "I’m looking for a souvenir.",
+        "I'm looking for a souvenir.",
+        "I am looking for a souvenir."
+      ]
+    },
+    {
+      "prompt": "Eu quero uma camiseta azul.",
+      "answers": [
+        "I want a blue t-shirt.",
+        "I want a blue shirt."
+      ]
+    },
+    {
+      "prompt": "Você tem este no tamanho médio?",
+      "answers": [
+        "Do you have this in medium?",
+        "Do you have this one in medium?",
+        "Do you have this t-shirt in medium?"
+      ]
+    },
+    {
+      "prompt": "Você tem este no azul?",
+      "answers": [
+        "Do you have this in blue?",
+        "Do you have this one in blue?",
+        "Do you have this t-shirt in blue?"
+      ]
+    },
+    {
+      "prompt": "Quanto custa?",
+      "answers": [
+        "How much is it?",
+        "How much?"
+      ]
+    },
+    {
+      "prompt": "Posso provar?",
+      "answers": [
+        "Can I try it on?",
+        "Can I try this on?",
+        "Can I try it?"
+      ]
+    },
+    {
+      "prompt": "Vou levar este aqui.",
+      "answers": [
+        "I’ll take this one.",
+        "I'll take this one.",
+        "I will take this one.",
+        "I’ll take it.",
+        "I'll take it."
+      ]
+    },
+    {
+      "prompt": "Posso pagar com cartão?",
+      "answers": [
+        "Can I pay by card?",
+        "Can I pay with card?",
+        "Can I pay by credit card?"
+      ]
+    },
+    {
+      "prompt": "Posso pegar um recibo, por favor?",
+      "answers": [
+        "Can I have a receipt, please?",
+        "Can I have the receipt, please?",
+        "Receipt, please."
+      ]
+    },
+    {
+      "prompt": "Posso pegar uma sacola, por favor?",
+      "answers": [
+        "Can I have a bag, please?",
+        "Can I get a bag, please?",
+        "Bag, please."
+      ]
+    },
+    {
+      "prompt": "É só isso, obrigado.",
+      "answers": [
+        "That’s all, thank you.",
+        "That's all, thank you.",
+        "That is all, thank you.",
+        "No, thank you."
+      ]
+    },
+    {
+      "prompt": "Você pode repetir, por favor?",
+      "answers": [
+        "Can you repeat, please?",
+        "Can you repeat please?",
+        "Repeat, please."
+      ]
+    },
+    {
+      "prompt": "Você pode falar devagar, por favor?",
+      "answers": [
+        "Can you speak slowly, please?",
+        "Can you speak slowly please?",
+        "Speak slowly, please."
+      ]
+    }
+  ],
+  "finalMissionScenario": "You are traveling in the United States.\n\nYou are at the mall.\nYou want to buy a t-shirt and a souvenir.\n\nUse English to ask for help, choose the item, ask the price, pay, and recover if needed.",
+  "finalMissionQuestions": [
+    {
+      "prompt": "You are in a store. You want a t-shirt.",
+      "answers": [
+        "I’m looking for a t-shirt.",
+        "I'm looking for a t-shirt.",
+        "I want a t-shirt.",
+        "I want a blue t-shirt."
+      ]
+    },
+    {
+      "prompt": "You want a blue t-shirt.",
+      "answers": [
+        "I want a blue t-shirt.",
+        "I’m looking for a blue t-shirt.",
+        "I'm looking for a blue t-shirt."
+      ]
+    },
+    {
+      "prompt": "You want medium size.",
+      "answers": [
+        "Do you have this in medium?",
+        "Do you have this t-shirt in medium?",
+        "Do you have this one in medium?"
+      ]
+    },
+    {
+      "prompt": "You want to know the price.",
+      "answers": [
+        "How much is it?",
+        "How much?"
+      ]
+    },
+    {
+      "prompt": "You want to try the t-shirt.",
+      "answers": [
+        "Can I try it on?",
+        "Can I try this on?"
+      ]
+    },
+    {
+      "prompt": "You like it and want to buy it.",
+      "answers": [
+        "I’ll take this one.",
+        "I'll take this one.",
+        "I’ll take it.",
+        "I'll take it."
+      ]
+    },
+    {
+      "prompt": "You want to pay by card.",
+      "answers": [
+        "Can I pay by card?",
+        "Card, please.",
+        "By card.",
+        "Can I pay with card?"
+      ]
+    },
+    {
+      "prompt": "You want a receipt.",
+      "answers": [
+        "Can I have a receipt, please?",
+        "Receipt, please.",
+        "Can I have the receipt, please?"
+      ]
+    },
+    {
+      "prompt": "You want a bag.",
+      "answers": [
+        "Can I have a bag, please?",
+        "Bag, please.",
+        "Can I get a bag, please?"
+      ]
+    },
+    {
+      "prompt": "You are in a souvenir store. You want a souvenir.",
+      "answers": [
+        "I’m looking for a souvenir.",
+        "I'm looking for a souvenir.",
+        "I’m looking for a gift.",
+        "I'm looking for a gift."
+      ]
+    },
+    {
+      "prompt": "The shop assistant offers more things. You don’t want anything else.",
+      "answers": [
+        "That’s all, thank you.",
+        "That's all, thank you.",
+        "No, thank you.",
+        "That is all, thank you."
+      ]
+    },
+    {
+      "prompt": "The person speaks fast.",
+      "answers": [
+        "Can you speak slowly, please?",
+        "Can you speak slowly please?",
+        "Speak slowly, please."
+      ]
+    },
+    {
+      "prompt": "You don’t understand.",
+      "answers": [
+        "Can you repeat, please?",
+        "Can you repeat please?",
+        "Repeat, please.",
+        "I don’t understand.",
+        "I don't understand."
+      ]
+    },
+    {
+      "prompt": "The t-shirt doesn’t fit.",
+      "answers": [
+        "It doesn’t fit.",
+        "It doesn't fit.",
+        "Do you have a different size?",
+        "Do you have this in large?"
+      ]
+    }
+  ],
+  "missionCompleteMessage": "Good job.\n\nYou practiced shopping and buying things.\n\nRemember:\n\nFind what you need.\nChoose size and color.\nAsk the price.\nPay.\nAsk for receipt or bag.\nRecover when confused.",
+  "mainPhrases": [
+    "I’m looking for a t-shirt.",
+    "I’m looking for a gift.",
+    "I’m looking for a souvenir.",
+    "Do you have this in medium?",
+    "Do you have this in blue?",
+    "How much is it?",
+    "Can I try it on?",
+    "I’ll take this one.",
+    "Can I pay by card?",
+    "Can I have a receipt, please?",
+    "Can I have a bag, please?",
+    "That’s all, thank you.",
+    "Can you repeat, please?",
+    "Can you speak slowly, please?"
+  ],
+  "fallbackAudioScript": "Hi, Mateus.\n\nThis is your Shopping Day training.\n\nRepeat out loud.\nDon’t just listen.\nSpeak.\n\nPart 1 — Shopping words.\n\nStore.\nMall.\nT-shirt.\nGift.\nSouvenir.\nSize.\nColor.\nPrice.\nReceipt.\nBag.\nCard.\nCash.\n\nGood.\n\nPart 2 — Looking for something.\n\nRepeat.\n\nI’m looking for a t-shirt.\n\n[pause]\n\nI’m looking for a gift.\n\n[pause]\n\nI’m looking for a souvenir.\n\n[pause]\n\nI want a blue t-shirt.\n\n[pause]\n\nGood.\n\nPart 3 — Size and color.\n\nRepeat.\n\nDo you have this in medium?\n\n[pause]\n\nDo you have this in blue?\n\n[pause]\n\nDo you have this one in medium?\n\n[pause]\n\nDo you have this one in blue?\n\n[pause]\n\nGood.\n\nPart 4 — Try and buy.\n\nRepeat.\n\nHow much is it?\n\n[pause]\n\nCan I try it on?\n\n[pause]\n\nCan I try this on?\n\n[pause]\n\nI’ll take this one.\n\n[pause]\n\nI’ll take it.\n\n[pause]\n\nGood.\n\nPart 5 — Pay and finish.\n\nRepeat.\n\nCan I pay by card?\n\n[pause]\n\nCan I have a receipt, please?\n\n[pause]\n\nCan I have a bag, please?\n\n[pause]\n\nThat’s all, thank you.\n\n[pause]\n\nGood.\n\nPart 6 — Recovery.\n\nRepeat.\n\nCan you repeat, please?\n\n[pause]\n\nCan you speak slowly, please?\n\n[pause]\n\nI don’t understand.\n\n[pause]\n\nLet me think.\n\n[pause]\n\nGood.\n\nFinal round.\n\nAnswer fast.\n\nYou want a t-shirt.\n\n[pause]\n\nI’m looking for a t-shirt.\n\n[pause]\n\nYou want a gift.\n\n[pause]\n\nI’m looking for a gift.\n\n[pause]\n\nYou want medium.\n\n[pause]\n\nDo you have this in medium?\n\n[pause]\n\nYou want blue.\n\n[pause]\n\nDo you have this in blue?\n\n[pause]\n\nYou want to know the price.\n\n[pause]\n\nHow much is it?\n\n[pause]\n\nYou want to try it.\n\n[pause]\n\nCan I try it on?\n\n[pause]\n\nYou choose this item.\n\n[pause]\n\nI’ll take this one.\n\n[pause]\n\nYou want to pay by card.\n\n[pause]\n\nCan I pay by card?\n\n[pause]\n\nYou want a receipt.\n\n[pause]\n\nCan I have a receipt, please?\n\n[pause]\n\nYou want a bag.\n\n[pause]\n\nCan I have a bag, please?\n\n[pause]\n\nYou don’t want anything else.\n\n[pause]\n\nThat’s all, thank you.\n\n[pause]\n\nYou don’t understand.\n\n[pause]\n\nCan you repeat, please?\n\n[pause]\n\nThe person speaks fast.\n\n[pause]\n\nCan you speak slowly, please?\n\n[pause]\n\nGood job.\n\nRemember:\n\nFind.\nChoose.\nPay.\nRecover when confused."
+},
+{
   "id": "mission-7-problems-help",
   "week": "Mission 7",
   "title": "Problems & Help",
   "shortTitle": "Problems & Help",
-  "status": "current",
+  "status": "draft",
+  "isNext": true,
   "missionVersion": "v1",
   "studentName": "Mateus",
   "keyPhrase": "Something is wrong. Ask for help.",

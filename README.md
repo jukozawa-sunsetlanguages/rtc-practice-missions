@@ -141,3 +141,5 @@ Três missões de revisão em Previous Missions: Mission 1 — Travel Survival, 
 Após concluir, a tentativa fica em My Last Result e a missão fica pronta para começar novamente no briefing. A tela Mission Complete e o envio automático continuam ativos. Treinos ainda não concluídos continuam de onde pararam.
 
 Mission 7 — Problems & Help é a missão atual: 20 frases e 44 questões (8 significado, 12 lacunas, 14 traduções, 10 situações). Mission 5 passou a previous, mantendo ID, versão e conteúdo. A Mission 6 não estava no repositório sincronizado; seu conteúdo não foi criado neste pedido. Registro automático permanece inalterado.
+
+Mission 6 — Shopping & Buying Things é a missão atual (17 frases, 51 questões). Mission 7 está em Next Mission: status draft com isNext: true, exibida como prévia na Home, ainda sem iniciar treino. Para ativá-la futuramente, altere status para current e mova a atual para previous. Registro automático, IDs e conteúdo das missões anteriores foram preservados.

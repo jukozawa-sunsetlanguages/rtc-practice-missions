@@ -279,7 +279,7 @@ test('Travel Review Pack has complete previous missions and accepted answers', (
  const reviews=missions.filter(m=>m.category==='Travel Review Pack');
  assert.equal(reviews.length,3);
  assert.deepEqual(reviews.map(m=>questionSections.map(s=>m[s+'Questions'].length)),[[6,8,8,7],[8,10,10,10],[8,10,11,12]]);
- assert.equal(missions.find(m=>m.status==='current').id,'mission-7-problems-help');
+ assert.equal(missions.find(m=>m.status==='current').id,'mission-6-shopping-buying');
  for(const m of reviews) {
   assert.equal(m.status,'previous'); assert.ok(m.finalMissionScenario); assert.ok(m.missionCompleteMessage); assert.ok(m.mainPhrases.length);
   for(const section of questionSections.slice(1)) for(const q of m[section+'Questions']) for(const answer of q.answers) assert.equal(evaluate(answer,q.answers),'correct');
@@ -305,12 +305,21 @@ test('completion resets saved practice while preserving result and submission sc
  assert.equal(ctx.load(m).step,3);
 });
 
-test('Mission 7 is current with all phrases, exercises and accepted answers', () => {
+test('Mission 7 is next with all phrases, exercises and accepted answers', () => {
 const m=missions.find(m=>m.id==='mission-7-problems-help');
-assert.equal(m.status,'current');assert.equal(m.week,'Mission 7');assert.equal(m.targetPhrases.length,20);
+assert.equal(m.status,'draft');assert.equal(m.isNext,true);assert.equal(m.week,'Mission 7');assert.equal(m.targetPhrases.length,20);
 assert.deepEqual(questionSections.map(s=>m[s+'Questions'].length),[8,12,14,10]);
 for(const s of questionSections.slice(1))for(const q of m[s+'Questions'])for(const answer of q.answers)assert.equal(evaluate(answer,q.answers),'correct');
 assert.equal(evaluate('big',m.completePhraseQuestions[6].answers),'correct');
 assert.equal(summarize(m,answered(m,true)).maxScore,44);
 assert.equal(missions.find(m=>m.id==='week-05-transportation').status,'previous');
+});
+
+test('Mission 6 is current, complete and accepts all supplied alternatives', () => {
+const m=missions.find(m=>m.id==='mission-6-shopping-buying');assert.equal(m.status,'current');assert.equal(m.week,'Mission 6');
+assert.equal(m.targetPhrases.length,17);assert.equal(m.recognitionPhrases.length,12);assert.equal(m.vocabulary.length,25);
+assert.deepEqual(questionSections.map(s=>m[s+'Questions'].length),[10,12,15,14]);
+for(const section of questionSections.slice(1))for(const q of m[section+'Questions'])for(const a of q.answers)assert.equal(evaluate(a,q.answers),'correct');
+assert.equal(summarize(m,answered(m,true)).maxScore,51);assert.match(m.fallbackAudioScript,/Part 6 — Recovery/);assert.match(m.fallbackAudioScript,/Final round/);
+assert.equal(missions.filter(m=>m.status==='previous').length,5);
 });
