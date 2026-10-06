@@ -1,6 +1,32 @@
 export const questionSections = ['chooseMeaning', 'completePhrase', 'typeSentence', 'finalMission'];
 export function normalize(value) {
-  return String(value).normalize('NFKC').toLowerCase().replace(/[’‘]/g, "'").replace(/[.,!?;:]/g, '').trim().replace(/\s+/g, ' ');
+  return String(value ?? '').normalize('NFKC').toLowerCase().replace(/[’‘]/g, "'").replace(/[“”]/g, '"').replace(/[.,!?;:]/g, '').trim().replace(/\s+/g, ' ');
+}
+export function acceptedAnswers(question) {
+  if (Array.isArray(question)) return question;
+  return [...new Set([question.expectedAnswer, ...(question.answers || []), ...(question.acceptedAnswers || [])].filter(a => typeof a === 'string' && a.trim()))];
+}
+export function itemId(mission, section, question, index) {
+  return `${mission.id}:${section}:${question.id ?? index}`;
+}
+export function reviewItems(mission, wrongAnswers = []) {
+  if (!Array.isArray(wrongAnswers)) return [];
+  const seen = new Set();
+  return wrongAnswers.filter(a => (a.attemptNumber ?? 1) === 1).flatMap(a => {
+    const questions = mission[a.section + 'Questions'];
+    const index = a.itemId ? questions?.findIndex((q, i) => itemId(mission, a.section, q, i) === a.itemId) : a.questionIndex;
+    const q = questions?.[index];
+    if (!q) return [];
+    const phrase = a.section === 'chooseMeaning' ? q.practicePhrase || q.prompt : q.fullPhrase || acceptedAnswers(q)[0];
+    const identity = normalize(phrase);
+    if (!identity || seen.has(identity)) return [];
+    seen.add(identity);
+    return [{ id: itemId(mission, a.section, q, index), section: a.section, index, phrase }];
+  });
+}
+export function uniquePhrases(phrases = []) {
+  const seen = new Set();
+  return phrases.filter(p => { const n = normalize(p); if (!n || seen.has(n)) return false; seen.add(n); return true; });
 }
 function distance(a, b) {
   let row = Array.from({ length: b.length + 1 }, (_, i) => i);
@@ -12,6 +38,7 @@ function distance(a, b) {
   return row[b.length];
 }
 export function evaluate(value, answers) {
+  answers = acceptedAnswers(answers);
   const text = normalize(value);
   if (answers.some(answer => normalize(answer) === text)) return 'correct';
   return answers.some(answer => {
@@ -30,15 +57,9 @@ export function summarize(mission, state) {
   const wrongAnswers = questionSections.flatMap(section => mission[section + 'Questions'].flatMap((q, i) => {
     const attempt = state.answers[section]?.[i];
     const attempts = attempt ? attempt.attempts || [attempt] : [];
-    return attempts.flatMap((item, attemptIndex) => !item.correct ? [{ section, questionIndex: i, attemptNumber: attemptIndex + 1, verdict: item.verdict || 'incorrect', prompt: q.prompt, answer: item.value, expected: q.fullPhrase || q.answers?.[0] || q.options[q.answer] }] : []);
+    return attempts.flatMap((item, attemptIndex) => !item.correct ? [{ section, questionIndex: i, itemId: itemId(mission, section, q, i), attemptNumber: attemptIndex + 1, verdict: item.verdict || 'incorrect', prompt: q.prompt, answer: item.value, expected: q.fullPhrase || acceptedAnswers(q)[0] || q.options[q.answer] }] : []);
   }));
-  const difficultPhrases = [...new Set([
-    ...(state.difficultAudioPhrase.trim() ? [state.difficultAudioPhrase.trim()] : []),
-    ...wrongAnswers.map(answer => {
-      const q = mission[answer.section + 'Questions'][answer.questionIndex];
-      return answer.section === 'chooseMeaning' ? q.practicePhrase || q.prompt : answer.expected;
-    })
-  ])];
+  const difficultPhrases = reviewItems(mission, wrongAnswers).map(item => item.phrase);
   const answerSummary = { correct: 0, almost: 0, incorrect: 0 };
   for (const section of questionSections) {
     mission[section + 'Questions'].forEach((_, i) => {

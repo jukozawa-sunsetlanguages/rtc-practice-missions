@@ -1174,3 +1174,33 @@ details p {
 .audio-settings { margin: 1.5rem 0; padding: 1rem; border: 1px solid #354b5c; border-radius: 12px; min-width: 0; }
 .audio-settings .audio-buttons { display: flex; flex-wrap: wrap; gap: .5rem; }
 .audio-settings [aria-pressed="true"] { background: #edbb55; color: #0c1b29; border-color: #edbb55; }
+
+/* Compact practice shell; existing navy/gold palette and focus rules stay intact. */
+.mission-progress { width:100%; height:6px; margin:18px 0; accent-color:var(--gold); border:0; }
+.mission-progress::-webkit-progress-bar { background:var(--line); border-radius:6px; }
+.mission-progress::-webkit-progress-value { background:var(--gold); border-radius:6px; }
+.flow-heading h1 { font-size:clamp(1.4rem,3vw,2rem); margin:6px 0; }
+.flow-panel .question-card { border:0; padding:0; background:transparent; }
+.flow-panel .phrase-card h2 { margin-bottom:20px; }
+.flow-panel .phrase-card { margin:16px 0; }
+.final-round { border-color:var(--gold); }
+.stars { color:var(--gold); letter-spacing:.04em; margin:12px 0; }
+.compact-intro { padding:24px 0; }
+.home-mission-heading { font-size:1.1rem; letter-spacing:0; }
+.mission-card-content > .button { margin-top:20px; }
+.flow-actions { align-items:center; }
+.flow-actions > .primary { min-width:150px; }
+.question-card, .phrase-card, .flow-heading > div { min-width:0; overflow-wrap:anywhere; }
+@media(max-width:700px) {
+  .site-header { padding:14px 20px; }
+  .back-link { padding:16px 0; }
+  .flow-panel { padding:18px 16px; }
+  .flow-actions { position:sticky; bottom:0; z-index:3; padding:12px 0 max(12px,env(safe-area-inset-bottom)); background:var(--bg,#0b1827); }
+  /* When typing, actions follow the input in document flow, so an overlay
+     keyboard cannot trap a fixed footer over the focused field. */
+  main:has(input:focus, textarea:focus) .flow-actions { position:static; }
+  input, textarea { scroll-margin-block:100px; }
+  .compact-intro { padding:18px 0; }
+  .mission-card-content { padding:22px; }
+  .mission-card-content h3 { font-size:1.6rem; }
+}

@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 import { missions } from '../src/missions.js';
-import { normalize, evaluate, summarize, questionSections } from '../src/scoring.js';
+import { normalize, evaluate, summarize, questionSections, acceptedAnswers, reviewItems, uniquePhrases } from '../src/scoring.js';
+import { phases, shuffledIndices, starText, completionFeedback, addReward, rewardSummary } from '../src/practice.js';
 import { buildResult, localISO } from '../src/results.js';
 
 // Never call the deployed URL during automated tests. Use explicit test endpoints.
@@ -266,7 +267,7 @@ test('Mission Complete starts automatic registration and retry uses the same coo
   const {createRegistration}=await import('../src/registration.js');
   const store=new Map(); const result={studentName:'Test',missionId:'test',missionVersion:'v1',completedAt:'2026-09-22T12:00:00Z',difficultPhrases:[],totalScore:0,maxScore:0};
   const registrations=createRegistration({read:k=>store.get(k),write:(k,v)=>store.set(k,v),submit:()=>{calls++;return new Promise(done=>resolve=done);}});
-  const context=vm.createContext({missionLabel: value => String(value ?? '').replace(/Week/g,'Mission'),console:{debug(){}},location:{hash:'#result/test'},state:{result},mission:{id:'test'},registrations,submissionId:()=> 'test',resultKey:()=> 'test',justSubmitted:new Set(),manualRegistrations:new Set(),esc:String,app:{innerHTML:''},questionSections:[],REGISTRATION_ERROR:'fallback',SHEETS_WEB_APP_URL:'',persistRegistration(){}});
+  const context=vm.createContext({review:null,reviewItems,uniquePhrases,starText,completionFeedback,read:()=>null,missionLabel: value => String(value ?? '').replace(/Week/g,'Mission'),console:{debug(){}},location:{hash:'#result/test'},state:{result},mission:{id:'test'},registrations,submissionId:()=> 'test',resultKey:()=> 'test',justSubmitted:new Set(),manualRegistrations:new Set(),esc:String,app:{innerHTML:''},questionSections:[],REGISTRATION_ERROR:'fallback',SHEETS_WEB_APP_URL:'',persistRegistration(){}});
   vm.runInContext(source.slice(start,end),context);
   context.renderComplete(); context.renderComplete();
   await Promise.resolve(); assert.equal(calls,1); assert.match(context.app.innerHTML,/Submitting training/);
@@ -292,7 +293,7 @@ test('completion resets saved practice while preserving result and submission sc
  const store=new Map(); const m={id:'test',missionVersion:'v1'};
  const result={missionId:'test',completedAt:'2026-09-29T12:00:00Z'};
  let rendered=0;
- const ctx=vm.createContext({questionSections,read:k=>store.get(k),write:(k,v)=>store.set(k,v),key:()=> 'progress',mission:m,state:{step:6},navigator:{userAgent:'test'},buildResult:()=>result,renderComplete:()=>rendered++,focusTop(){}});
+ const ctx=vm.createContext({addReward,questionSections,read:k=>store.get(k),write:(k,v)=>store.set(k,v),key:()=> 'progress',mission:m,state:{step:6},navigator:{userAgent:'test'},buildResult:()=>result,renderComplete:()=>rendered++,focusTop(){}});
  vm.runInContext(source.slice(source.indexOf('function fresh()'), source.indexOf('function save()')),ctx);
  vm.runInContext(source.slice(source.indexOf('function finish()'),source.indexOf('function renderComplete(')),ctx);
  ctx.finish();
@@ -322,4 +323,157 @@ assert.deepEqual(questionSections.map(s=>m[s+'Questions'].length),[10,12,15,14])
 for(const section of questionSections.slice(1))for(const q of m[section+'Questions'])for(const a of q.answers)assert.equal(evaluate(a,q.answers),'correct');
 assert.equal(summarize(m,answered(m,true)).maxScore,51);assert.match(m.fallbackAudioScript,/Part 6 — Recovery/);assert.match(m.fallbackAudioScript,/Final round/);
 assert.equal(missions.filter(m=>m.status==='previous').length,5);
+});
+
+test('Mission 5 exact and normalized answers score in every typed section', () => {
+  const m = missions.find(m => m.id === 'week-05-transportation');
+  const state = answered(m);
+  for (const section of questionSections.slice(1)) {
+    for (const [i, q] of m[section + 'Questions'].entries()) {
+      for (const answer of acceptedAnswers(q)) {
+        for (const value of [answer, '  ' + answer.toUpperCase().replaceAll(' ', '   ') + '  ', answer.replaceAll('’', "'").replace(/[.!?]$/, '') + '!']) {
+          const verdict = evaluate(value, q);
+          assert.equal(verdict, 'correct', `${section} ${i}: ${value}`);
+          state.answers[section][i] = { value, correct: verdict === 'correct', verdict };
+        }
+      }
+    }
+  }
+  assert.equal(summarize(m, state).totalScore, 43);
+  assert.equal(evaluate('Can you repeat please', m.typeSentenceQuestions[12]), 'correct');
+  assert.equal(evaluate('another size', { expectedAnswer:'different size', acceptedAnswers:['another size'] }), 'correct');
+  assert.equal(evaluate('taxy', { answers:['taxi'] }) === 'correct', false);
+});
+
+test('review uses first errors, stable IDs and normalized phrase deduplication', () => {
+  const m = missions.find(m => m.id === 'week-05-transportation');
+  const s = answered(m);
+  s.answers.chooseMeaning[1] = { correct:false, value:'left' };
+  s.answers.completePhrase[5] = { correct:true, attempts:[{correct:false,value:'left'},{correct:true,value:'right'}] };
+  // A later error on an originally correct item is evidence, not a review target.
+  s.answers.typeSentence[0] = { correct:false, attempts:[{correct:true,value:'I need an Uber.'},{correct:false,value:'oops'}] };
+  const r = summarize(m,s);
+  assert.equal(r.totalScore,41);
+  assert.equal(r.wrongAnswers.length,3);
+  assert.equal(r.difficultPhrases.length,1);
+  assert.equal(normalize(r.difficultPhrases[0]),'turn right');
+  const items = reviewItems(m,r.wrongAnswers);
+  assert.equal(items.length,1);
+  assert.match(items[0].id,/chooseMeaning-02$/);
+  assert.equal(reviewItems(m,[{...r.wrongAnswers[0],questionIndex:99}])[0].index,1);
+});
+
+test('word banks are explicit and unambiguous; phases and rewards are independent of scoring', () => {
+  const m = missions.find(m => m.id === 'week-05-transportation');
+  for (const q of m.completePhraseQuestions) {
+    assert.ok(q.hint);
+    assert.equal(q.wordBank.filter(word => evaluate(word,q) === 'correct').length,1);
+  }
+  assert.deepEqual(phases.map(p=>p.number),[1,2,2,3,4,4,5]);
+  assert.deepEqual([...shuffledIndices(4,()=>0)].sort(),[0,1,2,3]);
+  assert.notDeepEqual(shuffledIndices(4,()=>0),[0,1,2,3]);
+  assert.deepEqual([0,59,60,84,85,100].map(starText),['★☆☆','★☆☆','★★☆','★★☆','★★★','★★★']);
+  const r={missionId:m.id,missionVersion:m.missionVersion,completedAt:'2026-10-06T12:00:00Z',totalScore:43,percentage:100};
+  const original=JSON.stringify(r), ledger=addReward({},r);
+  assert.deepEqual(rewardSummary(ledger),{xp:305,completed:1});
+  assert.equal(addReward(ledger,{...r}),ledger);
+  assert.equal(JSON.stringify(r),original);
+});
+
+// Exercise the actual app handlers with isolated device storage and a fake
+// transport. No test data or synthetic student results reach Google Sheets.
+async function appHarness(saved = []) {
+  const registration = await import('../src/registration.js');
+  const audio = await import('../src/audio.js');
+  const results = await import('../src/results.js');
+  const labels = await import('../src/labels.js');
+  const handlers = {}, store = new Map(saved), requests = [], clipboard = [];
+  const control = {focus(){},matches:()=>true,disabled:false,setAttribute(){},classList:{add(){},remove(){}}};
+  const app = {innerHTML:'',focus(){},querySelector:()=>control,querySelectorAll:()=>[],addEventListener:(name,fn)=>handlers[name]=fn};
+  const context = vm.createContext({ ...registration,...audio,...results,...labels,phases,shuffledIndices,starText,completionFeedback,addReward,rewardSummary,missions,evaluate,questionSections,acceptedAnswers,normalize,reviewItems,uniquePhrases,
+    console:{debug(){}},document:{querySelector:selector=>selector==='#app'?app:control},location:{hash:'#home'},navigator:{userAgent:'isolated-test',clipboard:{writeText:async text=>clipboard.push(text)}},
+    window:{addEventListener(){},scrollTo(){}},localStorage:{getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v)},
+    setTimeout:()=>0,clearTimeout(){},submitTrainingLog:async r=>{requests.push(JSON.parse(JSON.stringify(r)));return {success:true};},REGISTRATION_ERROR:'fallback',registrationData:JSON.stringify,SHEETS_WEB_APP_URL:''
+  });
+  const source=(await readFile(new URL('../src/main.js',import.meta.url),'utf8')).replace(/^import .*;\r?\n/gm,'');
+  vm.runInContext(source,context);
+  const click = (action, data={}) => handlers.click({target:{closest:()=>({disabled:false,dataset:{action,...data}})}});
+  const submit = (section,index,value) => {
+    const input={value,setCustomValidity(){},reportValidity(){},addEventListener(){}};
+    const form={dataset:{section,question:String(index)},elements:{answer:input}};
+    handlers.submit({preventDefault(){},target:{closest:()=>form}});
+  };
+  return {context,app,store,requests,clipboard,click,submit};
+}
+
+test('actual app handlers preserve first scores through hard mode, retry, completion and review', async () => {
+  const h=await appHarness(), m=missions.find(m=>m.id==='week-05-transportation');
+  h.context.location.hash='#mission/'+m.id;h.context.route();
+  assert.match(h.app.innerHTML,/01<span> \/ 05/);
+  vm.runInContext("state.step=4; state.listenedFullAudio=true; state.repeatedOutLoud=true; state.repeat=mission.targetPhrases.map((_,i)=>i);",h.context);
+  // A historical partial practice (existing schema, no new UI fields).
+  for (const [i,q] of m.chooseMeaningQuestions.entries()) h.context.record('chooseMeaning',i,{selected:q.answer,value:q.options[q.answer],correct:true,verdict:'correct'});
+  h.context.renderMission();
+  assert.equal((h.app.innerHTML.match(/class="question-card"/g)||[]).length,1);
+  assert.match(h.app.innerHTML,/Hard mode/);
+  await h.click('hard-mode',{section:'completePhrase',index:'0'});
+  assert.match(h.app.innerHTML,/autocorrect="off"/);
+  h.submit('completePhrase',0,'  UBER! ');
+  assert.match(h.app.innerHTML,/Correct ✓/);
+  await h.click('advance-item');
+  await h.click('bank',{section:'completePhrase',index:'1',option:'1'}); // map, wrong
+  await h.click('retry',{section:'completePhrase',index:'1'});
+  await h.click('bank',{section:'completePhrase',index:'1',option:'0'}); // taxi, practice
+  await h.click('advance-item');
+  for (let i=2;i<m.completePhraseQuestions.length;i++) {
+    h.submit('completePhrase',i,m.completePhraseQuestions[i].answers[0]); await h.click('advance-item');
+  }
+  h.submit('typeSentence',0,'w');
+  assert.equal(vm.runInContext('state.answers.typeSentence[0]',h.context),undefined);
+  for (const section of ['typeSentence','finalMission']) for(const [i,q] of m[section+'Questions'].entries()) {
+    h.submit(section,i,q.answers[0].replaceAll('’',"'")); assert.match(h.app.innerHTML,/Correct ✓/); await h.click('advance-item');
+  }
+  await new Promise(done=>setTimeout(done,0));
+  assert.equal(h.requests.length,1);
+  const before=h.store.get('rtc:last:'+m.id), result=JSON.parse(before);
+  assert.equal(result.totalScore,42);assert.equal(result.maxScore,43);
+  assert.equal(result.completePhraseScore,11);
+  assert.equal(JSON.parse(h.store.get(`rtc:progress:${m.id}:${m.missionVersion}`)).step,0);
+  assert.match(h.app.innerHTML,/TRAIN WHAT I MISSED/);
+  await h.click('review-missed');
+  h.submit('completePhrase',1,'taxi'); await h.click('advance-item');
+  assert.equal(h.store.get('rtc:last:'+m.id),before);
+  assert.equal(h.requests.length,1);
+  assert.equal(rewardSummary(JSON.parse(h.store.get('rtc:rewards:v1'))).completed,1);
+  const reloaded=await appHarness([...h.store]);reloaded.context.location.hash='#result/'+m.id;reloaded.context.route();
+  assert.match(reloaded.app.innerHTML,/Training already submitted/);
+  assert.equal(reloaded.requests.length,0);
+  assert.match(reloaded.app.innerHTML,/Copy Result/);
+  await reloaded.click('copy');
+  assert.equal(reloaded.clipboard[0],result.copiedResultText);
+});
+
+test('old result versions stay readable without training mismatched questions', async () => {
+  const h=await appHarness(), m=missions.find(m=>m.id==='week-05-transportation');
+  const r=buildResult(m,{...answered(m,false),repeat:[],listenedFullAudio:true,repeatedOutLoud:true},'test');
+  r.missionVersion='v1';r.registrationStatus='registered';
+  h.store.set('rtc:last:'+m.id,JSON.stringify(r));
+  h.context.location.hash='#result/'+m.id;h.context.route();
+  assert.doesNotMatch(h.app.innerHTML,/data-action="review-missed"/);
+  assert.match(h.app.innerHTML,/My Last Result/);
+  assert.equal(h.requests.length,0);
+});
+
+test('old partial progress resumes; phrase practice needs one confirmation and typed fallback survives', async () => {
+  const h=await appHarness(), m=missions.find(m=>m.id==='week-05-transportation');
+  h.store.set(`rtc:progress:${m.id}:${m.missionVersion}`,JSON.stringify({step:2,answers:{},repeat:[0,1],drafts:{}}));
+  h.context.location.hash='#mission/'+m.id;h.context.route();
+  assert.match(h.app.innerHTML,/3 \/ 16 phrases/);assert.match(h.app.innerHTML,/<summary>Show meaning/);
+  await h.click('said');
+  assert.deepEqual(JSON.parse(h.store.get(`rtc:progress:${m.id}:${m.missionVersion}`)).repeat,[0,1,2]);
+  h.context.location.hash='#mission/mission-6-shopping-buying';h.context.route();
+  vm.runInContext('state.step=4;renderMission()',h.context);
+  assert.match(h.app.innerHTML,/<form id="answer-form"/);
+  assert.doesNotMatch(h.app.innerHTML,/Hard mode/);
+  h.submit('completePhrase',0,'gift');assert.match(h.app.innerHTML,/Correct ✓/);
 });

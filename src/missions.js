@@ -1788,9 +1788,10 @@ Recover when confused.`,
         "options": [
           "Vá reto",
           "Vire à esquerda",
-          "Pegue o elevador"
+          "Vire à direita"
         ],
-        "answer": 0
+        "answer": 0,
+        "id": "chooseMeaning-01"
       },
       {
         "prompt": "“Turn right” means:",
@@ -1800,7 +1801,8 @@ Recover when confused.`,
           "Vire à esquerda",
           "Atravesse a rua"
         ],
-        "answer": 0
+        "answer": 0,
+        "id": "chooseMeaning-02"
       },
       {
         "prompt": "“Subway station” means:",
@@ -1810,17 +1812,19 @@ Recover when confused.`,
           "Ponto de ônibus",
           "Aeroporto"
         ],
-        "answer": 0
+        "answer": 0,
+        "id": "chooseMeaning-03"
       },
       {
         "prompt": "“Bus stop” means:",
         "practicePhrase": "Bus stop",
         "options": [
           "Ponto de ônibus",
-          "Motorista",
-          "Bilhete"
+          "Estação de metrô",
+          "Ponto de táxi"
         ],
-        "answer": 0
+        "answer": 0,
+        "id": "chooseMeaning-04"
       },
       {
         "prompt": "“Address” means:",
@@ -1830,7 +1834,8 @@ Recover when confused.`,
           "Saída",
           "Mapa"
         ],
-        "answer": 0
+        "answer": 0,
+        "id": "chooseMeaning-05"
       },
       {
         "prompt": "“It’s over there” means:",
@@ -1838,9 +1843,10 @@ Recover when confused.`,
         "options": [
           "É logo ali",
           "É muito longe",
-          "É caro"
+          "É aqui perto"
         ],
-        "answer": 0
+        "answer": 0,
+        "id": "chooseMeaning-06"
       },
       {
         "prompt": "“Can you point, please?” means:",
@@ -1850,7 +1856,8 @@ Recover when confused.`,
           "Você pode pagar, por favor?",
           "Você pode esperar, por favor?"
         ],
-        "answer": 0
+        "answer": 0,
+        "id": "chooseMeaning-07"
       },
       {
         "prompt": "“Can you speak slowly, please?” means:",
@@ -1858,9 +1865,10 @@ Recover when confused.`,
         "options": [
           "Você pode falar devagar, por favor?",
           "Você pode falar mais alto, por favor?",
-          "Você pode repetir amanhã?"
+          "Você pode falar mais rápido, por favor?"
         ],
-        "answer": 0
+        "answer": 0,
+        "id": "chooseMeaning-08"
       }
     ],
     "completePhraseQuestions": [
@@ -1869,35 +1877,75 @@ Recover when confused.`,
         "answers": [
           "Uber"
         ],
-        "fullPhrase": "I need an Uber."
+        "fullPhrase": "I need an Uber.",
+        "id": "completePhrase-01",
+        "wordBank": [
+          "Uber",
+          "taxi",
+          "bus",
+          "subway"
+        ],
+        "hint": "Eu preciso de um Uber."
       },
       {
         "prompt": "I need a ______.",
         "answers": [
           "taxi"
         ],
-        "fullPhrase": "I need a taxi."
+        "fullPhrase": "I need a taxi.",
+        "id": "completePhrase-02",
+        "wordBank": [
+          "taxi",
+          "map",
+          "ticket",
+          "station"
+        ],
+        "hint": "Eu preciso de um táxi."
       },
       {
         "prompt": "Where is the subway ______?",
         "answers": [
           "station"
         ],
-        "fullPhrase": "Where is the subway station?"
+        "fullPhrase": "Where is the subway station?",
+        "id": "completePhrase-03",
+        "wordBank": [
+          "station",
+          "stop",
+          "address",
+          "driver"
+        ],
+        "hint": "Onde fica a estação de metrô?"
       },
       {
         "prompt": "Where is the bus ______?",
         "answers": [
           "stop"
         ],
-        "fullPhrase": "Where is the bus stop?"
+        "fullPhrase": "Where is the bus stop?",
+        "id": "completePhrase-04",
+        "wordBank": [
+          "stop",
+          "station",
+          "ticket",
+          "driver"
+        ],
+        "hint": "Onde fica o ponto de ônibus?"
       },
       {
         "prompt": "Go ______.",
         "answers": [
           "straight"
         ],
-        "fullPhrase": "Go straight."
+        "fullPhrase": "Go straight.",
+        "id": "completePhrase-05",
+        "wordBank": [
+          "straight",
+          "left",
+          "right",
+          "there"
+        ],
+        "hint": "Vá reto."
       },
       {
         "prompt": "Turn ______.",
@@ -1905,7 +1953,14 @@ Recover when confused.`,
           "right"
         ],
         "fullPhrase": "Turn right.",
-        "hint": "Vire à direita."
+        "hint": "Vire à direita.",
+        "id": "completePhrase-06",
+        "wordBank": [
+          "right",
+          "left",
+          "straight",
+          "there"
+        ]
       },
       {
         "prompt": "Turn ______.",
@@ -1913,42 +1968,89 @@ Recover when confused.`,
           "left"
         ],
         "fullPhrase": "Turn left.",
-        "hint": "Vire à esquerda."
+        "hint": "Vire à esquerda.",
+        "id": "completePhrase-07",
+        "wordBank": [
+          "left",
+          "right",
+          "straight",
+          "there"
+        ]
       },
       {
         "prompt": "It’s over ______.",
         "answers": [
           "there"
         ],
-        "fullPhrase": "It’s over there."
+        "fullPhrase": "It’s over there.",
+        "id": "completePhrase-08",
+        "wordBank": [
+          "there",
+          "here",
+          "left",
+          "right"
+        ],
+        "hint": "É logo ali."
       },
       {
         "prompt": "Here is the ______.",
         "answers": [
           "address"
         ],
-        "fullPhrase": "Here is the address."
+        "fullPhrase": "Here is the address.",
+        "id": "completePhrase-09",
+        "wordBank": [
+          "address",
+          "ticket",
+          "map",
+          "entrance"
+        ],
+        "hint": "Aqui está o endereço."
       },
       {
         "prompt": "Is this the right ______?",
         "answers": [
           "way"
         ],
-        "fullPhrase": "Is this the right way?"
+        "fullPhrase": "Is this the right way?",
+        "id": "completePhrase-10",
+        "wordBank": [
+          "way",
+          "address",
+          "map",
+          "ticket"
+        ],
+        "hint": "Esse é o caminho certo?"
       },
       {
         "prompt": "Can you show me on the ______?",
         "answers": [
           "map"
         ],
-        "fullPhrase": "Can you show me on the map?"
+        "fullPhrase": "Can you show me on the map?",
+        "id": "completePhrase-11",
+        "wordBank": [
+          "map",
+          "ticket",
+          "address",
+          "driver"
+        ],
+        "hint": "Você pode me mostrar no mapa?"
       },
       {
         "prompt": "Can you speak ______, please?",
         "answers": [
           "slowly"
         ],
-        "fullPhrase": "Can you speak slowly, please?"
+        "fullPhrase": "Can you speak slowly, please?",
+        "id": "completePhrase-12",
+        "wordBank": [
+          "slowly",
+          "quickly",
+          "loudly",
+          "quietly"
+        ],
+        "hint": "Você pode falar devagar, por favor?"
       }
     ],
     "typeSentenceQuestions": [
@@ -1956,86 +2058,100 @@ Recover when confused.`,
         "prompt": "Eu preciso de um Uber.",
         "answers": [
           "I need an Uber."
-        ]
+        ],
+        "id": "typeSentence-01"
       },
       {
         "prompt": "Eu preciso de um táxi.",
         "answers": [
           "I need a taxi."
-        ]
+        ],
+        "id": "typeSentence-02"
       },
       {
         "prompt": "Onde fica a estação de metrô?",
         "answers": [
           "Where is the subway station?"
-        ]
+        ],
+        "id": "typeSentence-03"
       },
       {
         "prompt": "Onde fica o ponto de ônibus?",
         "answers": [
           "Where is the bus stop?"
-        ]
+        ],
+        "id": "typeSentence-04"
       },
       {
         "prompt": "Vá reto.",
         "answers": [
           "Go straight."
-        ]
+        ],
+        "id": "typeSentence-05"
       },
       {
         "prompt": "Vire à direita.",
         "answers": [
           "Turn right."
-        ]
+        ],
+        "id": "typeSentence-06"
       },
       {
         "prompt": "Vire à esquerda.",
         "answers": [
           "Turn left."
-        ]
+        ],
+        "id": "typeSentence-07"
       },
       {
         "prompt": "É logo ali.",
         "answers": [
           "It’s over there.",
           "It is over there."
-        ]
+        ],
+        "id": "typeSentence-08"
       },
       {
         "prompt": "Aqui está o endereço.",
         "answers": [
           "Here is the address."
-        ]
+        ],
+        "id": "typeSentence-09"
       },
       {
         "prompt": "Esse é o caminho certo?",
         "answers": [
           "Is this the right way?"
-        ]
+        ],
+        "id": "typeSentence-10"
       },
       {
         "prompt": "Você pode me mostrar no mapa?",
         "answers": [
           "Can you show me on the map?"
-        ]
+        ],
+        "id": "typeSentence-11"
       },
       {
         "prompt": "Você pode apontar, por favor?",
         "answers": [
           "Can you point, please?"
-        ]
+        ],
+        "id": "typeSentence-12"
       },
       {
         "prompt": "Você pode repetir, por favor?",
         "answers": [
           "Can you repeat, please?"
-        ]
+        ],
+        "id": "typeSentence-13"
       },
       {
         "prompt": "Você pode falar devagar, por favor?",
         "answers": [
           "Can you speak slowly, please?"
-        ]
+        ],
+        "id": "typeSentence-14"
       }
     ],
     "finalMissionQuestions": [
@@ -2043,56 +2159,69 @@ Recover when confused.`,
         "prompt": "You need an Uber.",
         "answers": [
           "I need an Uber."
-        ]
+        ],
+        "id": "finalMission-01"
       },
       {
         "prompt": "You need the subway station.",
         "answers": [
           "Where is the subway station?"
-        ]
+        ],
+        "id": "finalMission-02"
       },
       {
         "prompt": "The person says the place is there.",
         "answers": [
           "It’s over there.",
           "It is over there."
-        ]
+        ],
+        "id": "finalMission-03"
       },
       {
         "prompt": "You want to confirm the way.",
         "answers": [
           "Is this the right way?"
-        ]
+        ],
+        "id": "finalMission-04"
       },
       {
         "prompt": "The driver asks for the address.",
         "answers": [
           "Here is the address."
-        ]
+        ],
+        "id": "finalMission-05"
       },
       {
         "prompt": "You want to see the map.",
         "answers": [
           "Can you show me on the map?"
-        ]
+        ],
+        "id": "finalMission-06"
       },
       {
         "prompt": "You want the person to point.",
         "answers": [
           "Can you point, please?"
-        ]
+        ],
+        "id": "finalMission-07"
       },
       {
         "prompt": "You don’t understand.",
         "answers": [
           "Can you repeat, please?"
+        ],
+        "id": "finalMission-08",
+        "acceptedAnswers": [
+          "I don't understand.",
+          "I don’t understand."
         ]
       },
       {
         "prompt": "The person speaks fast.",
         "answers": [
           "Can you speak slowly, please?"
-        ]
+        ],
+        "id": "finalMission-09"
       }
     ],
     "recognitionPhrases": [

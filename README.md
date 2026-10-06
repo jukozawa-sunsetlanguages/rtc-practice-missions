@@ -12,7 +12,8 @@ Instale Node.js 20+ e rode `npm run dev`. Abra **http://localhost:5173**. Não p
 - `src/styles.css`: identidade navy / off-white / amber e layout responsivo.
 - `src/main.js`: navegação, áudio, fluxo e armazenamento local.
 - `src/missions.js`: **todo o conteúdo editável das missões**.
-- `src/scoring.js`: normalização, feedback aproximado e pontuação.
+- `src/scoring.js`: normalização centralizada, alternativas aceitas, pontuação e itens de revisão.
+- `src/practice.js`: cinco fases visuais, embaralhamento e recompensas locais independentes do score.
 - `src/results.js`: snapshot de conclusão, horário local ISO e resumo para WhatsApp.
 - `src/sheets.js`: URL opcional e envio ao Apps Script.
 - `apps-script/Code.gs`: receptor do Google Sheets.
@@ -64,9 +65,9 @@ Defina `fullAudioUrl` com uma URL HTTPS de MP3 acessível publicamente ou um cam
 
 Fluxo: Briefing → Full Audio → Listen & Repeat → Meaning → Complete → Type → Final → Complete → registro opcional. Para avançar, confirme escuta e repetição, marque todas as frases e responda às perguntas da etapa.
 
-Cada resposta correta na primeira tentativa vale 1 ponto. Erros e respostas próximas valem 0, mostram a referência e entram em `wrongAnswers` / `difficultPhrases`. Maiúsculas, espaços extras, pontuação básica e aspas curvas são normalizados. Proximidade usa distância de edição de até 18%, apenas para feedback. Áudio e repetição são autorrelato e não entram na nota. Reiniciar permite uma nova tentativa completa.
+Cada resposta correta na primeira tentativa vale 1 ponto. Erros e respostas próximas valem 0 e mostram a referência. `wrongAnswers` mantém os erros de todas as tentativas; `difficultPhrases` usa somente erros da primeira tentativa, deduplicados com normalização. Maiúsculas, espaços extras, pontuação básica e aspas curvas são normalizados. Proximidade usa distância de edição de até 18%, apenas para feedback. Áudio e repetição são autorrelato e não entram na nota. Reiniciar permite uma nova tentativa completa.
 
-O botão **Try again** reabre uma questão errada para prática sem modificar a nota da primeira resposta. O progresso guarda todas as tentativas, inclusive as corretas. `wrongAnswers` preserva cada tentativa com erro, `questionIndex`, `attemptNumber` e `verdict: 'almost' | 'incorrect'`. Os scores registram os acertos da primeira tentativa. Para contar erros iniciais no Sheets, filtre `attemptNumber: 1`; tentativas posteriores não devem ser contadas novamente na nota. A tela final mostra a distribuição inicial entre correct/almost/incorrect.
+O botão **Practice Again** reabre uma questão errada para prática sem modificar a nota da primeira resposta. O progresso guarda todas as tentativas, inclusive as corretas. `wrongAnswers` preserva cada tentativa com erro, `questionIndex`, `attemptNumber` e `verdict: 'almost' | 'incorrect'`. Os scores registram os acertos da primeira tentativa. Para contar erros iniciais no Sheets, filtre `attemptNumber: 1`; tentativas posteriores não devem ser contadas novamente na nota. A tela final mostra a distribuição inicial entre correct/almost/incorrect.
 
 **Completed items** soma questões respondidas, frases marcadas e as duas confirmações de áudio: Week 5 completa tem 61 itens, dos quais 43 são pontuados. O texto de WhatsApp lista as frases em linhas separadas e orienta o envio à trainer.
 
@@ -143,3 +144,55 @@ Após concluir, a tentativa fica em My Last Result e a missão fica pronta para 
 Mission 7 — Problems & Help é a missão atual: 20 frases e 44 questões (8 significado, 12 lacunas, 14 traduções, 10 situações). Mission 5 passou a previous, mantendo ID, versão e conteúdo. A Mission 6 não estava no repositório sincronizado; seu conteúdo não foi criado neste pedido. Registro automático permanece inalterado.
 
 Mission 6 — Shopping & Buying Things é a missão atual (17 frases, 51 questões). Mission 7 está em Next Mission: status draft com isNext: true, exibida como prévia na Home, ainda sem iniciar treino. Para ativá-la futuramente, altere status para current e mova a atual para previous. Registro automático, IDs e conteúdo das missões anteriores foram preservados.
+
+
+## Refinamento do treino — outubro de 2026
+
+### Auditoria da Mission 5
+
+Antes da mudança visual, as respostas exatas `Uber` (Complete), `I need an Uber.` (Type) e `I need an Uber.` (Final) já eram reconhecidas corretamente pelo avaliador existente. A suíte inicial de 19 testes passou. Não há nesta auditoria as respostas da tentativa histórica com 7/8 e os demais scores zerados: não é possível concluir se eram preenchimentos inválidos ou um problema naquela versão do navegador.
+
+A correção encontrada foi na revisão: antes, incluía erros de qualquer tentativa e deduplicava texto literalmente, permitindo `Turn right` e `Turn right.`. Agora usa a primeira tentativa e normalização. O cálculo de acertos continua usando exclusivamente a primeira resposta. Respostas próximas nunca recebem ponto; o veredito `almost` antigo continua disponível para evidência, sem aceitar sinônimos por aproximação.
+
+### Experiência implementada
+
+- Sete etapas internas (`step` 0–6) preservadas, agrupadas em Briefing, Hear & Repeat (A/B), Recognize, Build (A/B) e Final Mission. Conclusão continua em `step: 7`.
+- Uma frase/pergunta por tela; uma confirmação basta para praticar uma frase. Tradução fica recolhida. Prática silenciosa é válida.
+- Opções explícitas embaralhadas uma vez por item/tentativa; a ordem é salva durante a missão. A identidade da alternativa correta não muda.
+- Bancos de palavras da Mission 5 possuem pistas em português para evitar ambiguidades. Hard mode usa o mesmo avaliador e a mesma nota. Sem banco, a missão mantém digitação.
+- Type the Sentence e Final continuam com produção digitada, uma pergunta por vez, feedback imediato e Practice Again. Não aceitam envio acidental de uma letra. Inputs desativam autocorreção/capitalização; lacunas limitadas a 60 caracteres, frases a 240.
+- Ações móveis usam uma área sticky. Ao focar um campo, ela volta ao fluxo normal da página, sem sobrepor o teclado. Ainda é necessário validar o teclado físico do aparelho do aluno.
+- Train What I Missed oferece os itens errados iniciais, deduplicados por frase, preservando seu tipo. A revisão fica isolada na sessão, não grava outro resultado, não altera score e não reenvia o treinamento. Ao recarregar, a revisão reinicia; o resultado original continua salvo. Resultados de outra versão permanecem visíveis/copiáveis, mas não iniciam revisão com perguntas de uma versão diferente.
+- Resultado exibe feedback proporcional, 1–3 estrelas e até seis frases prioritárias; a revisão cobre todas as frases únicas. A evidência completa permanece em Wrong Answers. A dificuldade de áudio autorrelatada fica em campo separado.
+- XP local: 10 por etapa interna concluída + 5 por acerto inicial + 20 pela conclusão. O total é creditado ao concluir a missão, uma única vez por identidade de resultado; reabrir/recarregar não duplica XP. Não se credita retroativamente ao abrir resultados antigos. Estrelas: 85% = 3, 60% = 2, abaixo = 1. Sem streak diário.
+- Home compacta mantém saudação, missão atual, próxima missão, revisão e último resultado. O tempo estimado inclui o roteiro integral de áudio, sem prometer 5 minutos para um treino mais longo.
+- MP3 mantém controles nativos; voz do navegador tem Play/Restart, Pause/Resume e Stop. A disponibilidade e a qualidade da voz/pausa dependem do navegador.
+
+### Campos opcionais e compatibilidade
+
+```js
+{ id: 'directions-right', prompt: 'Turn ___.',
+  expectedAnswer: 'right', // ou answers: ['right'], como antes
+  acceptedAnswers: [],
+  hint: 'Vire à direita.',
+  fullPhrase: 'Turn right.',
+  wordBank: ['right', 'left', 'straight', 'there'] }
+```
+
+`acceptedAnswers` se soma a `answers` e/ou `expectedAnswer`. A mesma função `acceptedAnswers()` + `evaluate()` é usada por lacunas, frases e desafios finais. Lowercase, espaços, pontuação básica e apóstrofos/aspas curvas são normalizados. Não há correção semântica por IA.
+
+`audioSections` é um alias opcional de `audioChapters`, no formato `{title, startsAt}`: `startsAt` deve ser um trecho literal do roteiro e a lista deve estar na ordem do roteiro. Missões sem seções reproduzem o áudio completo. Campos como `difficulty` e `xp` não são obrigatórios e não mudam a nota.
+
+As chaves `rtc:progress:<id>:<version>` e `rtc:last:<id>` foram mantidas. O progresso pode incluir `cursors`, `phraseCursor`, `orders` e `hardModes`, todos opcionais. Recompensas ficam apenas em `rtc:rewards:v1`. Os itens errados agora incluem `itemId` dentro do JSON já existente de Wrong Answers; os campos e cabeçalhos do Sheets não mudaram.
+
+### Limites deliberados
+
+Blocos para montar sentenças, bônus por repetições/hard mode/revisão, badges e analytics adicionais foram adiados. A versão mantém produção digitada confiável. Não há botões fictícios ou recursos TODO. Nenhuma dependência foi adicionada.
+
+`src/sheets.js`, `src/registration.js`, `apps-script/Code.gs` e a URL de produção permanecem inalterados. A única proteção visual nova evita que uma resposta assíncrona de registro interrompa uma revisão já aberta; o envio e a persistência do status continuam iguais. Copy Result e fallback de cópia manual estão preservados.
+
+### Validação e teste no telefone
+
+Execute `npm test`, `node --check src/main.js` e `node scripts/build-info.js` (comando usado pelo Netlify). Não existe script npm build nem instalação necessária. Testes usam armazenamento e transporte isolados, sem inserir tentativas artificiais na planilha da trainer.
+
+No Chrome do Mateus: abra Mission 5, teste a lacuna com `UBER!`, uma frase com espaços/apóstrofos e a resposta final `I need an Uber.`; erre uma resposta e acerte no Practice Again, verificando que a nota inicial não muda. Feche/reabra durante a prática. Confira teclado, Check/Next, voz, Pause/Resume, ritmo, revisão e cópia para WhatsApp. Na conclusão real, confirme Training submitted e a linha na planilha; reabra o resultado e confirme ausência de nova linha e de XP duplicado. Teste também uma missão sem wordBank.
