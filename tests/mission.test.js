@@ -283,7 +283,7 @@ test('Travel Review Pack has complete previous missions and accepted answers', (
  const reviews=missions.filter(m=>m.category==='Travel Review Pack');
  assert.equal(reviews.length,3);
  assert.deepEqual(reviews.map(m=>questionSections.map(s=>m[s+'Questions'].length)),[[6,8,8,7],[8,10,10,10],[8,10,11,12]]);
- assert.equal(missions.find(m=>m.status==='current').id,'mission-6-shopping-buying');
+ assert.equal(missions.find(m=>m.status==='current').id,'mission-7-problems-help');
  for(const m of reviews) {
   assert.equal(m.status,'previous'); assert.ok(m.finalMissionScenario); assert.ok(m.missionCompleteMessage); assert.ok(m.mainPhrases.length);
   for(const section of questionSections.slice(1)) for(const q of m[section+'Questions']) for(const answer of q.answers) assert.equal(evaluate(answer,q.answers),'correct');
@@ -309,9 +309,9 @@ test('completion resets saved practice while preserving result and submission sc
  assert.equal(ctx.load(m).step,3);
 });
 
-test('Mission 7 is next with all phrases, exercises and accepted answers', () => {
+test('Mission 7 is current with all phrases, exercises and accepted answers', () => {
 const m=missions.find(m=>m.id==='mission-7-problems-help');
-assert.equal(m.status,'draft');assert.equal(m.isNext,true);assert.equal(m.week,'Mission 7');assert.equal(m.targetPhrases.length,20);
+assert.equal(m.status,'current');assert.notEqual(m.isNext,true);assert.equal(m.week,'Mission 7');assert.equal(m.targetPhrases.length,20);
 assert.deepEqual(questionSections.map(s=>m[s+'Questions'].length),[8,12,14,10]);
 for(const s of questionSections.slice(1))for(const q of m[s+'Questions'])for(const answer of q.answers)assert.equal(evaluate(answer,q.answers),'correct');
 assert.equal(evaluate('big',m.completePhraseQuestions[6].answers),'correct');
@@ -319,13 +319,13 @@ assert.equal(summarize(m,answered(m,true)).maxScore,44);
 assert.equal(missions.find(m=>m.id==='week-05-transportation').status,'previous');
 });
 
-test('Mission 6 is current, complete and accepts all supplied alternatives', () => {
-const m=missions.find(m=>m.id==='mission-6-shopping-buying');assert.equal(m.status,'current');assert.equal(m.week,'Mission 6');
+test('Mission 6 is previous, complete and accepts all supplied alternatives', () => {
+const m=missions.find(m=>m.id==='mission-6-shopping-buying');assert.equal(m.status,'previous');assert.equal(m.week,'Mission 6');
 assert.equal(m.targetPhrases.length,17);assert.equal(m.recognitionPhrases.length,12);assert.equal(m.vocabulary.length,25);
 assert.deepEqual(questionSections.map(s=>m[s+'Questions'].length),[10,12,15,14]);
 for(const section of questionSections.slice(1))for(const q of m[section+'Questions'])for(const a of q.answers)assert.equal(evaluate(a,q.answers),'correct');
 assert.equal(summarize(m,answered(m,true)).maxScore,51);assert.match(m.fallbackAudioScript,/Part 6 — Recovery/);assert.match(m.fallbackAudioScript,/Final round/);
-assert.equal(missions.filter(m=>m.status==='previous').length,5);
+assert.equal(missions.filter(m=>m.status==='previous').length,6);
 });
 
 test('Mission 5 exact and normalized answers score in every typed section', () => {
@@ -558,16 +558,20 @@ test('daily practice deduplicates items; goals and streaks survive reload', asyn
   assert.equal(dailySummary({'2026-10-05':['x'],'2026-10-06':['y']},new Date(2026,9,6)).streak,2);
   assert.equal(dailySummary({'2026-10-05':['x']},new Date(2026,9,7)).streak,0);
 });
-test('home explains local counts and actually unlocks the next mission on completion', async () => {
-  const h=await appHarness(), current=missions.find(m=>m.status==='current'), next=missions.find(m=>m.isNext);
+test('Mission 7 opens without prerequisites and Mission 6 remains in the trail and previous missions', async () => {
+  const h=await appHarness();
   assert.match(h.app.innerHTML,/Recorded on this browser/);
   assert.match(h.app.innerHTML,/85%/);
   assert.match(h.app.innerHTML,/8-minute sessions/);
-  h.context.location.hash='#mission/'+next.id;h.context.route();
-  assert.match(h.app.innerHTML,/TODAY'S MISSION/);
-  h.store.set('rtc:last:'+current.id,JSON.stringify({missionId:current.id,completedAt:new Date().toISOString(),percentage:50}));
-  h.context.route();
+  assert.match(h.app.innerHTML,/Mission 7 · Current topic/);
+  assert.match(h.app.innerHTML,/#mission\/mission-6-shopping-buying/);
+  assert.doesNotMatch(h.app.innerHTML,/Complete Mission 6 to unlock/);
+  h.context.location.hash='#mission/mission-7-problems-help';h.context.route();
   assert.match(h.app.innerHTML,/Briefing/);
   assert.match(h.app.innerHTML,/Problems/);
+  h.context.location.hash='#previous';h.context.route();
+  assert.match(h.app.innerHTML,/Shopping &amp; Buying Things/);
+  h.context.location.hash='#mission/mission-6-shopping-buying';h.context.route();
+  assert.match(h.app.innerHTML,/Briefing/);
   assert.equal(h.requests.length,0);
 });

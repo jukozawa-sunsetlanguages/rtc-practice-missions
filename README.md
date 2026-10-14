@@ -211,7 +211,7 @@ No Chrome do Mateus: abra Mission 5, teste a lacuna com `UBER!`, uma frase com e
 
 ### Home, sessões e motivação
 
-A Home diferencia número do tópico de conclusões registradas neste navegador. A trilha ordena M1–M7 e mantém todas as missões anteriores acessíveis. M7 passa a abrir quando existe uma conclusão local de M6 (qualquer nota); as demais drafts continuam ocultas. Limpar dados locais também remove esse desbloqueio.
+A Home diferencia número do tópico de conclusões registradas neste navegador. A trilha ordena M1–M7 e mantém todas as missões anteriores acessíveis. Mission 7 é o treino atual, liberado sem pré-requisitos. Mission 6 permanece na trilha e em Previous Missions com o mesmo ID, versão e áudio; o progresso existente é preservado. Futuras missões draft com isNext usam o desbloqueio por conclusão da missão atual.
 
 “~8-minute sessions” é um convite para dividir o treino: não promete que o conteúdo integral leva oito minutos, não pula etapas nem envia resultado parcial. O tempo integral permanece em “Time & rewards”. “Save & finish this session” volta à Home e mantém o progresso; o registro só ocorre na conclusão integral original.
 
