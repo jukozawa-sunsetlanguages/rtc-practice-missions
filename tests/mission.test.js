@@ -551,7 +551,7 @@ test('live XP uses first attempts and does not double-credit retries or navigati
   assert.equal(practiceXP(m,state),25);
 });
 test('daily practice deduplicates items; goals and streaks survive reload', async () => {
-  const h=await appHarness(); h.context.location.hash='#mission/'+missions[0].id;h.context.route();
+  const h=await appHarness(); h.context.location.hash='#mission/'+missions.find(m=>m.status==='current').id;h.context.route();
   h.context.markPractice('phrase:0');h.context.markPractice('phrase:0');
   const log=JSON.parse(h.store.get('rtc:activity:v1'));
   assert.equal(dailySummary(log).count,1);
@@ -573,5 +573,35 @@ test('Mission 7 opens without prerequisites and Mission 6 remains in the trail a
   assert.match(h.app.innerHTML,/Shopping &amp; Buying Things/);
   h.context.location.hash='#mission/mission-6-shopping-buying';h.context.route();
   assert.match(h.app.innerHTML,/Briefing/);
+  assert.equal(h.requests.length,0);
+});
+
+
+test('Mission 8 includes every exercise and accepted answer from the brief', () => {
+  const m=missions.find(m=>m.id==='mission-8-small-talk-daily-interactions');
+  assert.equal(m.status,'draft');assert.equal(m.isNext,true);assert.equal(m.releaseMode,'manual');
+  assert.equal(m.targetPhrases.length,23);assert.equal(m.recognitionPhrases.length,14);
+  assert.deepEqual(questionSections.map(s=>m[s+'Questions'].length),[12,16,22,17]);
+  for(const section of questionSections.slice(1)) for(const q of m[section+'Questions']) for(const a of q.answers) {
+    assert.equal(evaluate(a,q),'correct');
+    assert.equal(evaluate('  '+a.replaceAll('’',"'").toUpperCase()+'  ',q),'correct');
+  }
+  assert.equal(evaluate("I'm from Sao Paulo, Brazil.",m.typeSentenceQuestions[5]),'correct');
+  assert.equal(evaluate('fit',m.completePhraseQuestions[15]),'correct');
+  assert.equal(summarize(m,answered(m,true)).totalScore,67);
+});
+test('Mission 8 stays locked after Mission 7 completion and cannot open via direct link', async () => {
+  const h=await appHarness(), m=missions.find(m=>m.week==='Mission 8');
+  assert.match(h.app.innerHTML,/Next Mission/);assert.match(h.app.innerHTML,/Small Talk/);
+  assert.match(h.app.innerHTML,/Your teacher will release/);
+  h.store.set('rtc:last:mission-7-problems-help',JSON.stringify({missionId:'mission-7-problems-help',completedAt:new Date().toISOString(),percentage:100}));
+  h.context.location.hash='#mission/'+m.id;h.context.route();
+  assert.match(h.app.innerHTML,/TODAY'S MISSION/);assert.doesNotMatch(h.app.innerHTML,/Start Mission 8/);
+  // Render unreleased content only inside the isolated test harness.
+  h.context.testMission=m;
+  for(let step=0;step<7;step++) {
+    vm.runInContext(`mission=testMission;state=fresh();state.step=${step};renderMission()`,h.context);
+    assert.match(h.app.innerHTML,/Small Talk/);
+  }
   assert.equal(h.requests.length,0);
 });

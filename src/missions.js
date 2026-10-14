@@ -2,6 +2,909 @@
 // Bump missionVersion when questions change. Optional target phrase audioUrl supports recordings.
 export const missions = [
 {
+  "id": "mission-8-small-talk-daily-interactions",
+  "week": "Mission 8",
+  "title": "Small Talk + Daily Interactions",
+  "shortTitle": "Small Talk",
+  "status": "draft",
+  "isNext": true,
+  "releaseMode": "manual",
+  "missionVersion": "v1",
+  "studentName": "Mateus",
+  "keyPhrase": "Answer. Ask back. Keep it simple.",
+  "goal": "You are traveling in the United States.\nPeople may talk to you.\nAt the hotel.\nIn an Uber.\nIn a store.\nIn a restaurant.\nIn a park.\nYou don’t need a long conversation.\nYour mission is simple:\nAnswer.\nAsk back.\nKeep it simple.",
+  "todayYouPractice": [
+    "answering simple questions",
+    "saying where you are from",
+    "saying you are on vacation",
+    "talking about your trip",
+    "saying who you are traveling with",
+    "asking back",
+    "using recovery phrases",
+    "connecting small talk with travel situations"
+  ],
+  "fullAudioUrl": "",
+  "targetPhrases": [
+    {
+      "english": "I’m good, thank you.",
+      "portuguese": "Estou bem, obrigado."
+    },
+    {
+      "english": "I’m a little tired.",
+      "portuguese": "Estou um pouco cansado."
+    },
+    {
+      "english": "It’s good.",
+      "portuguese": "Está bom."
+    },
+    {
+      "english": "It’s very nice.",
+      "portuguese": "É muito legal."
+    },
+    {
+      "english": "I’m from Brazil.",
+      "portuguese": "Sou do Brasil."
+    },
+    {
+      "english": "I’m from São Paulo, Brazil.",
+      "portuguese": "Sou de São Paulo, Brasil."
+    },
+    {
+      "english": "I’m here on vacation.",
+      "portuguese": "Estou aqui de férias."
+    },
+    {
+      "english": "I’m traveling with my parents.",
+      "portuguese": "Estou viajando com meus pais."
+    },
+    {
+      "english": "Yes, it’s my first time here.",
+      "portuguese": "Sim, é minha primeira vez aqui."
+    },
+    {
+      "english": "Yes, I’m enjoying it.",
+      "portuguese": "Sim, estou curtindo."
+    },
+    {
+      "english": "And you?",
+      "portuguese": "E você?"
+    },
+    {
+      "english": "What about you?",
+      "portuguese": "E você?"
+    },
+    {
+      "english": "Thank you. You too.",
+      "portuguese": "Obrigado. Você também."
+    },
+    {
+      "english": "Can you repeat, please?",
+      "portuguese": "Você pode repetir, por favor?"
+    },
+    {
+      "english": "Can you speak slowly, please?",
+      "portuguese": "Você pode falar devagar, por favor?"
+    },
+    {
+      "english": "I’m looking for a t-shirt.",
+      "portuguese": "Estou procurando uma camiseta."
+    },
+    {
+      "english": "Can I have a burger, please?",
+      "portuguese": "Posso pedir um hambúrguer, por favor?"
+    },
+    {
+      "english": "Here is the address.",
+      "portuguese": "Aqui está o endereço."
+    },
+    {
+      "english": "I have a problem.",
+      "portuguese": "Estou com um problema."
+    },
+    {
+      "english": "My order is wrong.",
+      "portuguese": "Meu pedido está errado."
+    },
+    {
+      "english": "I didn’t order this.",
+      "portuguese": "Eu não pedi isso."
+    },
+    {
+      "english": "It doesn’t fit.",
+      "portuguese": "Não serviu."
+    },
+    {
+      "english": "It doesn’t work.",
+      "portuguese": "Não funciona."
+    }
+  ],
+  "recognitionPhrases": [
+    {
+      "english": "How are you?",
+      "portuguese": "Como você está?"
+    },
+    {
+      "english": "How are you today?",
+      "portuguese": "Como você está hoje?"
+    },
+    {
+      "english": "How’s your day?",
+      "portuguese": "Como está seu dia?"
+    },
+    {
+      "english": "How’s your trip?",
+      "portuguese": "Como está sua viagem?"
+    },
+    {
+      "english": "Where are you from?",
+      "portuguese": "De onde você é?"
+    },
+    {
+      "english": "Are you from Brazil?",
+      "portuguese": "Você é do Brasil?"
+    },
+    {
+      "english": "Are you here on vacation?",
+      "portuguese": "Você está aqui de férias?"
+    },
+    {
+      "english": "Who are you traveling with?",
+      "portuguese": "Com quem você está viajando?"
+    },
+    {
+      "english": "Is this your first time here?",
+      "portuguese": "É sua primeira vez aqui?"
+    },
+    {
+      "english": "Are you enjoying Orlando?",
+      "portuguese": "Você está curtindo Orlando?"
+    },
+    {
+      "english": "Do you like it here?",
+      "portuguese": "Você gosta daqui?"
+    },
+    {
+      "english": "Can I help you?",
+      "portuguese": "Posso ajudar?"
+    },
+    {
+      "english": "What can I get for you?",
+      "portuguese": "O que posso trazer para você?"
+    },
+    {
+      "english": "Where are you going?",
+      "portuguese": "Aonde você está indo?"
+    }
+  ],
+  "vocabulary": [
+    {
+      "english": "vacation",
+      "portuguese": "férias"
+    },
+    {
+      "english": "parents",
+      "portuguese": "pais"
+    },
+    {
+      "english": "trip",
+      "portuguese": "viagem"
+    },
+    {
+      "english": "first time",
+      "portuguese": "primeira vez"
+    },
+    {
+      "english": "tired",
+      "portuguese": "cansado"
+    },
+    {
+      "english": "enjoy",
+      "portuguese": "curtir / aproveitar"
+    }
+  ],
+  "fallbackAudioScript": "Hi, Mateus.\nThis is your Small Talk and Daily Interactions training.\nListen. Repeat out loud.\nDon’t just read. Speak.\n\nI’m good, thank you.\n\n[pause]\n\nI’m a little tired.\n\n[pause]\n\nIt’s good.\n\n[pause]\n\nIt’s very nice.\n\n[pause]\n\nI’m from Brazil.\n\n[pause]\n\nI’m from São Paulo, Brazil.\n\n[pause]\n\nI’m here on vacation.\n\n[pause]\n\nI’m traveling with my parents.\n\n[pause]\n\nYes, it’s my first time here.\n\n[pause]\n\nYes, I’m enjoying it.\n\n[pause]\n\nAnd you?\n\n[pause]\n\nWhat about you?\n\n[pause]\n\nThank you. You too.\n\n[pause]\n\nCan you repeat, please?\n\n[pause]\n\nCan you speak slowly, please?\n\n[pause]\n\nI’m looking for a t-shirt.\n\n[pause]\n\nCan I have a burger, please?\n\n[pause]\n\nHere is the address.\n\n[pause]\n\nI have a problem.\n\n[pause]\n\nMy order is wrong.\n\n[pause]\n\nI didn’t order this.\n\n[pause]\n\nIt doesn’t fit.\n\n[pause]\n\nIt doesn’t work.\n\n[pause]\n\nAnswer. Ask back. Keep it simple.",
+  "chooseMeaningQuestions": [
+    {
+      "id": "meaning-01",
+      "prompt": "I’m good, thank you.",
+      "options": [
+        "Estou bem, obrigado.",
+        "Estou perdido, obrigado.",
+        "Estou cansado, obrigado."
+      ],
+      "answer": 0,
+      "practicePhrase": "I’m good, thank you."
+    },
+    {
+      "id": "meaning-02",
+      "prompt": "I’m a little tired.",
+      "options": [
+        "Estou um pouco cansado.",
+        "Estou um pouco atrasado.",
+        "Estou um pouco perdido."
+      ],
+      "answer": 0,
+      "practicePhrase": "I’m a little tired."
+    },
+    {
+      "id": "meaning-03",
+      "prompt": "It’s very nice.",
+      "options": [
+        "É muito legal / muito bom.",
+        "É muito longe.",
+        "É muito caro."
+      ],
+      "answer": 0,
+      "practicePhrase": "It’s very nice."
+    },
+    {
+      "id": "meaning-04",
+      "prompt": "I’m from Brazil.",
+      "options": [
+        "Eu sou do Brasil.",
+        "Eu vou para o Brasil.",
+        "Eu gosto do Brasil."
+      ],
+      "answer": 0,
+      "practicePhrase": "I’m from Brazil."
+    },
+    {
+      "id": "meaning-05",
+      "prompt": "I’m here on vacation.",
+      "options": [
+        "Estou aqui de férias.",
+        "Estou aqui trabalhando.",
+        "Estou aqui perdido."
+      ],
+      "answer": 0,
+      "practicePhrase": "I’m here on vacation."
+    },
+    {
+      "id": "meaning-06",
+      "prompt": "I’m traveling with my parents.",
+      "options": [
+        "Estou viajando com meus pais.",
+        "Estou procurando meus pais.",
+        "Estou falando com meus pais."
+      ],
+      "answer": 0,
+      "practicePhrase": "I’m traveling with my parents."
+    },
+    {
+      "id": "meaning-07",
+      "prompt": "It’s my first time here.",
+      "options": [
+        "É minha primeira vez aqui.",
+        "É minha primeira viagem sozinho.",
+        "É meu primeiro hotel."
+      ],
+      "answer": 0,
+      "practicePhrase": "It’s my first time here."
+    },
+    {
+      "id": "meaning-08",
+      "prompt": "I’m enjoying it.",
+      "options": [
+        "Estou curtindo / aproveitando.",
+        "Estou esperando.",
+        "Estou procurando."
+      ],
+      "answer": 0,
+      "practicePhrase": "I’m enjoying it."
+    },
+    {
+      "id": "meaning-09",
+      "prompt": "And you?",
+      "options": [
+        "E você?",
+        "Com você?",
+        "Para você?"
+      ],
+      "answer": 0,
+      "practicePhrase": "And you?"
+    },
+    {
+      "id": "meaning-10",
+      "prompt": "Thank you. You too.",
+      "options": [
+        "Obrigado. Você também.",
+        "Obrigado. Até amanhã.",
+        "Obrigado. Está tudo errado."
+      ],
+      "answer": 0,
+      "practicePhrase": "Thank you. You too."
+    },
+    {
+      "id": "meaning-11",
+      "prompt": "Here is the address.",
+      "options": [
+        "Aqui está o endereço.",
+        "Onde fica o endereço?",
+        "Este é o pedido."
+      ],
+      "answer": 0,
+      "practicePhrase": "Here is the address."
+    },
+    {
+      "id": "meaning-12",
+      "prompt": "My order is wrong.",
+      "options": [
+        "Meu pedido está errado.",
+        "Meu quarto está errado.",
+        "Meu endereço está errado."
+      ],
+      "answer": 0,
+      "practicePhrase": "My order is wrong."
+    }
+  ],
+  "completePhraseQuestions": [
+    {
+      "id": "complete-01",
+      "prompt": "I’m good, ______ you.",
+      "answers": [
+        "thank"
+      ],
+      "fullPhrase": "I’m good, thank you."
+    },
+    {
+      "id": "complete-02",
+      "prompt": "I’m a little ______.",
+      "answers": [
+        "tired"
+      ],
+      "fullPhrase": "I’m a little tired."
+    },
+    {
+      "id": "complete-03",
+      "prompt": "It’s very ______.",
+      "answers": [
+        "nice",
+        "good"
+      ],
+      "fullPhrase": "It’s very nice."
+    },
+    {
+      "id": "complete-04",
+      "prompt": "I’m from ______.",
+      "answers": [
+        "Brazil"
+      ],
+      "fullPhrase": "I’m from Brazil."
+    },
+    {
+      "id": "complete-05",
+      "prompt": "I’m here on ______.",
+      "answers": [
+        "vacation"
+      ],
+      "fullPhrase": "I’m here on vacation."
+    },
+    {
+      "id": "complete-06",
+      "prompt": "I’m traveling with my ______.",
+      "answers": [
+        "parents"
+      ],
+      "fullPhrase": "I’m traveling with my parents."
+    },
+    {
+      "id": "complete-07",
+      "prompt": "It’s my first time ______.",
+      "answers": [
+        "here"
+      ],
+      "fullPhrase": "It’s my first time here."
+    },
+    {
+      "id": "complete-08",
+      "prompt": "I’m enjoying ______.",
+      "answers": [
+        "it"
+      ],
+      "fullPhrase": "I’m enjoying it."
+    },
+    {
+      "id": "complete-09",
+      "prompt": "And ______?",
+      "answers": [
+        "you"
+      ],
+      "fullPhrase": "And you?"
+    },
+    {
+      "id": "complete-10",
+      "prompt": "What about ______?",
+      "answers": [
+        "you"
+      ],
+      "fullPhrase": "What about you?"
+    },
+    {
+      "id": "complete-11",
+      "prompt": "Thank you. You ______.",
+      "answers": [
+        "too"
+      ],
+      "fullPhrase": "Thank you. You too."
+    },
+    {
+      "id": "complete-12",
+      "prompt": "Can you ______, please?",
+      "answers": [
+        "repeat",
+        "help"
+      ],
+      "fullPhrase": "Can you repeat, please?"
+    },
+    {
+      "id": "complete-13",
+      "prompt": "Can you speak ______, please?",
+      "answers": [
+        "slowly"
+      ],
+      "fullPhrase": "Can you speak slowly, please?"
+    },
+    {
+      "id": "complete-14",
+      "prompt": "Here is the ______.",
+      "answers": [
+        "address",
+        "receipt"
+      ],
+      "fullPhrase": "Here is the address."
+    },
+    {
+      "id": "complete-15",
+      "prompt": "I have a ______.",
+      "answers": [
+        "problem"
+      ],
+      "fullPhrase": "I have a problem."
+    },
+    {
+      "id": "complete-16",
+      "prompt": "It doesn’t ______.",
+      "answers": [
+        "work",
+        "fit"
+      ],
+      "fullPhrase": "It doesn’t work."
+    }
+  ],
+  "typeSentenceQuestions": [
+    {
+      "id": "item-01",
+      "prompt": "Estou bem, obrigado.",
+      "answers": [
+        "I’m good, thank you.",
+        "I'm good, thank you.",
+        "I am good, thank you.",
+        "I’m fine, thanks.",
+        "I'm fine, thanks."
+      ]
+    },
+    {
+      "id": "item-02",
+      "prompt": "Estou um pouco cansado.",
+      "answers": [
+        "I’m a little tired.",
+        "I'm a little tired.",
+        "I am a little tired.",
+        "A little tired."
+      ]
+    },
+    {
+      "id": "item-03",
+      "prompt": "Está bom. / A viagem está boa.",
+      "answers": [
+        "It’s good.",
+        "It's good.",
+        "It is good."
+      ]
+    },
+    {
+      "id": "item-04",
+      "prompt": "É muito legal / muito bom.",
+      "answers": [
+        "It’s very nice.",
+        "It's very nice.",
+        "It is very nice.",
+        "Very nice.",
+        "It’s good.",
+        "It's good."
+      ]
+    },
+    {
+      "id": "item-05",
+      "prompt": "Sou do Brasil.",
+      "answers": [
+        "I’m from Brazil.",
+        "I'm from Brazil.",
+        "I am from Brazil.",
+        "Brazil."
+      ]
+    },
+    {
+      "id": "item-06",
+      "prompt": "Sou de São Paulo, Brasil.",
+      "answers": [
+        "I’m from São Paulo, Brazil.",
+        "I'm from Sao Paulo, Brazil.",
+        "I'm from São Paulo, Brazil.",
+        "I am from São Paulo, Brazil.",
+        "I’m from Brazil.",
+        "I'm from Brazil."
+      ]
+    },
+    {
+      "id": "item-07",
+      "prompt": "Estou aqui de férias.",
+      "answers": [
+        "I’m here on vacation.",
+        "I'm here on vacation.",
+        "I am here on vacation.",
+        "On vacation."
+      ]
+    },
+    {
+      "id": "item-08",
+      "prompt": "Estou viajando com meus pais.",
+      "answers": [
+        "I’m traveling with my parents.",
+        "I'm traveling with my parents.",
+        "I am traveling with my parents.",
+        "With my parents."
+      ]
+    },
+    {
+      "id": "item-09",
+      "prompt": "É minha primeira vez aqui.",
+      "answers": [
+        "It’s my first time here.",
+        "It's my first time here.",
+        "It is my first time here.",
+        "My first time here.",
+        "Yes, first time."
+      ]
+    },
+    {
+      "id": "item-10",
+      "prompt": "Sim, estou curtindo / aproveitando.",
+      "answers": [
+        "Yes, I’m enjoying it.",
+        "Yes, I'm enjoying it.",
+        "Yes, I am enjoying it.",
+        "I’m enjoying it.",
+        "I'm enjoying it.",
+        "Yes, it’s very nice.",
+        "Yes, it's very nice."
+      ]
+    },
+    {
+      "id": "item-11",
+      "prompt": "E você?",
+      "answers": [
+        "And you?",
+        "What about you?",
+        "How about you?",
+        "And you"
+      ]
+    },
+    {
+      "id": "item-12",
+      "prompt": "Obrigado. Você também.",
+      "answers": [
+        "Thank you. You too.",
+        "Thanks. You too.",
+        "Thank you, you too.",
+        "You too."
+      ]
+    },
+    {
+      "id": "item-13",
+      "prompt": "Você pode repetir, por favor?",
+      "answers": [
+        "Can you repeat, please?",
+        "Can you repeat please?",
+        "Repeat, please.",
+        "Can you say that again?"
+      ]
+    },
+    {
+      "id": "item-14",
+      "prompt": "Você pode falar devagar, por favor?",
+      "answers": [
+        "Can you speak slowly, please?",
+        "Can you speak slowly please?",
+        "Speak slowly, please.",
+        "Slowly, please."
+      ]
+    },
+    {
+      "id": "item-15",
+      "prompt": "Estou procurando uma camiseta.",
+      "answers": [
+        "I’m looking for a t-shirt.",
+        "I'm looking for a t-shirt.",
+        "I am looking for a t-shirt.",
+        "I want a t-shirt."
+      ]
+    },
+    {
+      "id": "item-16",
+      "prompt": "Posso pedir um hambúrguer, por favor?",
+      "answers": [
+        "Can I have a burger, please?",
+        "Can I have a burger please?",
+        "A burger, please.",
+        "I want a burger, please."
+      ]
+    },
+    {
+      "id": "item-17",
+      "prompt": "Aqui está o endereço.",
+      "answers": [
+        "Here is the address.",
+        "Here's the address.",
+        "This is the address.",
+        "Here is my address."
+      ]
+    },
+    {
+      "id": "item-18",
+      "prompt": "Estou com um problema.",
+      "answers": [
+        "I have a problem.",
+        "I have problem.",
+        "I’ve got a problem."
+      ]
+    },
+    {
+      "id": "item-19",
+      "prompt": "Meu pedido está errado.",
+      "answers": [
+        "My order is wrong.",
+        "The order is wrong.",
+        "This order is wrong.",
+        "Something is wrong."
+      ]
+    },
+    {
+      "id": "item-20",
+      "prompt": "Eu não pedi isso.",
+      "answers": [
+        "I didn’t order this.",
+        "I didn't order this.",
+        "I did not order this.",
+        "I didn’t ask for this."
+      ]
+    },
+    {
+      "id": "item-21",
+      "prompt": "Não serviu.",
+      "answers": [
+        "It doesn’t fit.",
+        "It doesn't fit.",
+        "The t-shirt doesn’t fit.",
+        "The t-shirt doesn't fit."
+      ]
+    },
+    {
+      "id": "item-22",
+      "prompt": "Não funciona.",
+      "answers": [
+        "It doesn’t work.",
+        "It doesn't work.",
+        "This doesn’t work.",
+        "This doesn't work."
+      ]
+    }
+  ],
+  "finalMissionScenario": "You are traveling in the United States.\nPeople talk to you in different places:\nat the hotel,\nin an Uber,\nin a store,\nin a restaurant,\nand in a park.\nAnswer short.\nAsk back when possible.\nRecover if needed.",
+  "finalMissionQuestions": [
+    {
+      "id": "item-01",
+      "prompt": "Someone says: How are you today?",
+      "answers": [
+        "I’m good, thank you.",
+        "I'm good, thank you.",
+        "I’m fine, thanks.",
+        "I'm fine, thanks.",
+        "I’m a little tired.",
+        "I'm a little tired."
+      ]
+    },
+    {
+      "id": "item-02",
+      "prompt": "You want to ask back: E você?",
+      "answers": [
+        "And you?",
+        "What about you?",
+        "How about you?"
+      ]
+    },
+    {
+      "id": "item-03",
+      "prompt": "Someone asks: Where are you from?",
+      "answers": [
+        "I’m from Brazil.",
+        "I'm from Brazil.",
+        "I am from Brazil.",
+        "I’m from São Paulo, Brazil.",
+        "I'm from Sao Paulo, Brazil."
+      ]
+    },
+    {
+      "id": "item-04",
+      "prompt": "Someone asks: Are you here on vacation?",
+      "answers": [
+        "Yes, I’m here on vacation.",
+        "Yes, I'm here on vacation.",
+        "I’m here on vacation.",
+        "I'm here on vacation.",
+        "Yes, with my parents."
+      ]
+    },
+    {
+      "id": "item-05",
+      "prompt": "Someone asks: Who are you traveling with?",
+      "answers": [
+        "I’m traveling with my parents.",
+        "I'm traveling with my parents.",
+        "I am traveling with my parents.",
+        "With my parents."
+      ]
+    },
+    {
+      "id": "item-06",
+      "prompt": "Someone asks: Is this your first time here?",
+      "answers": [
+        "Yes, it’s my first time here.",
+        "Yes, it's my first time here.",
+        "It’s my first time here.",
+        "It's my first time here.",
+        "Yes, first time."
+      ]
+    },
+    {
+      "id": "item-07",
+      "prompt": "Someone asks: Are you enjoying your trip?",
+      "answers": [
+        "Yes, I’m enjoying it.",
+        "Yes, I'm enjoying it.",
+        "I’m enjoying it.",
+        "I'm enjoying it.",
+        "Yes, it’s very nice.",
+        "Yes, it's very nice."
+      ]
+    },
+    {
+      "id": "item-08",
+      "prompt": "Someone says: Have a good day.",
+      "answers": [
+        "Thank you. You too.",
+        "Thanks. You too.",
+        "Thank you, you too.",
+        "You too."
+      ]
+    },
+    {
+      "id": "item-09",
+      "prompt": "In a store, the clerk asks: Can I help you?",
+      "answers": [
+        "I’m looking for a t-shirt.",
+        "I'm looking for a t-shirt.",
+        "I am looking for a t-shirt.",
+        "I want a t-shirt.",
+        "Yes. I’m looking for a t-shirt."
+      ]
+    },
+    {
+      "id": "item-10",
+      "prompt": "In a restaurant, the server asks: What can I get for you?",
+      "answers": [
+        "Can I have a burger, please?",
+        "A burger, please.",
+        "Can I have a burger please?",
+        "I want a burger, please."
+      ]
+    },
+    {
+      "id": "item-11",
+      "prompt": "In an Uber, the driver asks: Where are you going?",
+      "answers": [
+        "Here is the address.",
+        "Here's the address.",
+        "This is the address.",
+        "Here is my address."
+      ]
+    },
+    {
+      "id": "item-12",
+      "prompt": "You don’t understand.",
+      "answers": [
+        "Can you repeat, please?",
+        "Can you repeat please?",
+        "Repeat, please.",
+        "I don’t understand.",
+        "I don't understand."
+      ]
+    },
+    {
+      "id": "item-13",
+      "prompt": "The person speaks fast.",
+      "answers": [
+        "Can you speak slowly, please?",
+        "Can you speak slowly please?",
+        "Speak slowly, please.",
+        "Slowly, please."
+      ]
+    },
+    {
+      "id": "item-14",
+      "prompt": "At a restaurant, your order is wrong.",
+      "answers": [
+        "My order is wrong.",
+        "The order is wrong.",
+        "This order is wrong.",
+        "Something is wrong."
+      ]
+    },
+    {
+      "id": "item-15",
+      "prompt": "You didn’t order this.",
+      "answers": [
+        "I didn’t order this.",
+        "I didn't order this.",
+        "I did not order this.",
+        "I didn’t ask for this."
+      ]
+    },
+    {
+      "id": "item-16",
+      "prompt": "Your t-shirt doesn’t fit.",
+      "answers": [
+        "It doesn’t fit.",
+        "It doesn't fit.",
+        "The t-shirt doesn’t fit.",
+        "The t-shirt doesn't fit."
+      ]
+    },
+    {
+      "id": "item-17",
+      "prompt": "The Wi-Fi doesn’t work.",
+      "answers": [
+        "It doesn’t work.",
+        "It doesn't work.",
+        "The Wi-Fi doesn’t work.",
+        "The wifi doesn't work.",
+        "The Wi-Fi doesn't work."
+      ]
+    }
+  ],
+  "missionCompleteMessage": "Good job.\nYou practiced small talk and daily interactions.\nRemember:\nAnswer short.\nAsk back.\nKeep it simple.\nRecover when confused.",
+  "mainPhrases": [
+    "I’m good, thank you.",
+    "It’s very nice.",
+    "I’m from Brazil.",
+    "I’m here on vacation.",
+    "I’m traveling with my parents.",
+    "Yes, it’s my first time here.",
+    "And you?",
+    "Thank you. You too.",
+    "Can you repeat, please?",
+    "Can you speak slowly, please?",
+    "I’m looking for a t-shirt.",
+    "Can I have a burger, please?",
+    "Here is the address.",
+    "I have a problem.",
+    "My order is wrong.",
+    "I didn’t order this.",
+    "It doesn’t fit.",
+    "It doesn’t work."
+  ]
+},
+{
   "id": "mission-6-shopping-buying",
   "week": "Mission 6",
   "title": "Shopping & Buying Things",

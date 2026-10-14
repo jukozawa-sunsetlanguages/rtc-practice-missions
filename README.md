@@ -220,3 +220,8 @@ O XP durante a missão deriva de passos concluídos e primeiras respostas corret
 `practice-reminder.ics` oferece importação opcional de lembrete diário às 19h no fuso local do calendário, editável pelo aluno. Não envia notificações pelo site nem exige permissões. Reimportar pode duplicar eventos dependendo do calendário; importe apenas uma vez.
 
 Estrelas preservam os limiares existentes: 85% e 60%. Payload, URL, envio automático, notas e Copy Result permanecem inalterados.
+
+
+### Mission 8 — preparada, ainda bloqueada
+
+`mission-8-small-talk-daily-interactions` contém 23 frases de prática, 14 perguntas de reconhecimento e 67 questões avaliadas (12/16/22/17). Aparece como Next Mission com `status: "draft"`, `isNext: true` e `releaseMode: "manual"`. Não abre por link direto nem após concluir Mission 7. Mission 7 continua atual. Para liberar em uma atualização futura, torne Mission 7 `previous`, Mission 8 `current` e remova `isNext`/`releaseMode`. Mantenha IDs e versões para preservar progresso. O áudio usa o roteiro e a voz do navegador até receber uma gravação própria.
