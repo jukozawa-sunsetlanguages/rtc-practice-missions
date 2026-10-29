@@ -283,7 +283,7 @@ test('Travel Review Pack has complete previous missions and accepted answers', (
  const reviews=missions.filter(m=>m.category==='Travel Review Pack');
  assert.equal(reviews.length,3);
  assert.deepEqual(reviews.map(m=>questionSections.map(s=>m[s+'Questions'].length)),[[6,8,8,7],[8,10,10,10],[8,10,11,12]]);
- assert.equal(missions.find(m=>m.status==='current').id,'mission-7-problems-help');
+ assert.equal(missions.find(m=>m.status==='current').id,'mission-9-travel-problems');
  for(const m of reviews) {
   assert.equal(m.status,'previous'); assert.ok(m.finalMissionScenario); assert.ok(m.missionCompleteMessage); assert.ok(m.mainPhrases.length);
   for(const section of questionSections.slice(1)) for(const q of m[section+'Questions']) for(const answer of q.answers) assert.equal(evaluate(answer,q.answers),'correct');
@@ -309,9 +309,9 @@ test('completion resets saved practice while preserving result and submission sc
  assert.equal(ctx.load(m).step,3);
 });
 
-test('Mission 7 is current with all phrases, exercises and accepted answers', () => {
+test('Mission 7 remains available with all phrases, exercises and accepted answers', () => {
 const m=missions.find(m=>m.id==='mission-7-problems-help');
-assert.equal(m.status,'current');assert.notEqual(m.isNext,true);assert.equal(m.week,'Mission 7');assert.equal(m.targetPhrases.length,20);
+assert.equal(m.status,'previous');assert.notEqual(m.isNext,true);assert.equal(m.week,'Mission 7');assert.equal(m.targetPhrases.length,20);
 assert.deepEqual(questionSections.map(s=>m[s+'Questions'].length),[8,12,14,10]);
 for(const s of questionSections.slice(1))for(const q of m[s+'Questions'])for(const answer of q.answers)assert.equal(evaluate(answer,q.answers),'correct');
 assert.equal(evaluate('big',m.completePhraseQuestions[6].answers),'correct');
@@ -325,7 +325,7 @@ assert.equal(m.targetPhrases.length,17);assert.equal(m.recognitionPhrases.length
 assert.deepEqual(questionSections.map(s=>m[s+'Questions'].length),[10,12,15,14]);
 for(const section of questionSections.slice(1))for(const q of m[section+'Questions'])for(const a of q.answers)assert.equal(evaluate(a,q.answers),'correct');
 assert.equal(summarize(m,answered(m,true)).maxScore,51);assert.match(m.fallbackAudioScript,/Part 6 — Recovery/);assert.match(m.fallbackAudioScript,/Final round/);
-assert.equal(missions.filter(m=>m.status==='previous').length,6);
+assert.equal(missions.filter(m=>m.status==='previous').length,8);
 });
 
 test('Mission 5 exact and normalized answers score in every typed section', () => {
@@ -563,7 +563,7 @@ test('Mission 7 opens without prerequisites and Mission 6 remains in the trail a
   assert.match(h.app.innerHTML,/Recorded on this browser/);
   assert.match(h.app.innerHTML,/85%/);
   assert.match(h.app.innerHTML,/8-minute sessions/);
-  assert.match(h.app.innerHTML,/Mission 7 · Current topic/);
+  assert.match(h.app.innerHTML,/Mission 9 · Current topic/);
   assert.match(h.app.innerHTML,/#mission\/mission-6-shopping-buying/);
   assert.doesNotMatch(h.app.innerHTML,/Complete Mission 6 to unlock/);
   h.context.location.hash='#mission/mission-7-problems-help';h.context.route();
@@ -579,7 +579,7 @@ test('Mission 7 opens without prerequisites and Mission 6 remains in the trail a
 
 test('Mission 8 includes every exercise and accepted answer from the brief', () => {
   const m=missions.find(m=>m.id==='mission-8-small-talk-daily-interactions');
-  assert.equal(m.status,'draft');assert.equal(m.isNext,true);assert.equal(m.releaseMode,'manual');
+  assert.equal(m.status,'previous');assert.notEqual(m.isNext,true);
   assert.equal(m.targetPhrases.length,23);assert.equal(m.recognitionPhrases.length,14);
   assert.deepEqual(questionSections.map(s=>m[s+'Questions'].length),[12,16,22,17]);
   for(const section of questionSections.slice(1)) for(const q of m[section+'Questions']) for(const a of q.answers) {
@@ -590,18 +590,100 @@ test('Mission 8 includes every exercise and accepted answer from the brief', () 
   assert.equal(evaluate('fit',m.completePhraseQuestions[15]),'correct');
   assert.equal(summarize(m,answered(m,true)).totalScore,67);
 });
-test('Mission 8 stays locked after Mission 7 completion and cannot open via direct link', async () => {
-  const h=await appHarness(), m=missions.find(m=>m.week==='Mission 8');
-  assert.match(h.app.innerHTML,/Next Mission/);assert.match(h.app.innerHTML,/Small Talk/);
+test('Missions 8 and 9 open, but Mission 10 stays locked even after Mission 9 completion', async () => {
+  const h=await appHarness(), m=missions.find(m=>m.week==='Mission 10');
+  assert.equal(m.status,'draft');assert.equal(m.isNext,true);assert.equal(m.releaseMode,'manual');
+  assert.match(h.app.innerHTML,/Next Mission/);assert.match(h.app.innerHTML,/The Travel Quest/);
   assert.match(h.app.innerHTML,/Your teacher will release/);
-  h.store.set('rtc:last:mission-7-problems-help',JSON.stringify({missionId:'mission-7-problems-help',completedAt:new Date().toISOString(),percentage:100}));
+  for (const week of ['Mission 8','Mission 9']) {
+    h.context.location.hash='#mission/'+missions.find(m=>m.week===week).id;h.context.route();
+    assert.match(h.app.innerHTML,/Briefing/);
+  }
+  h.store.set('rtc:last:mission-9-travel-problems',JSON.stringify({missionId:'mission-9-travel-problems',completedAt:new Date().toISOString(),percentage:100}));
   h.context.location.hash='#mission/'+m.id;h.context.route();
-  assert.match(h.app.innerHTML,/TODAY'S MISSION/);assert.doesNotMatch(h.app.innerHTML,/Start Mission 8/);
+  assert.match(h.app.innerHTML,/TODAY'S MISSION/);assert.doesNotMatch(h.app.innerHTML,/Start Mission 10/);
   // Render unreleased content only inside the isolated test harness.
   h.context.testMission=m;
   for(let step=0;step<7;step++) {
     vm.runInContext(`mission=testMission;state=fresh();state.step=${step};renderMission()`,h.context);
-    assert.match(h.app.innerHTML,/Small Talk/);
+    assert.match(h.app.innerHTML,/The Travel Quest/);
   }
   assert.equal(h.requests.length,0);
+});
+
+test('Missions 9 and 10 cover priorities, playable listening, unambiguous gaps and valid alternatives', () => {
+  for (const [id, total] of [['mission-9-travel-problems',32],['mission-10-travel-quest',36]]) {
+    const m=missions.find(m=>m.id===id);
+    assert.equal(summarize(m,answered(m)).maxScore,total);
+    for (const phrase of ['Can I try it on?','Can I have another one, please?',"I didn't order this.",'My order is wrong.']) {
+      assert.ok(m.targetPhrases.some(p=>p.english===phrase));
+      assert.ok(m.fallbackAudioScript.includes(phrase));
+    }
+    for (const q of m.completePhraseQuestions) {
+      assert.ok(q.hint);
+      assert.equal(q.wordBank.filter(a=>evaluate(a,q)==='correct').length,1);
+    }
+    for (const s of questionSections.slice(1)) for (const q of m[s+'Questions']) for (const a of q.answers) {
+      assert.equal(evaluate('  '+a.toUpperCase().replaceAll("'",'’')+'  ',q),'correct');
+    }
+    assert.ok(m.chooseMeaningQuestions.every(q=>q.audioPrompt===q.prompt));
+    assert.ok(m.finalMissionQuestions.every(q=>q.audioPrompt));
+  }
+});
+
+test('new missions finish through real handlers, review only missed items and register once', async () => {
+  for (const id of ['mission-9-travel-problems','mission-10-travel-quest']) {
+    const h=await appHarness(), m=missions.find(m=>m.id===id);
+    h.context.location.hash='#mission/'+id;h.context.route();
+    // Exercise the prepared draft only in the isolated harness; public routing stays locked.
+    if (m.status==='draft') {
+      h.context.testMission=m;
+      vm.runInContext('mission=testMission;state=fresh();renderMission()',h.context);
+    }
+    assert.match(h.app.innerHTML,/Briefing/);
+    // Render all original stages; audio checks are self-reported, never scored.
+    for (let step=0;step<7;step++) {
+      vm.runInContext(`state.step=${step};renderMission()`,h.context);
+      assert.match(h.app.innerHTML,new RegExp(m.title));
+    }
+    vm.runInContext('state.step=3;state.listenedFullAudio=true;state.repeatedOutLoud=true;state.repeat=mission.targetPhrases.map((_,i)=>i);renderMission()',h.context);
+    assert.match(h.app.innerHTML,/Listen to staff/);
+    assert.match(h.app.innerHTML,/<details><summary>Read transcript/);
+    const spoken=[]; h.context.captureSpeech=text=>spoken.push(text);
+    vm.runInContext('speak=captureSpeech',h.context);
+    await h.click('prompt-audio',{section:'chooseMeaning',index:'0'});
+    assert.equal(spoken[0],m.chooseMeaningQuestions[0].audioPrompt);
+    for (const [i,q] of m.chooseMeaningQuestions.entries()) {
+      await h.click('choose',{index:String(i),option:String(q.answer)});
+      await h.click('advance-item');
+    }
+    for (const section of questionSections.slice(1)) for (const [i,q] of m[section+'Questions'].entries()) {
+      if (section==='finalMission' && i===0) {
+        h.submit(section,i,'wrong response');
+        await h.click('retry',{section,index:String(i)});
+      }
+      h.submit(section,i,q.answers.at(-1));
+      assert.match(h.app.innerHTML,/Correct ✓/);
+      await h.click('advance-item');
+    }
+    await new Promise(resolve=>setTimeout(resolve,0));
+    assert.equal(h.requests.length,1);
+    const saved=h.store.get('rtc:last:'+id), result=JSON.parse(saved);
+    assert.equal(result.totalScore,result.maxScore-1);
+    assert.equal(result.wrongAnswers.length,1);
+    assert.equal(reviewItems(m,result.wrongAnswers).length,1);
+    await h.click('review-missed');
+    await h.click('prompt-audio',{section:'finalMission',index:'0'});
+    h.submit('finalMission',0,m.finalMissionQuestions[0].answers[0]);
+    await h.click('advance-item');
+    assert.equal(h.store.get('rtc:last:'+id),saved);
+    assert.equal(h.requests.length,1);
+    if (m.status==='draft') continue; // Draft results remain inaccessible through public routes.
+    const reloaded=await appHarness([...h.store]);
+    reloaded.context.location.hash='#result/'+id;reloaded.context.route();
+    assert.match(reloaded.app.innerHTML,/Training already submitted/);
+    assert.equal(reloaded.requests.length,0);
+    await reloaded.click('copy');
+    assert.equal(reloaded.clipboard[0],result.copiedResultText);
+  }
 });
