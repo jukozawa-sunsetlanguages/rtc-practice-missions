@@ -2,6 +2,961 @@
 // Bump missionVersion when questions change. Optional target phrase audioUrl supports recordings.
 export const missions = [
 {
+  "id": "mission-10-travel-quest",
+  "week": "Mission 10",
+  "title": "The Travel Quest",
+  "shortTitle": "Travel Quest",
+  "status": "current",
+  "missionVersion": "v1",
+  "studentName": "Mateus",
+  "keyPhrase": "Listen. React. Recover. Keep going.",
+  "goal": "Your travel quest has four stops: store, restaurant, hotel and transport. Practise the phrases that still need repetition. Each surprise needs just one short response. At the end, Train What I Missed selects your first-try mistakes for focused review.",
+  "todayYouPractice": [
+    "trying on a different size",
+    "fixing a wrong order",
+    "listening for the next action",
+    "recovering when you do not understand",
+    "reviewing your own first-try mistakes"
+  ],
+  "fullAudioUrl": "",
+  "targetPhrases": [
+    {
+      "english": "Can I try it on?",
+      "portuguese": "Posso experimentar?"
+    },
+    {
+      "english": "Can I have another one, please?",
+      "portuguese": "Posso pegar outro, por favor?"
+    },
+    {
+      "english": "I didn't order this.",
+      "portuguese": "Eu não pedi isto."
+    },
+    {
+      "english": "My order is wrong.",
+      "portuguese": "Meu pedido está errado."
+    },
+    {
+      "english": "Do you have a bigger size?",
+      "portuguese": "Você tem um tamanho maior?"
+    },
+    {
+      "english": "Can you help me, please?",
+      "portuguese": "Você pode me ajudar, por favor?"
+    },
+    {
+      "english": "Can you repeat, please?",
+      "portuguese": "Você pode repetir, por favor?"
+    },
+    {
+      "english": "Can you speak slowly, please?",
+      "portuguese": "Você pode falar devagar, por favor?"
+    },
+    {
+      "english": "Here is my receipt.",
+      "portuguese": "Aqui está meu recibo."
+    },
+    {
+      "english": "Is this the right bus?",
+      "portuguese": "Este é o ônibus certo?"
+    },
+    {
+      "english": "The key doesn't work.",
+      "portuguese": "A chave não funciona."
+    },
+    {
+      "english": "Where do I get off?",
+      "portuguese": "Onde eu desço?"
+    }
+  ],
+  "vocabulary": [
+    {
+      "english": "try on",
+      "portuguese": "experimentar roupa"
+    },
+    {
+      "english": "another one",
+      "portuguese": "outro"
+    },
+    {
+      "english": "wrong",
+      "portuguese": "errado"
+    },
+    {
+      "english": "fitting room",
+      "portuguese": "provador"
+    },
+    {
+      "english": "cashier",
+      "portuguese": "caixa"
+    },
+    {
+      "english": "next stop",
+      "portuguese": "próximo ponto"
+    }
+  ],
+  "recognitionPhrases": [
+    {
+      "english": "Try this one.",
+      "portuguese": "Experimente este."
+    },
+    {
+      "english": "Do you have your receipt?",
+      "portuguese": "Você está com o recibo?"
+    },
+    {
+      "english": "Please pay at the cashier.",
+      "portuguese": "Por favor, pague no caixa."
+    },
+    {
+      "english": "I'll bring your burger.",
+      "portuguese": "Vou trazer seu hambúrguer."
+    },
+    {
+      "english": "Here is a new key.",
+      "portuguese": "Aqui está uma chave nova."
+    },
+    {
+      "english": "You need the next bus.",
+      "portuguese": "Você precisa pegar o próximo ônibus."
+    }
+  ],
+  "chooseMeaningQuestions": [
+    {
+      "prompt": "Try this one.",
+      "audioPrompt": "Try this one.",
+      "options": [
+        "Experimente este.",
+        "Pague no caixa.",
+        "Mostre o recibo."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "The fitting room is on the right.",
+      "audioPrompt": "The fitting room is on the right.",
+      "options": [
+        "Vá ao provador à direita.",
+        "Vá ao caixa à esquerda.",
+        "Peça uma chave nova."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Do you have your receipt?",
+      "audioPrompt": "Do you have your receipt?",
+      "options": [
+        "Mostre seu recibo.",
+        "Informe o tamanho.",
+        "Mostre o endereço."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Please pay at the cashier.",
+      "audioPrompt": "Please pay at the cashier.",
+      "options": [
+        "Pague no caixa.",
+        "Experimente a camiseta.",
+        "Espere no ponto."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "I'll bring your burger.",
+      "audioPrompt": "I'll bring your burger.",
+      "options": [
+        "A pessoa vai trazer seu hambúrguer.",
+        "A pessoa quer saber seu pedido.",
+        "A pessoa vai trazer a conta."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Here is a new key.",
+      "audioPrompt": "Here is a new key.",
+      "options": [
+        "A pessoa entrega uma chave nova.",
+        "A pessoa pede seu cartão.",
+        "A pessoa informa seu quarto."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "You need the next bus.",
+      "audioPrompt": "You need the next bus.",
+      "options": [
+        "Espere o próximo ônibus.",
+        "Entre neste ônibus.",
+        "Desça no próximo ponto."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Get off at the next stop.",
+      "audioPrompt": "Get off at the next stop.",
+      "options": [
+        "Desça no próximo ponto.",
+        "Pegue o próximo ônibus.",
+        "Mostre o recibo."
+      ],
+      "answer": 0
+    }
+  ],
+  "completePhraseQuestions": [
+    {
+      "prompt": "Can I ___ it on?",
+      "hint": "Peça para experimentar.",
+      "answers": [
+        "try"
+      ],
+      "fullPhrase": "Can I try it on?",
+      "wordBank": [
+        "try",
+        "have",
+        "order"
+      ]
+    },
+    {
+      "prompt": "Can I have ___ one, please?",
+      "hint": "Peça outro.",
+      "answers": [
+        "another"
+      ],
+      "fullPhrase": "Can I have another one, please?",
+      "wordBank": [
+        "another",
+        "wrong",
+        "right"
+      ]
+    },
+    {
+      "prompt": "I didn’t ___ this.",
+      "hint": "Você não pediu isto.",
+      "answers": [
+        "order"
+      ],
+      "fullPhrase": "I didn't order this.",
+      "wordBank": [
+        "order",
+        "try",
+        "work"
+      ]
+    },
+    {
+      "prompt": "My ___ is wrong.",
+      "hint": "Seu pedido está errado.",
+      "answers": [
+        "order"
+      ],
+      "fullPhrase": "My order is wrong.",
+      "wordBank": [
+        "order",
+        "receipt",
+        "size"
+      ]
+    },
+    {
+      "prompt": "Do you have a ___ size?",
+      "hint": "Peça um tamanho maior.",
+      "answers": [
+        "bigger"
+      ],
+      "fullPhrase": "Do you have a bigger size?",
+      "wordBank": [
+        "bigger",
+        "wrong",
+        "next"
+      ]
+    },
+    {
+      "prompt": "Here is my ___.",
+      "hint": "Mostre seu recibo.",
+      "answers": [
+        "receipt"
+      ],
+      "fullPhrase": "Here is my receipt.",
+      "wordBank": [
+        "receipt",
+        "order",
+        "stop"
+      ]
+    },
+    {
+      "prompt": "Can you ___, please?",
+      "hint": "Peça para repetir.",
+      "answers": [
+        "repeat"
+      ],
+      "fullPhrase": "Can you repeat, please?",
+      "wordBank": [
+        "repeat",
+        "try",
+        "have"
+      ]
+    },
+    {
+      "prompt": "The key doesn’t ___.",
+      "hint": "A chave não funciona.",
+      "answers": [
+        "work"
+      ],
+      "fullPhrase": "The key doesn't work.",
+      "wordBank": [
+        "work",
+        "order",
+        "repeat"
+      ]
+    }
+  ],
+  "typeSentenceQuestions": [
+    {
+      "prompt": "Posso experimentar?",
+      "answers": [
+        "Can I try it on?",
+        "Could I try it on?",
+        "Can I try this on?"
+      ]
+    },
+    {
+      "prompt": "Posso pegar outro, por favor?",
+      "answers": [
+        "Can I have another one, please?",
+        "Could I have another one, please?",
+        "Can I have another one?"
+      ]
+    },
+    {
+      "prompt": "Eu não pedi isto.",
+      "answers": [
+        "I didn't order this.",
+        "I did not order this."
+      ]
+    },
+    {
+      "prompt": "Meu pedido está errado.",
+      "answers": [
+        "My order is wrong.",
+        "This is not my order.",
+        "This isn't my order."
+      ]
+    },
+    {
+      "prompt": "Você tem um tamanho maior?",
+      "answers": [
+        "Do you have a bigger size?",
+        "Do you have a larger size?"
+      ]
+    },
+    {
+      "prompt": "Aqui está meu recibo.",
+      "answers": [
+        "Here is my receipt.",
+        "Here's my receipt."
+      ]
+    },
+    {
+      "prompt": "Você pode repetir, por favor?",
+      "answers": [
+        "Can you repeat, please?",
+        "Could you repeat, please?",
+        "Can you say that again, please?"
+      ]
+    },
+    {
+      "prompt": "Onde eu desço?",
+      "answers": [
+        "Where do I get off?",
+        "Where should I get off?"
+      ]
+    }
+  ],
+  "finalMissionScenario": "Travel Quest: four stops, surprise changes. Tap Listen to staff first; open the transcript if you need support. Give one short answer. If you get stuck, practise again. Finish with Train What I Missed for your personal recovery round.",
+  "finalMissionQuestions": [
+    {
+      "prompt": "STORE · A camiseta ficou pequena. Peça um tamanho maior.",
+      "audioPrompt": "That one is a small.",
+      "answers": [
+        "Do you have a bigger size?",
+        "Do you have a larger size?",
+        "Can I have a bigger size, please?"
+      ]
+    },
+    {
+      "prompt": "STORE · Surpresa: há outro tamanho. Peça para experimentar.",
+      "audioPrompt": "We have a medium.",
+      "answers": [
+        "Can I try it on?",
+        "Could I try it on?",
+        "Can I try this on?"
+      ]
+    },
+    {
+      "prompt": "STORE · Surpresa: pediram um documento da compra. Mostre-o.",
+      "audioPrompt": "Do you have your receipt?",
+      "answers": [
+        "Here is my receipt.",
+        "Here's my receipt.",
+        "Yes, here is my receipt."
+      ]
+    },
+    {
+      "prompt": "RESTAURANT · Chegou uma pizza; você pediu um hambúrguer. Diga que não pediu isto.",
+      "audioPrompt": "Here is your pizza.",
+      "answers": [
+        "I didn't order this.",
+        "I did not order this.",
+        "My order is wrong.",
+        "This is not my order.",
+        "This isn't my order."
+      ]
+    },
+    {
+      "prompt": "RESTAURANT · Surpresa: seu copo está sujo. Peça outro copo.",
+      "audioPrompt": "Here is your water.",
+      "answers": [
+        "Can I have another one, please?",
+        "Could I have another one, please?",
+        "Can I have another glass, please?",
+        "Can I have another one?"
+      ]
+    },
+    {
+      "prompt": "RESTAURANT · A pessoa confirmou a solução. Agradeça.",
+      "audioPrompt": "Sorry. I’ll bring a clean glass.",
+      "answers": [
+        "Thank you.",
+        "Thanks.",
+        "Okay, thank you.",
+        "Thank you very much."
+      ]
+    },
+    {
+      "prompt": "HOTEL · Sua chave parou de funcionar. Explique.",
+      "audioPrompt": "How can I help you?",
+      "answers": [
+        "The key doesn't work.",
+        "The key does not work.",
+        "My key doesn't work."
+      ]
+    },
+    {
+      "prompt": "HOTEL · Surpresa: a pessoa falou rápido. Peça para falar devagar.",
+      "audioPrompt": "Take the elevator to the third floor.",
+      "answers": [
+        "Can you speak slowly, please?",
+        "Could you speak slowly, please?",
+        "Can you speak more slowly, please?"
+      ]
+    },
+    {
+      "prompt": "TRANSPORT · Você está em dúvida antes de embarcar. Confirme o ônibus.",
+      "audioPrompt": "Where are you going?",
+      "answers": [
+        "Is this the right bus?",
+        "Is this the correct bus?"
+      ]
+    },
+    {
+      "prompt": "TRANSPORT · Surpresa: você não entendeu a nova orientação. Peça repetição.",
+      "audioPrompt": "You need the next bus, across the street.",
+      "answers": [
+        "Can you repeat, please?",
+        "Could you repeat, please?",
+        "Can you say that again, please?"
+      ]
+    },
+    {
+      "prompt": "TRANSPORT · Agora você está no ônibus certo. Pergunte onde descer.",
+      "audioPrompt": "Yes, this bus goes to your hotel.",
+      "answers": [
+        "Where do I get off?",
+        "Where should I get off?"
+      ]
+    },
+    {
+      "prompt": "TRANSPORT · Você ouviu onde descer. Confirme com uma pergunta curta.",
+      "audioPrompt": "Get off at the next stop.",
+      "answers": [
+        "The next stop?",
+        "At the next stop?",
+        "Do I get off at the next stop?",
+        "Should I get off at the next stop?"
+      ]
+    }
+  ],
+  "missionCompleteMessage": "Quest complete. You kept the conversation moving, even when the plan changed. Now choose Train What I Missed: only your first-try mistakes become your personal recovery round. Repeat those phrases out loud if you can. Your first score remains unchanged.",
+  "mainPhrases": [
+    "Can I try it on?",
+    "Can I have another one, please?",
+    "I didn't order this.",
+    "My order is wrong.",
+    "Can you repeat, please?",
+    "Here is my receipt."
+  ],
+  "fallbackAudioScript": "Welcome to Mission 10. The Travel Quest. Listen. React. Recover. Keep going.\nListen, pause and repeat each short phrase.\nCan I try it on? Pause. Can I try it on?\nCan I have another one, please? Pause. Can I have another one, please?\nI didn't order this. Pause. I didn't order this.\nMy order is wrong. Pause. My order is wrong.\nDo you have a bigger size? Pause. Do you have a bigger size?\nCan you help me, please? Pause. Can you help me, please?\nCan you repeat, please? Pause. Can you repeat, please?\nCan you speak slowly, please? Pause. Can you speak slowly, please?\nHere is my receipt. Pause. Here is my receipt.\nIs this the right bus? Pause. Is this the right bus?\nThe key doesn't work. Pause. The key doesn't work.\nWhere do I get off? Pause. Where do I get off?\nListen to the staff. Think about your next action.\nTry this one.\nDo you have your receipt?\nPlease pay at the cashier.\nI'll bring your burger.\nHere is a new key.\nYou need the next bus.\nFinal round. Say one short response. Ask for repetition when you need it. Keep going."
+},
+{
+  "id": "mission-9-travel-problems",
+  "week": "Mission 9",
+  "title": "Travel Problems",
+  "shortTitle": "Travel Problems",
+  "status": "previous",
+  "missionVersion": "v1",
+  "studentName": "Mateus",
+  "keyPhrase": "Explain. Ask. Confirm. Continue.",
+  "goal": "Small problem? You can keep going. Explain one problem, ask for help and confirm the next step at a hotel, store, restaurant or bus stop.",
+  "todayYouPractice": [
+    "explaining a simple problem",
+    "asking for help or a replacement",
+    "understanding staff replies",
+    "confirming where to go next"
+  ],
+  "fullAudioUrl": "",
+  "targetPhrases": [
+    {
+      "english": "Can I try it on?",
+      "portuguese": "Posso experimentar?"
+    },
+    {
+      "english": "Can I have another one, please?",
+      "portuguese": "Posso pegar outro, por favor?"
+    },
+    {
+      "english": "I didn't order this.",
+      "portuguese": "Eu não pedi isto."
+    },
+    {
+      "english": "My order is wrong.",
+      "portuguese": "Meu pedido está errado."
+    },
+    {
+      "english": "Can you help me, please?",
+      "portuguese": "Você pode me ajudar, por favor?"
+    },
+    {
+      "english": "Can you repeat, please?",
+      "portuguese": "Você pode repetir, por favor?"
+    },
+    {
+      "english": "Can you speak slowly, please?",
+      "portuguese": "Você pode falar devagar, por favor?"
+    },
+    {
+      "english": "Here is my receipt.",
+      "portuguese": "Aqui está meu recibo."
+    },
+    {
+      "english": "Is this the right bus?",
+      "portuguese": "Este é o ônibus certo?"
+    },
+    {
+      "english": "The key doesn't work.",
+      "portuguese": "A chave não funciona."
+    },
+    {
+      "english": "This is too small.",
+      "portuguese": "Isto está pequeno demais."
+    },
+    {
+      "english": "Do you have a bigger size?",
+      "portuguese": "Você tem um tamanho maior?"
+    },
+    {
+      "english": "Where do I get off?",
+      "portuguese": "Onde eu desço?"
+    }
+  ],
+  "vocabulary": [
+    {
+      "english": "key",
+      "portuguese": "chave"
+    },
+    {
+      "english": "receipt",
+      "portuguese": "recibo"
+    },
+    {
+      "english": "size",
+      "portuguese": "tamanho"
+    },
+    {
+      "english": "another",
+      "portuguese": "outro"
+    },
+    {
+      "english": "order",
+      "portuguese": "pedido"
+    },
+    {
+      "english": "bus stop",
+      "portuguese": "ponto de ônibus"
+    }
+  ],
+  "recognitionPhrases": [
+    {
+      "english": "I can change your key.",
+      "portuguese": "Posso trocar sua chave."
+    },
+    {
+      "english": "Do you have your receipt?",
+      "portuguese": "Você está com o recibo?"
+    },
+    {
+      "english": "I'll bring another one.",
+      "portuguese": "Vou trazer outro."
+    },
+    {
+      "english": "Take the next bus.",
+      "portuguese": "Pegue o próximo ônibus."
+    },
+    {
+      "english": "Get off at the next stop.",
+      "portuguese": "Desça no próximo ponto."
+    },
+    {
+      "english": "The fitting room is on the left.",
+      "portuguese": "O provador fica à esquerda."
+    }
+  ],
+  "chooseMeaningQuestions": [
+    {
+      "prompt": "I can change your key.",
+      "audioPrompt": "I can change your key.",
+      "options": [
+        "A pessoa pode trocar sua chave.",
+        "Você precisa trocar de hotel.",
+        "Seu quarto está pronto."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Do you have your receipt?",
+      "audioPrompt": "Do you have your receipt?",
+      "options": [
+        "A pessoa pede o recibo.",
+        "A pessoa pede seu passaporte.",
+        "A pessoa oferece outro tamanho."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "I'll bring another one.",
+      "audioPrompt": "I'll bring another one.",
+      "options": [
+        "A pessoa vai trazer outro.",
+        "A pessoa vai trazer a conta.",
+        "A pessoa pede para você sair."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Take the next bus.",
+      "audioPrompt": "Take the next bus.",
+      "options": [
+        "Pegue o próximo ônibus.",
+        "Desça agora.",
+        "Este ônibus é o certo."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Get off at the next stop.",
+      "audioPrompt": "Get off at the next stop.",
+      "options": [
+        "Desça no próximo ponto.",
+        "Espere no hotel.",
+        "Pegue um táxi."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "The fitting room is on the left.",
+      "audioPrompt": "The fitting room is on the left.",
+      "options": [
+        "O provador fica à esquerda.",
+        "O caixa fica à direita.",
+        "O tamanho está errado."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "I didn't order this.",
+      "audioPrompt": "I didn't order this.",
+      "options": [
+        "Eu não pedi isto.",
+        "Quero fazer um pedido.",
+        "Quero a conta."
+      ],
+      "answer": 0
+    },
+    {
+      "prompt": "Can you repeat, please?",
+      "audioPrompt": "Can you repeat, please?",
+      "options": [
+        "Você pode repetir, por favor?",
+        "Você pode trocar, por favor?",
+        "Você pode trazer outro?"
+      ],
+      "answer": 0
+    }
+  ],
+  "completePhraseQuestions": [
+    {
+      "prompt": "The key doesn’t ___.",
+      "hint": "A chave não funciona.",
+      "answers": [
+        "work"
+      ],
+      "fullPhrase": "The key doesn't work.",
+      "wordBank": [
+        "work",
+        "order",
+        "small"
+      ]
+    },
+    {
+      "prompt": "Can you ___ me, please?",
+      "hint": "Peça ajuda.",
+      "answers": [
+        "help"
+      ],
+      "fullPhrase": "Can you help me, please?",
+      "wordBank": [
+        "help",
+        "have",
+        "try"
+      ]
+    },
+    {
+      "prompt": "This is too ___.",
+      "hint": "Está pequeno demais.",
+      "answers": [
+        "small"
+      ],
+      "fullPhrase": "This is too small.",
+      "wordBank": [
+        "small",
+        "right",
+        "wrong"
+      ]
+    },
+    {
+      "prompt": "Do you have a ___ size?",
+      "hint": "Peça um tamanho maior.",
+      "answers": [
+        "bigger"
+      ],
+      "fullPhrase": "Do you have a bigger size?",
+      "wordBank": [
+        "bigger",
+        "receipt",
+        "bus"
+      ]
+    },
+    {
+      "prompt": "I didn’t ___ this.",
+      "hint": "Você não pediu isto.",
+      "answers": [
+        "order"
+      ],
+      "fullPhrase": "I didn't order this.",
+      "wordBank": [
+        "order",
+        "work",
+        "repeat"
+      ]
+    },
+    {
+      "prompt": "My order is ___.",
+      "hint": "Seu pedido está errado.",
+      "answers": [
+        "wrong"
+      ],
+      "fullPhrase": "My order is wrong.",
+      "wordBank": [
+        "wrong",
+        "small",
+        "next"
+      ]
+    },
+    {
+      "prompt": "Is this the ___ bus?",
+      "hint": "Confirme se é o ônibus certo.",
+      "answers": [
+        "right"
+      ],
+      "fullPhrase": "Is this the right bus?",
+      "wordBank": [
+        "right",
+        "another",
+        "off"
+      ]
+    },
+    {
+      "prompt": "Can you ___, please?",
+      "hint": "Peça para repetir.",
+      "answers": [
+        "repeat"
+      ],
+      "fullPhrase": "Can you repeat, please?",
+      "wordBank": [
+        "repeat",
+        "order",
+        "receipt"
+      ]
+    }
+  ],
+  "typeSentenceQuestions": [
+    {
+      "prompt": "A chave não funciona.",
+      "answers": [
+        "The key doesn't work.",
+        "The key does not work.",
+        "My key doesn't work."
+      ]
+    },
+    {
+      "prompt": "Peça ajuda com educação.",
+      "answers": [
+        "Can you help me, please?",
+        "Could you help me, please?",
+        "Can you help me?"
+      ]
+    },
+    {
+      "prompt": "Peça um tamanho maior.",
+      "answers": [
+        "Do you have a bigger size?",
+        "Do you have a larger size?",
+        "Can I have a bigger size, please?"
+      ]
+    },
+    {
+      "prompt": "Diga que não pediu isto.",
+      "answers": [
+        "I didn't order this.",
+        "I did not order this."
+      ]
+    },
+    {
+      "prompt": "Diga que seu pedido está errado.",
+      "answers": [
+        "My order is wrong.",
+        "This is not my order.",
+        "This isn't my order."
+      ]
+    },
+    {
+      "prompt": "Confirme se é o ônibus certo.",
+      "answers": [
+        "Is this the right bus?",
+        "Is this the correct bus?"
+      ]
+    },
+    {
+      "prompt": "Pergunte onde descer.",
+      "answers": [
+        "Where do I get off?",
+        "Where should I get off?"
+      ]
+    },
+    {
+      "prompt": "Peça para a pessoa repetir.",
+      "answers": [
+        "Can you repeat, please?",
+        "Could you repeat, please?",
+        "Can you say that again, please?"
+      ]
+    }
+  ],
+  "finalMissionScenario": "Four stops. One short answer at a time. Listen to the staff, explain the problem and confirm the solution. Tap Listen to staff before reading the transcript.",
+  "finalMissionQuestions": [
+    {
+      "prompt": "HOTEL · Sua chave não abre a porta. Explique o problema.",
+      "audioPrompt": "How can I help you?",
+      "answers": [
+        "The key doesn't work.",
+        "The key does not work.",
+        "My key doesn't work."
+      ]
+    },
+    {
+      "prompt": "HOTEL · A pessoa oferece outra chave. Aceite.",
+      "audioPrompt": "I can change your key.",
+      "answers": [
+        "Yes, please.",
+        "Thank you.",
+        "Yes, thank you."
+      ]
+    },
+    {
+      "prompt": "STORE · A camiseta está pequena. Peça um tamanho maior.",
+      "audioPrompt": "Is the size okay?",
+      "answers": [
+        "Do you have a bigger size?",
+        "Do you have a larger size?",
+        "Can I have a bigger size, please?"
+      ]
+    },
+    {
+      "prompt": "STORE · Ouça o pedido e apresente o recibo.",
+      "audioPrompt": "Do you have your receipt?",
+      "answers": [
+        "Here is my receipt.",
+        "Here's my receipt.",
+        "Yes, here is my receipt."
+      ]
+    },
+    {
+      "prompt": "RESTAURANT · Trouxeram algo que você não pediu. Diga isso.",
+      "audioPrompt": "Here is your order.",
+      "answers": [
+        "I didn't order this.",
+        "I did not order this.",
+        "My order is wrong."
+      ]
+    },
+    {
+      "prompt": "RESTAURANT · A pessoa vai trazer outro. Aceite e agradeça.",
+      "audioPrompt": "Sorry. I’ll bring another one.",
+      "answers": [
+        "Thank you.",
+        "Thank you very much.",
+        "Okay, thank you.",
+        "Thanks."
+      ]
+    },
+    {
+      "prompt": "TRANSPORT · Antes de embarcar, confirme se é o ônibus certo.",
+      "audioPrompt": "Hello. Where are you going?",
+      "answers": [
+        "Is this the right bus?",
+        "Is this the correct bus?"
+      ]
+    },
+    {
+      "prompt": "TRANSPORT · Você não entendeu a orientação. Peça repetição.",
+      "audioPrompt": "Get off at the next stop.",
+      "answers": [
+        "Can you repeat, please?",
+        "Could you repeat, please?",
+        "Can you say that again, please?"
+      ]
+    }
+  ],
+  "missionCompleteMessage": "You handled travel problems. One clear sentence can move the conversation forward. Use Train What I Missed to practise your first-try mistakes. Your original score stays the same.",
+  "mainPhrases": [
+    "The key doesn't work.",
+    "Can you help me, please?",
+    "Do you have a bigger size?",
+    "I didn't order this.",
+    "My order is wrong.",
+    "Is this the right bus?"
+  ],
+  "fallbackAudioScript": "Welcome to Mission 9. Travel Problems. Explain. Ask. Confirm. Continue.\nListen, pause and repeat each short phrase.\nCan I try it on? Pause. Can I try it on?\nCan I have another one, please? Pause. Can I have another one, please?\nI didn't order this. Pause. I didn't order this.\nMy order is wrong. Pause. My order is wrong.\nCan you help me, please? Pause. Can you help me, please?\nCan you repeat, please? Pause. Can you repeat, please?\nCan you speak slowly, please? Pause. Can you speak slowly, please?\nHere is my receipt. Pause. Here is my receipt.\nIs this the right bus? Pause. Is this the right bus?\nThe key doesn't work. Pause. The key doesn't work.\nThis is too small. Pause. This is too small.\nDo you have a bigger size? Pause. Do you have a bigger size?\nWhere do I get off? Pause. Where do I get off?\nListen to the staff. Think about your next action.\nI can change your key.\nDo you have your receipt?\nI'll bring another one.\nTake the next bus.\nGet off at the next stop.\nThe fitting room is on the left.\nFinal round. Say one short response. Ask for repetition when you need it. Keep going."
+},
+{
   "id": "mission-8-small-talk-daily-interactions",
   "week": "Mission 8",
   "title": "Small Talk + Daily Interactions",
@@ -1662,7 +2617,7 @@ export const missions = [
   "week": "Mission 7",
   "title": "Problems & Help",
   "shortTitle": "Problems & Help",
-  "status": "current",
+  "status": "previous",
   "missionVersion": "v1",
   "studentName": "Mateus",
   "keyPhrase": "Something is wrong. Ask for help.",

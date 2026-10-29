@@ -1,5 +1,17 @@
 # RTC Lab Practice Missions
 
+## Missions 9 e 10 — outubro de 2026
+
+- **Mission 9 — Travel Problems** (`mission-9-travel-problems`, v1): disponível em Previous Missions e na trilha. 13 frases e 32 questões (8 significado, 8 lacunas, 8 frases, 8 desafios finais). Explain. Ask. Confirm. Continue.
+- **Mission 10 — The Travel Quest** (`mission-10-travel-quest`, v1): missão atual, sem pré-requisito. 12 frases e 36 questões (8/8/8/12), com foco em experimentar roupa, pedir outro item, informar pedido errado e recuperar a conversa. Listen. React. Recover. Keep going.
+- As duas usam as etapas existentes, inclusive Full Audio Training, Listen & Repeat, significado, lacunas, frases, desafio final e conclusão. A ordem, o visual, os pontos da primeira tentativa e os registros continuam iguais.
+- Questões com `audioPrompt` oferecem **Listen to staff** antes de responder e transcrição recolhida. Usam a voz já disponível no navegador, sem gravação nova. A transcrição permite continuar sem áudio. O botão de áudio após corrigir continua tocando a resposta esperada.
+- A revisão adaptativa usa **Train What I Missed**: seleciona erros da primeira tentativa desta conclusão, deduplica frases e permite treinar sem mudar nota, XP ou reenviar o resultado. Não consulta notas privadas nem práticas de outro dispositivo. Os imprevistos finais são cenas curtas fixas; não foi criado motor de aleatoriedade.
+- Mission 7 passou a `previous`; conteúdo, ID e versão permanecem iguais. Missions 1–6 e 8 estão intactas, inclusive o bloqueio manual já existente da 8. Nenhuma prática passada foi marcada como concluída.
+- Validação: `npm test` (36 testes), `node --check src/main.js` e o comando de build do Netlify, `node scripts/build-info.js`. A integração é simulada: não cria registros artificiais na planilha. Voz e teclado no celular do aluno precisam de conferência no aparelho.
+
+Links após publicar no endereço habitual do site: `/#mission/mission-9-travel-problems` e `/#mission/mission-10-travel-quest`.
+
 MVP estático de prática oral entre aulas, WorkSpeak / RTC Lab. Inicialmente para Mateus. HTML, CSS e JavaScript ES Modules, sem dependências de execução, backend próprio, login ou banco de dados. Hospedagem prevista no Netlify.
 
 ## Rodar localmente
